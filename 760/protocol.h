@@ -35,6 +35,7 @@ class Protocol : boost::noncopyable
 			m_connection = connection;
 			m_rawMessages = false;
 			m_outputBuffer = NULL;
+			m_refCount = 0;
 		}
 	
 		virtual ~Protocol() {}
@@ -49,7 +50,10 @@ class Protocol : boost::noncopyable
 		const Connection* getConnection() const { return m_connection;}
 		void setConnection(Connection* connection) { m_connection = connection;}
 
-	uint32_t getIP() const;
+    	uint32_t getIP() const;
+
+		int32_t addRef() {return ++m_refCount;}
+		int32_t unRef() {return --m_refCount;}
 
 	protected:
 		//Use this function for autosend messages only
@@ -57,6 +61,7 @@ class Protocol : boost::noncopyable
 
 		void setRawMessages(bool value) { m_rawMessages = value; }
 
+		virtual void releaseProtocol();
 		virtual void deleteProtocolTask();
 		friend class Connection;
 	
@@ -64,6 +69,7 @@ class Protocol : boost::noncopyable
 		OutputMessage* m_outputBuffer;
 		Connection* m_connection;
 		bool m_rawMessages;
+		uint32_t m_refCount;
 };
 
 #endif

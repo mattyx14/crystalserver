@@ -248,6 +248,18 @@ void Protocol76::setPlayer(Player* p)
 	player = p;
 }
 
+void Protocol76::releaseProtocol()
+{
+	//dispatcher thread
+	if(player)
+	{
+		if(player->client == this)
+			player->client = NULL;
+	}
+
+	Protocol::releaseProtocol();
+}
+
 void Protocol76::deleteProtocolTask()
 {
 	//dispatcher thread
@@ -427,11 +439,14 @@ bool Protocol76::login(const std::string& name, uint32_t accnumber, const std::s
 			g_chat.removeUserFromAllChannels(_player);
 			_player->disconnect();
 			_player->isConnecting = true;
+			addRef();
 			eventConnect = Scheduler::getScheduler().addEvent(
 				createSchedulerTask(1000, boost::bind(&Protocol76::connect, this, _player->getID())));
 
 			return true;
 		}
+
+		addRef();
 		return connect(_player->getID());
 	}
 	return false;
@@ -439,6 +454,7 @@ bool Protocol76::login(const std::string& name, uint32_t accnumber, const std::s
 
 bool Protocol76::connect(uint32_t playerId)
 {
+	unRef();
 	eventConnect = 0;
 	Player* _player = g_game.getPlayerByID(playerId);
 	if(!_player || _player->isRemoved() || _player->isOnline())

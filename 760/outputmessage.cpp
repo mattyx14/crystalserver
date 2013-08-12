@@ -146,8 +146,26 @@ void OutputMessagePool::sendAll()
 
 void OutputMessagePool::internalReleaseMessage(OutputMessage* msg)
 {
-	//Simulate that the message is sent and then liberate it
-	msg->getProtocol()->onSendMessage(msg);
+	if(msg->getProtocol())
+	{
+		msg->getProtocol()->unRef();
+#ifdef __DEBUG_NET_DETAIL__
+		std::cout << "Removing reference to protocol " << msg->getProtocol() << std::endl;
+#endif
+	}
+	else
+		std::cout << "No protocol found." << std::endl;
+
+	if(msg->getConnection())
+	{
+		msg->getConnection()->unRef();
+#ifdef __DEBUG_NET_DETAIL__
+		std::cout << "Removing reference to connection " << msg->getConnection() << std::endl;
+#endif
+	}
+	else
+		std::cout << "No connection found." << std::endl;
+
 	msg->freeMessage();
 	m_outputMessages.push_back(msg);
 }
@@ -163,22 +181,17 @@ void OutputMessagePool::releaseMessage(OutputMessage* msg, bool sent /*= false*/
 				std::find(m_autoSendOutputMessages.begin(), m_autoSendOutputMessages.end(), msg);
 			if(it != m_autoSendOutputMessages.end())
 				m_autoSendOutputMessages.erase(it);
-			msg->freeMessage();
-			m_outputMessages.push_back(msg);
+			internalReleaseMessage(msg);
 			break;
 		}
 		case OutputMessage::STATE_ALLOCATED_NO_AUTOSEND:
-			msg->freeMessage();
-			m_outputMessages.push_back(msg);
+			internalReleaseMessage(msg);
 			break;
 		case OutputMessage::STATE_WAITING:
 			if(!sent)
 				std::cout << "Error: [OutputMessagePool::releaseMessage] Releasing STATE_WAITING OutputMessage." << std::endl;
 			else
-			{
-				msg->freeMessage();
-				m_outputMessages.push_back(msg);
-			}
+				internalReleaseMessage(msg);
 			break;
 		case OutputMessage::STATE_FREE:
 			std::cout << "Error: [OutputMessagePool::releaseMessage] Releasing STATE_FREE OutputMessage." << std::endl;
@@ -246,7 +259,18 @@ void OutputMessagePool::configureOutputMessage(OutputMessage* msg, Protocol* pro
 	else
 		msg->setState(OutputMessage::STATE_ALLOCATED_NO_AUTOSEND);
 
+	Connection* connection = protocol->getConnection();
+	assert(connection != NULL);
+
 	msg->setProtocol(protocol);
-	msg->setConnection(protocol->getConnection());
+	protocol->addRef();
+#ifdef __DEBUG_NET_DETAIL__
+	std::cout << "Adding reference to protocol - " << protocol << std::endl;
+#endif
+	msg->setConnection(connection);
+	connection->addRef();
+#ifdef __DEBUG_NET_DETAIL__
+	std::cout << "Adding reference to connection - " << connection << std::endl;
+#endif
 	msg->setFrame(m_frameTime);
 }
