@@ -1,0 +1,17 @@
+[ TODO
+	Project Name
+		Crystal Server
+
+	Version
+		0.1
+
+	License
+		GNU GPLv3
+
+	Web
+		https://github.com/tryller/crystalserver
+]
+
+[ LIST
+	Add alot of functions from The Forgotten Server
+]

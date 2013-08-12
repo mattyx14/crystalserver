@@ -1,0 +1,38 @@
+[ CHANGELOG
+	Project Name
+		Crystal Server
+
+	Version
+		0.1
+
+	License
+		GNU GPLv3
+
+	Web
+		https://github.com/tryller/crystalserver
+]
+
+[ File changes
+	D = Deleted.
+	M = Modified.
+	A = Added.
+
+	[ M...
+
+	]
+
+	[ A...
+	]
+
+	[ D...
+
+	]
+]
+			
+[ Milestone
+	Game protocol 7.60 (Tryller)
+]
+
+[ Fixed issues...
+
+]
