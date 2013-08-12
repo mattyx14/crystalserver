@@ -22,7 +22,7 @@
 #include "connection.h"
 #include "protocol.h"
 #include "outputmessage.h"
-#include "protocolgame.h"
+#include "protocol76.h"
 #include "protocollogin.h"
 #include "status.h"
 #include "tasks.h"
@@ -182,7 +182,7 @@ void Connection::parsePacket(const boost::system::error_code& error)
 					m_protocol = new ProtocolLogin(this);
 					break;
 				case 0x0A: // World server protocol
-					m_protocol = new ProtocolGame(this);
+					m_protocol = new Protocol76(this);
 					break;
 				case 0xFF: // Status protocol
 					m_protocol = new ProtocolStatus(this);

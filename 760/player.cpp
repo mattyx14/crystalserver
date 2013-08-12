@@ -58,7 +58,7 @@ int32_t Player::maxMessageBuffer;
 uint32_t Player::playerCount = 0;
 #endif
 
-Player::Player(const std::string& _name, ProtocolGame *p) :
+Player::Player(const std::string& _name, Protocol76 *p) :
 Creature()
 {
 	client = p;

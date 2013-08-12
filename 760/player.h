@@ -29,7 +29,7 @@
 #include "outfit.h"
 #include "enums.h"
 #include "vocation.h"
-#include "protocolgame.h"
+#include "protocol76.h"
 #include "ioguild.h"
 #include "party.h"
 
@@ -40,7 +40,7 @@
 class House;
 class NetworkMessage;
 class Weapon;
-class ProtocolGame;
+class Protocol76;
 class Npc;
 class Party;
 class SchedulerTask;
@@ -119,7 +119,7 @@ class Player : public Creature, public Cylinder
 #ifdef __ENABLE_SERVER_DIAGNOSTIC__
 		static uint32_t playerCount;
 #endif
-		Player(const std::string& name, ProtocolGame* p);
+		Player(const std::string& name, Protocol76* p);
 		virtual ~Player();
 
 		virtual Player* getPlayer() {return this;}
@@ -166,9 +166,6 @@ class Player : public Creature, public Cylinder
 		void hasRequestedOutfit(bool newValue) {requestedOutfit = newValue;}
 
 		Vocation* getVocation() const {return vocation;}
-
-		OperatingSystem_t getOperatingSystem() const {return operatingSystem;}
-		void setOperatingSystem(OperatingSystem_t clientos) {operatingSystem = clientos;}
 
 		secureMode_t getSecureMode() const {return secureMode;}
 
@@ -680,7 +677,7 @@ class Player : public Creature, public Cylinder
 		virtual void __internalAddThing(uint32_t index, Thing* thing);
 
 	protected:
-		ProtocolGame* client;
+		Protocol76* client;
 
 		Party* party;
 		PartyList invitePartyList;
@@ -714,7 +711,7 @@ class Player : public Creature, public Cylinder
 		std::string groupName;
 		int32_t idleTime;
 		int32_t groupId;
-		OperatingSystem_t operatingSystem;
+
 		bool ghostMode;
 
 		bool talkState[13], accountManager;
@@ -849,7 +846,7 @@ class Player : public Creature, public Cylinder
 		friend class Map;
 		friend class Actions;
 		friend class IOLoginData;
-		friend class ProtocolGame;
+		friend class Protocol76;
 };
 
 #endif

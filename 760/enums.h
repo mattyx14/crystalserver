@@ -33,12 +33,6 @@ enum GuildLevel_t
 	GUILDLEVEL_LEADER = 3
 };
 
-enum OperatingSystem_t
-{
-	CLIENTOS_LINUX = 0x01,
-	CLIENTOS_WINDOWS = 0x02
-};
-
 enum AccountType_t
 {
 	ACCOUNT_TYPE_NORMAL = 0x01,

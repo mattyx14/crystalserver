@@ -29,7 +29,7 @@
 
 #include "otsystem.h"
 #include "networkmessage.h"
-#include "protocolgame.h"
+#include "protocol76.h"
 
 #include <stdlib.h>
 #include <time.h>

@@ -18,8 +18,8 @@
 // Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //////////////////////////////////////////////////////////////////////
 
-#ifndef __OTSERV_PROTOCOLGAME_H__
-#define __OTSERV_PROTOCOLGAME_H__
+#ifndef __OTSERV_PROTOCOL76_H__
+#define __OTSERV_PROTOCOL76_H__
 
 #include <string>
 #include "protocol.h"
@@ -42,16 +42,16 @@ class Container;
 class Tile;
 class Connection;
 
-class ProtocolGame : public Protocol
+class Protocol76 : public Protocol
 {
 	public:
 #ifdef __ENABLE_SERVER_DIAGNOSTIC__
-		static uint32_t protocolGameCount;
+		static uint32_t protocol76Count;
 #endif
-		ProtocolGame(Connection* connection);
-		virtual ~ProtocolGame();
+		Protocol76(Connection* connection);
+		virtual ~Protocol76();
 
-		bool login(const std::string& name, uint32_t accnumber, const std::string& password, uint16_t operatingSystem, uint8_t gamemasterLogin);
+		bool login(const std::string& name, uint32_t accnumber, const std::string& password, uint8_t gamemasterLogin);
 		bool logout(bool displayEffect, bool forced);
 
 		void setPlayer(Player* p);

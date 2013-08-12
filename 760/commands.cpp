@@ -47,6 +47,7 @@
 #include "connection.h"
 #include "status.h"
 #include "protocollogin.h"
+#include "protocol76.h"
 #endif
 #include <libxml/xmlmemory.h>
 #include <libxml/parser.h>
@@ -1384,7 +1385,7 @@ bool Commands::serverDiag(Creature* creature, const std::string& cmd, const std:
 
 	text << "\nProtocols:" << "\n";
 	text << "--------------------\n";
-	text << "ProtocolGame: " << ProtocolGame::protocolGameCount << "\n";
+	text << "Protocol76: " << Protocol76::protocol76Count << "\n";
 	text << "ProtocolLogin: " << ProtocolLogin::protocolLoginCount << "\n";
 	text << "ProtocolStatus: " << ProtocolStatus::protocolStatusCount << "\n\n";
 
