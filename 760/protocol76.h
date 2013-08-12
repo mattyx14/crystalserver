@@ -51,7 +51,7 @@ class Protocol76 : public Protocol
 		Protocol76(Connection* connection);
 		virtual ~Protocol76();
 
-		bool login(const std::string& name, uint32_t accnumber, const std::string& password, uint8_t gamemasterLogin);
+		bool login(const std::string& name, uint32_t accnumber, const std::string& password);
 		bool logout(bool displayEffect, bool forced);
 
 		void setPlayer(Player* p);

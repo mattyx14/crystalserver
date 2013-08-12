@@ -2132,13 +2132,10 @@ bool Game::playerStopAutoWalk(uint32_t playerId)
 }
 
 bool Game::playerUseItemEx(uint32_t playerId, const Position& fromPos, uint8_t fromStackPos, uint16_t fromSpriteId,
-	const Position& toPos, uint8_t toStackPos, uint16_t toSpriteId, bool isHotkey)
+	const Position& toPos, uint8_t toStackPos, uint16_t toSpriteId)
 {
 	Player* player = getPlayerByID(playerId);
 	if(!player || player->isRemoved())
-		return false;
-
-	if(isHotkey && g_config.getString(ConfigManager::AIMBOT_HOTKEY_ENABLED) == "no")
 		return false;
 
 	Thing* thing = internalGetThing(player, fromPos, fromStackPos, fromSpriteId);
@@ -2195,7 +2192,7 @@ bool Game::playerUseItemEx(uint32_t playerId, const Position& fromPos, uint8_t f
 					this, player->getID(), listDir)));
 
 				SchedulerTask* task = createSchedulerTask(400, boost::bind(&Game::playerUseItemEx, this,
-					playerId, itemPos, itemStackPos, fromSpriteId, toPos, toStackPos, toSpriteId, isHotkey));
+					playerId, itemPos, itemStackPos, fromSpriteId, toPos, toStackPos, toSpriteId));
 				player->setNextWalkActionTask(task);
 				return true;
 			}
@@ -2214,24 +2211,21 @@ bool Game::playerUseItemEx(uint32_t playerId, const Position& fromPos, uint8_t f
 	{
 		uint32_t delay = player->getNextActionTime();
 		SchedulerTask* task = createSchedulerTask(delay, boost::bind(&Game::playerUseItemEx, this,
-			playerId, fromPos, fromStackPos, fromSpriteId, toPos, toStackPos, toSpriteId, isHotkey));
+			playerId, fromPos, fromStackPos, fromSpriteId, toPos, toStackPos, toSpriteId));
 		player->setNextActionTask(task);
 		return false;
 	}
 
 	player->setNextActionTask(NULL);
 
-	return g_actions->useItemEx(player, fromPos, toPos, toStackPos, item, isHotkey);
+	return g_actions->useItemEx(player, fromPos, toPos, toStackPos, item);
 }
 
 bool Game::playerUseItem(uint32_t playerId, const Position& pos, uint8_t stackPos,
-	uint8_t index, uint16_t spriteId, bool isHotkey)
+	uint8_t index, uint16_t spriteId)
 {
 	Player* player = getPlayerByID(playerId);
 	if(!player || player->isRemoved())
-		return false;
-
-	if(isHotkey && g_config.getString(ConfigManager::AIMBOT_HOTKEY_ENABLED) == "no")
 		return false;
 
 	Thing* thing = internalGetThing(player, pos, stackPos, spriteId);
@@ -2260,7 +2254,7 @@ bool Game::playerUseItem(uint32_t playerId, const Position& pos, uint8_t stackPo
 					this, player->getID(), listDir)));
 
 				SchedulerTask* task = createSchedulerTask(400, boost::bind(&Game::playerUseItem, this,
-					playerId, pos, stackPos, index, spriteId, isHotkey));
+					playerId, pos, stackPos, index, spriteId));
 				player->setNextWalkActionTask(task);
 				return true;
 			}
@@ -2274,19 +2268,19 @@ bool Game::playerUseItem(uint32_t playerId, const Position& pos, uint8_t stackPo
 	{
 		uint32_t delay = player->getNextActionTime();
 		SchedulerTask* task = createSchedulerTask(delay, boost::bind(&Game::playerUseItem, this,
-			playerId, pos, stackPos, index, spriteId, isHotkey));
+			playerId, pos, stackPos, index, spriteId));
 		player->setNextActionTask(task);
 		return false;
 	}
 
 	player->setNextActionTask(NULL);
 
-	g_actions->useItem(player, pos, index, item, isHotkey);
+	g_actions->useItem(player, pos, index, item);
 	return true;
 }
 
 bool Game::playerUseBattleWindow(uint32_t playerId, const Position& fromPos, uint8_t fromStackPos,
-	uint32_t creatureId, uint16_t spriteId, bool isHotkey)
+	uint32_t creatureId, uint16_t spriteId)
 {
 	Player* player = getPlayerByID(playerId);
 	if(!player || player->isRemoved())
@@ -2298,15 +2292,6 @@ bool Game::playerUseBattleWindow(uint32_t playerId, const Position& fromPos, uin
 
 	if(!Position::areInRange<7,5,0>(creature->getPosition(), player->getPosition()))
 		return false;
-
-	if(g_config.getString(ConfigManager::AIMBOT_HOTKEY_ENABLED) == "no")
-	{
-		if(creature->getPlayer() || isHotkey)
-		{
-			player->sendCancelMessage(RET_DIRECTPLAYERSHOOT);
-			return false;
-		}
-	}
 
 	Thing* thing = internalGetThing(player, fromPos, fromStackPos, spriteId, STACKPOS_USE);
 	if(!thing)
@@ -2334,7 +2319,7 @@ bool Game::playerUseBattleWindow(uint32_t playerId, const Position& fromPos, uin
 					this, player->getID(), listDir)));
 
 				SchedulerTask* task = createSchedulerTask(400, boost::bind(&Game::playerUseBattleWindow, this,
-					playerId, fromPos, fromStackPos, creatureId, spriteId, isHotkey));
+					playerId, fromPos, fromStackPos, creatureId, spriteId));
 				player->setNextWalkActionTask(task);
 				return true;
 			}
@@ -2348,14 +2333,14 @@ bool Game::playerUseBattleWindow(uint32_t playerId, const Position& fromPos, uin
 	{
 		uint32_t delay = player->getNextActionTime();
 		SchedulerTask* task = createSchedulerTask(delay, boost::bind(&Game::playerUseBattleWindow, this,
-			playerId, fromPos, fromStackPos, creatureId, spriteId, isHotkey));
+			playerId, fromPos, fromStackPos, creatureId, spriteId));
 		player->setNextActionTask(task);
 		return false;
 	}
 
 	player->setNextActionTask(NULL);
 
-	return g_actions->useItemEx(player, fromPos, creature->getPosition(), creature->getParent()->__getIndexOfThing(creature), item, isHotkey, creatureId);
+	return g_actions->useItemEx(player, fromPos, creature->getPosition(), creature->getParent()->__getIndexOfThing(creature), item, creatureId);
 }
 
 bool Game::playerCloseContainer(uint32_t playerId, uint8_t cid)

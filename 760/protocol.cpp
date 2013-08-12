@@ -83,6 +83,9 @@ void Protocol::releaseProtocol()
 void Protocol::deleteProtocolTask()
 {
 	//dispather thread
+	assert(m_refCount == 0);
+	setConnection(NULL);
+
 	if(m_outputBuffer)
 		OutputMessagePool::getInstance()->releaseMessage(m_outputBuffer);
 

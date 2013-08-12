@@ -22,7 +22,6 @@
 #include "outputmessage.h"
 #include "connection.h"
 #include "protocol.h"
-#include "tools.h"
 
 OutputMessage::OutputMessage()
 {
@@ -84,7 +83,10 @@ void OutputMessagePool::send(OutputMessage* msg)
 				OTSYS_THREAD_UNLOCK(m_outputPoolLock, "");
 			}
 			else
+			{
+				msg->getProtocol()->onSendMessage(msg);
 				internalReleaseMessage(msg);
+			}
 		}
 		else
 		{
@@ -129,7 +131,10 @@ void OutputMessagePool::sendAll()
 						(*it)->setState(OutputMessage::STATE_WAITING);
 				}
 				else
+				{
+					(*it)->getProtocol()->onSendMessage((*it));
 					internalReleaseMessage(*it);
+				}
 			}
 			else
 			{
@@ -204,15 +209,15 @@ void OutputMessagePool::releaseMessage(OutputMessage* msg, bool sent /*= false*/
 
 OutputMessage* OutputMessagePool::getOutputMessage(Protocol* protocol, bool autosend /*= true*/)
 {
-	#ifdef __DEBUG_NET__
-	if(protocol->getConnection() == NULL)
-		std::cout << "Warning: [OutputMessagePool::getOutputMessage] NULL connection." << std::endl;
-	#endif
 	#ifdef __DEBUG_NET_DETAIL__
 	std::cout << "request output message - auto = " << autosend << std::endl;
 	#endif
 
 	OTSYS_THREAD_LOCK_CLASS lockClass(m_outputPoolLock);
+
+	if(protocol->getConnection() == NULL)
+		return NULL;
+
 	OutputMessage* outputmessage;
 	if(m_outputMessages.empty())
 	{

@@ -112,7 +112,6 @@ bool ConfigManager::loadFile(const std::string& _filename)
 	m_confString[ALLOW_CHANGEOUTFIT] = getGlobalString(L, "allowChangeOutfit", "yes");
 	m_confString[ONE_PLAYER_ON_ACCOUNT] = getGlobalString(L, "onePlayerOnlinePerAccount", "yes");
 	m_confString[CANNOT_ATTACK_SAME_LOOKFEET] = getGlobalString(L, "noDamageToSameLookfeet", "no");
-	m_confString[AIMBOT_HOTKEY_ENABLED] = getGlobalString(L, "hotkeyAimbotEnabled", "yes");
 	m_confInteger[ACTIONS_DELAY_INTERVAL] = getGlobalNumber(L, "timeBetweenActions", 200);
 	m_confInteger[EX_ACTIONS_DELAY_INTERVAL] = getGlobalNumber(L, "timeBetweenExActions", 1000);
 	m_confInteger[MAX_MESSAGEBUFFER] = getGlobalNumber(L, "maxMessageBuffer", 4);
@@ -128,7 +127,6 @@ bool ConfigManager::loadFile(const std::string& _filename)
 	m_confString[CLEAN_MAP_AT_SERVERSAVE] = getGlobalString(L, "cleanMapAtServerSave", "yes");
 	m_confString[FREE_PREMIUM] = getGlobalString(L, "freePremium", "no");
 	m_confInteger[PROTECTION_LEVEL] = getGlobalNumber(L, "protectionLevel", 1);
-	m_confString[ADMIN_LOGS_ENABLED] = getGlobalString(L, "adminLogsEnabled", "no");
 	m_confInteger[DEATH_LOSE_PERCENT] = getGlobalNumber(L, "deathLosePercent", 10);
 	m_confInteger[STATUSQUERY_TIMEOUT] = getGlobalNumber(L, "statusTimeout", 5 * 60 * 1000);
 	m_confString[BROADCAST_BANISHMENTS] = getGlobalString(L, "broadcastBanishments", "yes");

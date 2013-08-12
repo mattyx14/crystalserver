@@ -28,7 +28,6 @@
 
 	-- Battle
 	worldType = "pvp"
-	hotkeyAimbotEnabled = "yes"
 	protectionLevel = 1
 	killsToRedSkull = 3
 	pzLocked = 60000
@@ -49,12 +48,11 @@
 	retryTimeout = 5 * 1000
 	loginTimeout = 60 * 1000
 	maxPlayers = "1000"
-	motd = "Welcome to the Forgotten Server!"
+	motd = "Welcome to the Crystal Server!"
 	onePlayerOnlinePerAccount = "yes"
 	allowClones = 0
-	serverName = "Forgotten"
-	loginMessage = "Welcome to the Forgotten Server!"
-	adminLogsEnabled = "no"
+	serverName = "Crystal"
+	loginMessage = "Welcome to the Crystal Server!"
 	statusTimeout = 5 * 60 * 1000
 	replaceKickOnLogin = "yes"
 

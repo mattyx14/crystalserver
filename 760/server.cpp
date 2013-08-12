@@ -21,7 +21,7 @@
 
 #include "server.h"
 #include "connection.h"
-#include "tools.h"
+#include <iostream>
 
 Server::Server(uint32_t serverip, uint16_t port)
 : m_io_service()
@@ -95,11 +95,11 @@ void Server::onAccept(Connection* connection, const boost::system::error_code& e
 			m_listenErrors++;
 			PRINT_ASIO_ERROR("Accepting");
 			closeListenSocket();
-			#ifndef __IGNORE_LISTEN_ERROR__
+			#ifdef __ENABLE_LISTEN_ERROR__
 			if(m_listenErrors < 100)
 			#endif
 				openListenSocket();
-			#ifndef __IGNORE_LISTEN_ERROR__
+			#ifdef __ENABLE_LISTEN_ERROR__
 			else
 				std::cout << "Error: [Server::onAccept] More than 100 listen errors." << std::endl;
 			#else

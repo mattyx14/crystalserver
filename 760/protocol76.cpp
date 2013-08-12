@@ -276,7 +276,7 @@ void Protocol76::deleteProtocolTask()
 	Protocol::deleteProtocolTask();
 }
 
-bool Protocol76::login(const std::string& name, uint32_t accnumber, const std::string& password, uint8_t gamemasterLogin)
+bool Protocol76::login(const std::string& name, uint32_t accnumber, const std::string& password)
 {
 	//dispatcher thread
 	Player* _player = g_game.getPlayerByName(name);
@@ -319,12 +319,6 @@ bool Protocol76::login(const std::string& name, uint32_t accnumber, const std::s
 		{
 			player->accountManager = true;
 			player->realAccount = accnumber;
-		}
-
-		if(gamemasterLogin == 1 && player->getAccountType() < ACCOUNT_TYPE_GAMEMASTER && player->getName() != "Account Manager")
-		{
-			disconnectClient(0x14, "You are not a gamemaster!");
-			return false;
 		}
 
 		if(!player->hasFlag(PlayerFlag_CannotBeBanned))
@@ -430,11 +424,11 @@ bool Protocol76::login(const std::string& name, uint32_t accnumber, const std::s
 		if(eventConnect != 0 || g_config.getString(ConfigManager::REPLACE_KICK_ON_LOGIN) != "yes")
 		{
 			//Already trying to connect
-			disconnectClient(0x14, "Your already logged in.");
+			disconnectClient(0x14, "You already logged in.");
 			return false;
 		}
 
-		if(_player->isOnline())
+		if(_player->client)
 		{
 			g_chat.removeUserFromAllChannels(_player);
 			_player->disconnect();
@@ -457,7 +451,7 @@ bool Protocol76::connect(uint32_t playerId)
 	unRef();
 	eventConnect = 0;
 	Player* _player = g_game.getPlayerByID(playerId);
-	if(!_player || _player->isRemoved() || _player->isOnline())
+	if(!_player || _player->isRemoved() || _player->client)
 	{
 		disconnectClient(0x14, "Your already logged in.");
 		return false;
@@ -532,14 +526,14 @@ bool Protocol76::parseFirstPacket(NetworkMessage& msg)
 	/*uint16_t clientos =*/ msg.GetU16();
 	uint16_t version = msg.GetU16();
 
-	uint8_t isSetGM = msg.GetByte();
+	/*uint8_t isSetGM = */msg.GetByte();
 	uint32_t accnumber = msg.GetU32();
 	const std::string name = msg.GetString();
 	std::string password = msg.GetString();
 
 	if(version < CLIENT_VERSION_MIN || version > CLIENT_VERSION_MAX)
 	{
-		disconnectClient(0x14, CLIENT_VERSION_STRING);
+		disconnectClient(0x0A, CLIENT_VERSION_STRING);
 		return false;
 	}
 
@@ -586,7 +580,7 @@ bool Protocol76::parseFirstPacket(NetworkMessage& msg)
 	g_bans.addLoginAttempt(getIP(), true);
 
 	Dispatcher::getDispatcher().addTask(
-		createTask(boost::bind(&Protocol76::login, this, name, accnumber, password, isSetGM)));
+		createTask(boost::bind(&Protocol76::login, this, name, accnumber, password)));
 
 	return true;
 }
@@ -599,10 +593,13 @@ void Protocol76::onRecvFirstMessage(NetworkMessage& msg)
 void Protocol76::disconnectClient(uint8_t error, const char* message)
 {
 	OutputMessage* output = OutputMessagePool::getInstance()->getOutputMessage(this, false);
-	TRACK_MESSAGE(output);
-	output->AddByte(error);
-	output->AddString(message);
-	OutputMessagePool::getInstance()->send(output);
+	if(output)
+	{
+		TRACK_MESSAGE(output);
+		output->AddByte(error);
+		output->AddString(message);
+		OutputMessagePool::getInstance()->send(output);
+	}
 	disconnect();
 }
 
@@ -986,10 +983,6 @@ void Protocol76::GetMapDescription(uint16_t x, uint16_t y, unsigned char z,
 		msg->AddByte(0xFF);
 		//cc += skip;
 	}
-
-	#ifdef __DEBUG__
-	//printf("tiles in total: %d \n", cc);
-	#endif
 }
 
 void Protocol76::GetFloorDescription(NetworkMessage* msg, int32_t x, int32_t y, int32_t z, int32_t width, int32_t height, int32_t offset, int& skip)
@@ -1077,7 +1070,7 @@ void Protocol76::checkCreatureAsKnown(uint32_t id, bool &known, uint32_t &remove
 
 bool Protocol76::canSee(const Creature* c) const
 {
-	if(c->isRemoved())
+	if(!player || !c || c->isRemoved())
 		return false;
 
 	if(c->isInGhostMode() && !player->isAccessPlayer())
@@ -1291,8 +1284,7 @@ void Protocol76::parseUseItem(NetworkMessage& msg)
 	uint16_t spriteId = msg.GetSpriteId();
 	uint8_t stackpos = msg.GetByte();
 	uint8_t index = msg.GetByte();
-	bool isHotkey = (pos.x == 0xFFFF && pos.y == 0 && pos.z == 0);
-	addGameTask(&Game::playerUseItem, player->getID(), pos, stackpos, index, spriteId, isHotkey);
+	addGameTask(&Game::playerUseItem, player->getID(), pos, stackpos, index, spriteId);
 }
 
 void Protocol76::parseUseItemEx(NetworkMessage& msg)
@@ -1303,8 +1295,7 @@ void Protocol76::parseUseItemEx(NetworkMessage& msg)
 	Position toPos = msg.GetPosition();
 	uint16_t toSpriteId = msg.GetU16();
 	uint8_t toStackPos = msg.GetByte();
-	bool isHotkey = (fromPos.x == 0xFFFF && fromPos.y == 0 && fromPos.z == 0);
-	addGameTask(&Game::playerUseItemEx, player->getID(), fromPos, fromStackPos, fromSpriteId, toPos, toStackPos, toSpriteId, isHotkey);
+	addGameTask(&Game::playerUseItemEx, player->getID(), fromPos, fromStackPos, fromSpriteId, toPos, toStackPos, toSpriteId);
 }
 
 void Protocol76::parseBattleWindow(NetworkMessage& msg)
@@ -1313,8 +1304,7 @@ void Protocol76::parseBattleWindow(NetworkMessage& msg)
 	uint16_t spriteId = msg.GetSpriteId();
 	uint8_t fromStackPos = msg.GetByte();
 	uint32_t creatureId = msg.GetU32();
-	bool isHotkey = (fromPos.x == 0xFFFF && fromPos.y == 0 && fromPos.z == 0);
-	addGameTask(&Game::playerUseBattleWindow, player->getID(), fromPos, fromStackPos, creatureId, spriteId, isHotkey);
+	addGameTask(&Game::playerUseBattleWindow, player->getID(), fromPos, fromStackPos, creatureId, spriteId);
 }
 
 void Protocol76::parseCloseContainer(NetworkMessage& msg)

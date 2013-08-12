@@ -78,12 +78,15 @@ void ProtocolStatus::onRecvFirstMessage(NetworkMessage& msg)
 			if(msg.GetRaw() == "info")
 			{
 				OutputMessage* output = OutputMessagePool::getInstance()->getOutputMessage(this, false);
-				TRACK_MESSAGE(output);
-				Status* status = Status::getInstance();
-				std::string str = status->getStatusString();
-				output->AddBytes(str.c_str(), str.size());
-				setRawMessages(true); // we dont want the size header, nor encryption
-				OutputMessagePool::getInstance()->send(output);
+				if(output)
+				{
+					TRACK_MESSAGE(output);
+					Status* status = Status::getInstance();
+					std::string str = status->getStatusString();
+					output->AddBytes(str.c_str(), str.size());
+					setRawMessages(true); // we dont want the size header, nor encryption
+					OutputMessagePool::getInstance()->send(output);
+				}
 			}
 			break;
 		}

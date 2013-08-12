@@ -52,10 +52,13 @@ void ProtocolLogin::deleteProtocolTask()
 void ProtocolLogin::disconnectClient(uint8_t error, const char* message)
 {
 	OutputMessage* output = OutputMessagePool::getInstance()->getOutputMessage(this, false);
-	TRACK_MESSAGE(output);
-	output->AddByte(error);
-	output->AddString(message);
-	OutputMessagePool::getInstance()->send(output);
+	if(output)
+	{
+		TRACK_MESSAGE(output);
+		output->AddByte(error);
+		output->AddString(message);
+		OutputMessagePool::getInstance()->send(output);
+	}
 	getConnection()->closeConnection();
 }
 
@@ -73,7 +76,7 @@ bool ProtocolLogin::parseFirstPacket(NetworkMessage& msg)
 	uint16_t version  = msg.GetU16();
 	msg.SkipBytes(12);
 
-	if(version < CLIENT_VERSION_MIN || version > CLIENT_VERSION_MAX)
+	if(version < 760 || version > 760)
 		disconnectClient(0x0A, CLIENT_VERSION_STRING);
 
 	uint32_t accnumber = msg.GetU32();

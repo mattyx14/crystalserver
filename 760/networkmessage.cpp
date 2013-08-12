@@ -7,7 +7,7 @@
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation; either version 2
 // of the License, or (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -32,7 +32,9 @@
 
 int32_t NetworkMessage::decodeHeader()
 {
-	return (int32_t)(m_MsgBuf[0] | m_MsgBuf[1] << 8);
+	int32_t size = (int32_t)(m_MsgBuf[0] | m_MsgBuf[1] << 8);
+	m_MsgSize = size;
+	return size;
 }
 
 /******************************************************************************/
@@ -73,7 +75,7 @@ void NetworkMessage::AddString(const char* value)
 	uint32_t stringlen = (uint32_t)strlen(value);
 	if(!canAdd(stringlen+2) || stringlen > 8192)
 		return;
-	
+
 	AddU16(stringlen);
 	strcpy((char*)(m_MsgBuf + m_ReadPos), value);
 	m_ReadPos += stringlen;
@@ -84,7 +86,7 @@ void NetworkMessage::AddBytes(const char* bytes, uint32_t size)
 {
 	if(!canAdd(size) || size > 8192)
 		return;
-	
+
 	memcpy(m_MsgBuf + m_ReadPos, bytes, size);
 	m_ReadPos += size;
 	m_MsgSize += size;
@@ -117,7 +119,7 @@ void NetworkMessage::AddItem(uint16_t id, uint8_t count)
 	else if(it.isSplash() || it.isFluidContainer())
 	{
 		uint32_t fluidIndex = count % 8;
-		AddByte(fluidMap[fluidIndex]);
+		AddByte(fluidIndex);
 	}
 }
 
@@ -131,7 +133,7 @@ void NetworkMessage::AddItem(const Item* item)
 	else if(it.isSplash() || it.isFluidContainer())
 	{
 		uint32_t fluidIndex = item->getSubType() % 8;
-		AddByte(fluidMap[fluidIndex]);
+		AddByte(fluidIndex);
 	}
 }
 

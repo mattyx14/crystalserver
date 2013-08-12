@@ -7,7 +7,7 @@
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation; either version 2
 // of the License, or (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -48,7 +48,7 @@ class NetworkMessage
 		// resets the internal buffer to an empty message
 		void Reset(){
 			m_MsgSize = 0;
-			m_ReadPos = 4;
+			m_ReadPos = 8;
 		}
 
 	public:
@@ -70,13 +70,18 @@ class NetworkMessage
 			m_ReadPos += 4;
 			return v;
 		}
+		uint32_t PeekU32()
+		{
+			uint32_t v = *(uint32_t*)(m_MsgBuf + m_ReadPos);
+			return v;
+		}
 		std::string GetString();
 		std::string GetRaw();
 		Position GetPosition();
-	
+
 		// skips count unknown/unused bytes in an incoming message
 		void SkipBytes(int count){m_ReadPos += count;}
-	
+
 		// simply write functions for outgoing message
 		void AddByte(uint8_t  value)
 		{
@@ -112,15 +117,16 @@ class NetworkMessage
 		void AddItemId(const Item *item);
 		void AddItemId(uint16_t itemId);
 		void AddCreature(const Creature *creature, bool known, unsigned int remove);
-	
+
 		int32_t getMessageLength() const { return m_MsgSize; }
 		void setMessageLength(int32_t newSize) { m_MsgSize = newSize; }
 		int32_t getReadPos() const { return m_ReadPos; }
-	
+		void setReadPos(int32_t newPos) { m_ReadPos = newPos; }
+
 		int32_t decodeHeader();
 
 		char* getBuffer() { return (char*)&m_MsgBuf[0]; }
-		char* getBodyBuffer() { m_ReadPos = 2; return (char*)&m_MsgBuf[header_length]; }
+		char* getBodyBuffer(int32_t header = header_length) {m_ReadPos = 2; return (char*)&m_MsgBuf[header];}
 
 	protected:
 		inline bool canAdd(int size)

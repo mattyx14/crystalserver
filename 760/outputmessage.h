@@ -23,6 +23,7 @@
 
 #include "networkmessage.h"
 #include "otsystem.h"
+#include "tools.h"
 #include <list>
 
 #ifdef __TRACK_NETWORK__
@@ -43,16 +44,16 @@ class OutputMessage : public NetworkMessage, boost::noncopyable
 		OutputMessage();
 
 	public:
-		~OutputMessage() {}
+		virtual ~OutputMessage() {}
 
 		char* getOutputBuffer() { return (char*)&m_MsgBuf[m_outputBufferStart];}
 
 		void writeMessageLength()
 		{
-			*(uint16_t*)(m_MsgBuf + 2) = m_MsgSize;
+			*(uint16_t*)(m_MsgBuf + 6) = m_MsgSize;
 			//added header size to the message size
-			m_MsgSize = m_MsgSize + 2;
-			m_outputBufferStart = 2;
+			m_MsgSize += 2;
+			m_outputBufferStart = 6;
 		}
 
 		enum OutputMessageState
@@ -94,7 +95,7 @@ class OutputMessage : public NetworkMessage, boost::noncopyable
 			setConnection(NULL);
 			setProtocol(NULL);
 			m_frame = 0;
-			m_outputBufferStart = 4;
+			m_outputBufferStart = 8;
 			//setState have to be the last one
 			setState(OutputMessage::STATE_FREE);
 		}
@@ -163,7 +164,7 @@ class OutputMessagePool
 #ifdef __TRACK_NETWORK__
 	#define TRACK_MESSAGE(omsg) if(dynamic_cast<OutputMessage*>(omsg)) dynamic_cast<OutputMessage*>(omsg)->Track(__FILE__, __LINE__, __FUNCTION__)
 #else
-	#define TRACK_MESSAGE(omsg) 
+	#define TRACK_MESSAGE(omsg)
 #endif
 
 #endif
