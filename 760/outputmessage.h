@@ -55,13 +55,6 @@ class OutputMessage : public NetworkMessage, boost::noncopyable
 			m_outputBufferStart = 2;
 		}
 
-		void addCryptoHeader()
-		{
-			*(uint16_t*)(m_MsgBuf) = m_MsgSize;
-			m_MsgSize = m_MsgSize + 2;
-			m_outputBufferStart = 0;
-		}
-
 		enum OutputMessageState
 		{
 			STATE_FREE,

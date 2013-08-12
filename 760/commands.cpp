@@ -45,7 +45,6 @@
 #ifdef __ENABLE_SERVER_DIAGNOSTIC__
 #include "outputmessage.h"
 #include "connection.h"
-#include "admin.h"
 #include "status.h"
 #include "protocollogin.h"
 #endif
@@ -1387,7 +1386,6 @@ bool Commands::serverDiag(Creature* creature, const std::string& cmd, const std:
 	text << "--------------------\n";
 	text << "ProtocolGame: " << ProtocolGame::protocolGameCount << "\n";
 	text << "ProtocolLogin: " << ProtocolLogin::protocolLoginCount << "\n";
-	text << "ProtocolAdmin: " << ProtocolAdmin::protocolAdminCount << "\n";
 	text << "ProtocolStatus: " << ProtocolStatus::protocolStatusCount << "\n\n";
 
 	text << "\nConnections:\n";

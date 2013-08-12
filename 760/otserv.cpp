@@ -51,11 +51,8 @@
 
 #include "tools.h"
 #include "ban.h"
-#include "rsa.h"
 
 #include "resources.h"
-
-#include "admin.h"
 
 #ifdef __OTSERV_ALLOCATOR__
 #include "allocator.h"
@@ -71,7 +68,6 @@
 
 IPList serverIPs;
 
-extern AdminProtocolConfig* g_adminConfig;
 Ban g_bans;
 Game g_game;
 Commands commands;
@@ -80,7 +76,6 @@ ConfigManager g_config;
 Monsters g_monsters;
 Vocations g_vocations;
 
-RSA* g_otservRSA = NULL;
 Server* g_server = NULL;
 
 OTSYS_THREAD_LOCKVAR g_loaderLock;
@@ -190,14 +185,6 @@ void mainLoader(int argc, char *argv[])
 	}
   	#endif
 
-	//load RSA key
-	std::cout << ":: Loading RSA key" << std::endl;
-	const char* p("14299623962416399520070177382898895550795403345466153217470516082934737582776038882967213386204600674145392845853859217990626450972452084065728686565928113");
-	const char* q("7630979195970404721891201847792002125535401292779123937207447574596692788513647179235335529307251350570728407373705564708871762033017096809910315212884101");
-	const char* d("46730330223584118622160180015036832148732986808519344675210555262940258739805766860224610646919605860206328024326703361630109888417839241959507572247284807035235569619173792292786907845791904955103601652822519121908367187885509270025388641700821735345222087940578381210879116823013776808975766851829020659073");
-	g_otservRSA = new RSA();
-	g_otservRSA->setKey(p, q, d);
-
 	std::cout << ":: Testing SQL connection... ";
 	#if defined __USE_MYSQL__ && defined __USE_SQLITE__
 	std::string sqlType = asLowerCaseString(g_config.getString(ConfigManager::SQL_TYPE));
@@ -271,11 +258,6 @@ void mainLoader(int argc, char *argv[])
 	Outfits* outfits = Outfits::getInstance();
 	if(!outfits->loadFromXml())
 		startupErrorMessage("Unable to load outfits!");
-
-	g_adminConfig = new AdminProtocolConfig();
-	std::cout << ":: Loading admin protocol config" << std::endl;
-	if(!g_adminConfig->loadXMLConfig())
-		startupErrorMessage("Unable to load admin protocol config!");
 
 	std::cout << ":: Loading experience stages" << std::endl;
 	if(!g_game.loadExperienceStages())

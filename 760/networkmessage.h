@@ -30,7 +30,6 @@ class Item;
 class Creature;
 class Player;
 class Position;
-class RSA;
 
 class NetworkMessage
 {

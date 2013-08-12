@@ -24,7 +24,6 @@
 
 #include "outputmessage.h"
 #include "connection.h"
-#include "rsa.h"
 
 #include "configmanager.h"
 #include "tools.h"
@@ -33,7 +32,6 @@
 #include <iomanip>
 #include "game.h"
 
-extern RSA* g_otservRSA;
 extern ConfigManager g_config;
 extern IPList serverIPs;
 extern Ban g_bans;
@@ -77,20 +75,6 @@ bool ProtocolLogin::parseFirstPacket(NetworkMessage& msg)
 
 	if(version < CLIENT_VERSION_MIN || version > CLIENT_VERSION_MAX)
 		disconnectClient(0x0A, CLIENT_VERSION_STRING);
-
-	if(!RSA_decrypt(g_otservRSA, msg))
-	{
-		getConnection()->closeConnection();
-		return false;
-	}
-
-	uint32_t key[4];
-	key[0] = msg.GetU32();
-	key[1] = msg.GetU32();
-	key[2] = msg.GetU32();
-	key[3] = msg.GetU32();
-	enableXTEAEncryption();
-	setXTEAKey(key);
 
 	uint32_t accnumber = msg.GetU32();
 	std::string password = msg.GetString();

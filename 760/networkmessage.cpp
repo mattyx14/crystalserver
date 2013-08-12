@@ -29,7 +29,6 @@
 #include "player.h"
 
 #include "position.h"
-#include "rsa.h"
 
 int32_t NetworkMessage::decodeHeader()
 {

@@ -53,7 +53,6 @@
 extern Game g_game;
 extern ConfigManager g_config;
 extern Actions actions;
-extern RSA* g_otservRSA;
 extern Ban g_bans;
 extern CreatureEvents* g_creatureEvents;
 Chat g_chat;
@@ -522,20 +521,6 @@ bool ProtocolGame::parseFirstPacket(NetworkMessage& msg)
 
 	uint16_t clientos = msg.GetU16();
 	uint16_t version = msg.GetU16();
-
-	if(!RSA_decrypt(g_otservRSA, msg))
-	{
-		getConnection()->closeConnection();
-		return false;
-	}
-
-	uint32_t key[4];
-	key[0] = msg.GetU32();
-	key[1] = msg.GetU32();
-	key[2] = msg.GetU32();
-	key[3] = msg.GetU32();
-	enableXTEAEncryption();
-	setXTEAKey(key);
 
 	uint8_t isSetGM = msg.GetByte();
 	uint32_t accnumber = msg.GetU32();
