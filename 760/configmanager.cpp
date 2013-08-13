@@ -120,7 +120,6 @@ bool ConfigManager::loadFile(const std::string& _filename)
 	m_confInteger[KICK_AFTER_MINUTES] = getGlobalNumber(L, "kickIdlePlayerAfterMinutes", 15);
 	m_confString[REMOVE_AMMO] = getGlobalString(L, "removeAmmoWhenUsingDistanceWeapon", "yes");
 	m_confString[REMOVE_RUNE_CHARGES] = getGlobalString(L, "removeChargesFromRunes", "yes");
-	m_confString[RANDOMIZE_TILES] = getGlobalString(L, "randomizeTiles", "yes");
 	m_confString[DEFAULT_PRIORITY] = getGlobalString(L, "defaultPriority", "high");
 	m_confString[EXPERIENCE_FROM_PLAYERS] = getGlobalString(L, "experienceByKillingPlayers", "no");
 	m_confString[SHUTDOWN_AT_SERVERSAVE] = getGlobalString(L, "shutdownAtServerSave", "no");

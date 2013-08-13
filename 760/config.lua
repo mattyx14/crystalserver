@@ -81,7 +81,6 @@
 	-- Map
 	mapName = "forgotten"
 	mapAuthor = "Komic"
-	randomizeTiles = "yes"
 
 	-- Messaging
 	maxMessageBuffer = 4
