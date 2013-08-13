@@ -1512,24 +1512,8 @@ uint32_t ConditionDamage::getIcons() const
 			return ICON_ENERGY;
 			break;
 
-		case CONDITION_DROWN:
-			return ICON_DROWNING;
-			break;
-
 		case CONDITION_POISON:
 			return ICON_POISON;
-			break;
-
-		case CONDITION_FREEZING:
-			return ICON_FREEZING;
-			break;
-
-		case CONDITION_DAZZLED:
-			return ICON_DAZZLED;
-			break;
-
-		case CONDITION_CURSED:
-			return ICON_CURSED;
 			break;
 
 		default:

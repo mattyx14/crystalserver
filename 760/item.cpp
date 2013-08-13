@@ -1064,22 +1064,6 @@ std::string Item::getDescription(const ItemType& it, int32_t lookDistance, const
 			s << std::endl << getWeightDescription(it, weight);
 	}
 
-	if(it.abilities.elementType != COMBAT_NONE && it.charges != 0)
-	{
-		s << " It is temporarily enchanted with ";
-		std::string strElement = "";
-		int32_t elementDamage = it.abilities.elementDamage;
-		switch(it.abilities.elementType)
-		{
-			case COMBAT_ICEDAMAGE: strElement = "ice"; break;
-			case COMBAT_EARTHDAMAGE: strElement = "earth"; break;
-			case COMBAT_FIREDAMAGE: strElement = "fire"; break;
-			case COMBAT_ENERGYDAMAGE: strElement = "energy"; break;
-			default: break;
-		}
-		s << strElement << " (" << it.attack - elementDamage << " physical + " << elementDamage << " " << strElement << " damage).";
-	}
-
 	if(item && item->getSpecialDescription() != "")
 		s << std::endl << item->getSpecialDescription().c_str();
 	else if(it.description.length() && lookDistance <= 1)

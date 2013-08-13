@@ -1045,18 +1045,6 @@ bool Items::loadFromXml()
 										conditionDamage = new ConditionDamage(CONDITIONID_COMBAT, CONDITION_POISON);
 										combatType = COMBAT_EARTHDAMAGE;
 									}
-									else if(tmpStrValue == "drown")
-									{
-										conditionDamage = new ConditionDamage(CONDITIONID_COMBAT, CONDITION_DROWN);
-										combatType = COMBAT_DROWNDAMAGE;
-									}
-									/*
-									else if(tmpStrValue == "physical")
-									{
-										damageCondition = new ConditionDamage(CONDITIONID_COMBAT, CONDITION_PHYSICAL);
-										combatType = COMBAT_PHYSICALDAMAGE;
-									}
-									*/
 									else
 										std::cout << "Warning: [Items::loadFromXml] " << "Unknown field value " << strValue << std::endl;
 
@@ -1168,14 +1156,6 @@ bool Items::loadFromXml()
 							{
 								if(readXMLInteger(itemAttributesNode, "value", intValue))
 									it.transformToFree = intValue;
-							}
-							else if(tmpStrValue == "elementice")
-							{
-								if(readXMLInteger(itemAttributesNode, "value", intValue))
-								{
-									it.abilities.elementDamage = intValue;
-									it.abilities.elementType = COMBAT_ICEDAMAGE;
-								}
 							}
 							else if(tmpStrValue == "elementearth")
 							{

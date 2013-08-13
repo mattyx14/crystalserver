@@ -505,14 +505,6 @@ bool Monsters::deserializeSpell(xmlNodePtr node, spellBlock_t& sb, const std::st
 			combat->setParam(COMBATPARAM_COMBATTYPE, COMBAT_FIREDAMAGE);
 		else if(tmpName == "energy")
 			combat->setParam(COMBATPARAM_COMBATTYPE, COMBAT_ENERGYDAMAGE);
-		else if(tmpName == "drown")
-			combat->setParam(COMBATPARAM_COMBATTYPE, COMBAT_DROWNDAMAGE);
-		else if(tmpName == "ice")
-			combat->setParam(COMBATPARAM_COMBATTYPE, COMBAT_ICEDAMAGE);
-		else if(tmpName == "holy")
-			combat->setParam(COMBATPARAM_COMBATTYPE, COMBAT_HOLYDAMAGE);
-		else if(tmpName == "death")
-			combat->setParam(COMBATPARAM_COMBATTYPE, COMBAT_DEATHDAMAGE);
 		else if(tmpName == "lifedrain")
 			combat->setParam(COMBATPARAM_COMBATTYPE, COMBAT_LIFEDRAIN);
 		else if(tmpName == "manadrain")
@@ -1015,26 +1007,6 @@ bool Monsters::loadMonster(const std::string& file, const std::string& monster_n
 								mType->damageImmunities |= COMBAT_EARTHDAMAGE;
 								mType->conditionImmunities |= CONDITION_POISON;
 							}
-							else if(tmpStrValue == "drown")
-							{
-								mType->damageImmunities |= COMBAT_DROWNDAMAGE;
-								mType->conditionImmunities |= CONDITION_DROWN;
-							}
-							else if(tmpStrValue == "ice")
-							{
-								mType->damageImmunities |= COMBAT_ICEDAMAGE;
-								mType->conditionImmunities |= CONDITION_FREEZING;
-							}
-							else if(tmpStrValue == "holy")
-							{
-								mType->damageImmunities |= COMBAT_HOLYDAMAGE;
-								mType->conditionImmunities |= CONDITION_DAZZLED;
-							}
-							else if(tmpStrValue == "death")
-							{
-								mType->damageImmunities |= COMBAT_DEATHDAMAGE;
-								mType->conditionImmunities |= CONDITION_CURSED;
-							}
 							else if(tmpStrValue == "lifedrain")
 							{
 								mType->damageImmunities |= COMBAT_LIFEDRAIN;
@@ -1083,38 +1055,6 @@ bool Monsters::loadMonster(const std::string& file, const std::string& monster_n
 							{
 								mType->damageImmunities |= COMBAT_EARTHDAMAGE;
 								mType->conditionImmunities |= CONDITION_POISON;
-							}
-						}
-						else if(readXMLInteger(tmpNode, "drown", intValue))
-						{
-							if(intValue != 0)
-							{
-								mType->damageImmunities |= COMBAT_DROWNDAMAGE;
-								mType->conditionImmunities |= CONDITION_DROWN;
-							}
-						}
-						else if(readXMLInteger(tmpNode, "ice", intValue))
-						{
-							if(intValue != 0)
-							{
-								mType->damageImmunities |= COMBAT_ICEDAMAGE;
-								mType->conditionImmunities |= CONDITION_FREEZING;
-							}
-						}
-						else if(readXMLInteger(tmpNode, "holy", intValue))
-						{
-							if(intValue != 0)
-							{
-								mType->damageImmunities |= COMBAT_HOLYDAMAGE;
-								mType->conditionImmunities |= CONDITION_DAZZLED;
-							}
-						}
-						else if(readXMLInteger(tmpNode, "death", intValue))
-						{
-							if(intValue != 0)
-							{
-								mType->damageImmunities |= COMBAT_DEATHDAMAGE;
-								mType->conditionImmunities |= CONDITION_CURSED;
 							}
 						}
 						else if(readXMLInteger(tmpNode, "lifedrain", intValue))
@@ -1221,12 +1161,7 @@ bool Monsters::loadMonster(const std::string& file, const std::string& monster_n
 							percent = intValue;
 						}
 
-						if(readXMLInteger(tmpNode, "icePercent", intValue))
-						{
-							type = COMBAT_ICEDAMAGE;
-							percent = intValue;
-						}
-						else if(readXMLInteger(tmpNode, "poisonPercent", intValue) ||
+						if(readXMLInteger(tmpNode, "poisonPercent", intValue) ||
 							readXMLInteger(tmpNode, "earthPercent", intValue))
 						{
 							type = COMBAT_EARTHDAMAGE;
@@ -1240,16 +1175,6 @@ bool Monsters::loadMonster(const std::string& file, const std::string& monster_n
 						else if(readXMLInteger(tmpNode, "energyPercent", intValue))
 						{
 							type = COMBAT_ENERGYDAMAGE;
-							percent = intValue;
-						}
-						else if(readXMLInteger(tmpNode, "holyPercent", intValue))
-						{
-							type = COMBAT_HOLYDAMAGE;
-							percent = intValue;
-						}
-						else if(readXMLInteger(tmpNode, "deathPercent", intValue))
-						{
-							type = COMBAT_DEATHDAMAGE;
 							percent = intValue;
 						}
 
