@@ -51,7 +51,6 @@
 #include "database.h"
 #include "server.h"
 #include "ioguild.h"
-#include "quests.h"
 
 #ifdef __EXCEPTION_TRACER__
 #include "exception.h"
@@ -139,8 +138,6 @@ void Game::setGameState(GameState_t newState)
 
 				Raids::getInstance()->loadFromXml();
 				Raids::getInstance()->startup();
-
-				Quests::getInstance()->loadFromXml();
 
 				loadMotd();
 				loadPlayersRecord();
@@ -3047,15 +3044,11 @@ bool Game::playerChangeOutfit(uint32_t playerId, Outfit_t outfit)
 	if(!player || player->isRemoved())
 		return false;
 
-	if(player->canWear(outfit.lookType, outfit.lookAddons) && player->hasRequestedOutfit())
-	{
-		player->hasRequestedOutfit(false);
-		player->defaultOutfit = outfit;
-		if(player->hasCondition(CONDITION_OUTFIT))
-			return false;
-
-		internalCreatureChangeOutfit(player, outfit);
-	}
+	player->defaultOutfit = outfit;
+	if(player->hasCondition(CONDITION_OUTFIT))
+		return false;
+	
+	internalCreatureChangeOutfit(player, outfit);
 	return true;
 }
 
@@ -4899,18 +4892,6 @@ bool Game::playerLeaveParty(uint32_t playerId)
 		return false;
 
 	return player->getParty()->leaveParty(player);
-}
-
-bool Game::playerEnableSharedPartyExperience(uint32_t playerId, uint8_t sharedExpActive, uint8_t unknown)
-{
-	Player* player = getPlayerByID(playerId);
-	if(!player || player->isRemoved())
-		return false;
-
-	if(!player->getParty() || player->hasCondition(CONDITION_INFIGHT))
-		return false;
-
-	return player->getParty()->setSharedExperience(player, sharedExpActive == 1);
 }
 
 void Game::sendGuildMotd(uint32_t playerId, uint32_t guildId)

@@ -1367,15 +1367,6 @@ void LuaScriptInterface::registerFunctions()
 	//doPlayerSetGuildNick(cid, nick)
 	lua_register(m_luaState, "doPlayerSetGuildNick", LuaScriptInterface::luaDoPlayerSetGuildNick);
 
-	//doPlayerAddOutfit(cid,looktype,addons)
-	lua_register(m_luaState, "doPlayerAddOutfit", LuaScriptInterface::luaDoPlayerAddOutfit);
-
-	//doPlayerRemOutfit(cid,looktype,addons)
-	lua_register(m_luaState, "doPlayerRemOutfit", LuaScriptInterface::luaDoPlayerRemOutfit);
-
-	//canPlayerWearOutfit(cid, looktype, addons)
-	lua_register(m_luaState, "canPlayerWearOutfit", LuaScriptInterface::luaCanPlayerWearOutfit);
-
 	//doSetCreatureLight(cid, lightLevel, lightColor, time)
 	lua_register(m_luaState, "doSetCreatureLight", LuaScriptInterface::luaDoSetCreatureLight);
 
@@ -5557,7 +5548,7 @@ int32_t LuaScriptInterface::luaSetCreatureOutfit(lua_State* L)
 	outfit.lookBody = getField(L, "lookBody");
 	outfit.lookLegs = getField(L, "lookLegs");
 	outfit.lookFeet = getField(L, "lookFeet");
-	outfit.lookAddons = getField(L, "lookAddons");
+
 	lua_pop(L, 1);
 
 	uint32_t cid = popNumber(L);
@@ -5600,7 +5591,7 @@ int32_t LuaScriptInterface::luaGetCreatureOutfit(lua_State* L)
 		setField(L, "lookBody", outfit.lookBody);
 		setField(L, "lookLegs", outfit.lookLegs);
 		setField(L, "lookFeet", outfit.lookFeet);
-		setField(L, "lookAddons", outfit.lookAddons);
+
 		return 1;
 	}
 	else
@@ -6301,70 +6292,6 @@ int32_t LuaScriptInterface::luaIsInArray(lua_State* L)
 	}
 }
 
-int32_t LuaScriptInterface::luaDoPlayerAddOutfit(lua_State* L)
-{
-	//doPlayerAddOutfit(cid, looktype, addon)
-	uint32_t addon = popNumber(L);
-	uint32_t looktype = popNumber(L);
-	uint32_t cid = popNumber(L);
-
-	ScriptEnviroment* env = getScriptEnv();
-	Player* player = env->getPlayerByUID(cid);
-	if(player)
-	{
-		player->addOutfit(looktype, addon);
-		lua_pushnumber(L, LUA_NO_ERROR);
-	}
-	else
-	{
-		reportErrorFunc(getErrorDesc(LUA_ERROR_PLAYER_NOT_FOUND));
-		lua_pushnumber(L, LUA_ERROR);
-	}
-	return 1;
-}
-
-int32_t LuaScriptInterface::luaDoPlayerRemOutfit(lua_State* L)
-{
-	//doPlayerRemOutfit(cid, looktype, addon)
-	uint32_t addon = popNumber(L);
-	uint32_t looktype = popNumber(L);
-	uint32_t cid = popNumber(L);
-
-	ScriptEnviroment* env = getScriptEnv();
-	Player* player = env->getPlayerByUID(cid);
-	if(player)
-	{
-		player->remOutfit(looktype, addon);
-		lua_pushnumber(L, LUA_NO_ERROR);
-	}
-	else
-	{
-		reportErrorFunc(getErrorDesc(LUA_ERROR_PLAYER_NOT_FOUND));
-		lua_pushnumber(L, LUA_ERROR);
-	}
-	return 1;
-}
-
-int32_t LuaScriptInterface::luaCanPlayerWearOutfit(lua_State* L)
-{
-	//canPlayerWearOutfit(cid, looktype, addon)
-	uint32_t addon = popNumber(L);
-	uint32_t looktype = popNumber(L);
-	uint32_t cid = popNumber(L);
-
-	ScriptEnviroment* env = getScriptEnv();
-	Player* player = env->getPlayerByUID(cid);
-	if(player)
-	{
-		lua_pushnumber(L, (player->canWear(looktype, addon)? LUA_TRUE : LUA_FALSE));
-		return 1;
-	}
-
-	reportErrorFunc(getErrorDesc(LUA_ERROR_PLAYER_NOT_FOUND));
-	lua_pushnumber(L, LUA_ERROR);
-	return 1;
-}
-
 int32_t LuaScriptInterface::luaDoCreatureChangeOutfit(lua_State* L)
 {
 	//doCreatureChangeOutfit(cid, outfit)
@@ -6374,7 +6301,6 @@ int32_t LuaScriptInterface::luaDoCreatureChangeOutfit(lua_State* L)
 	outfit.lookBody = getField(L, "lookBody");
 	outfit.lookLegs = getField(L, "lookLegs");
 	outfit.lookFeet = getField(L, "lookFeet");
-	outfit.lookAddons = getField(L, "lookAddons");
 	lua_pop(L, 1);
 
 	uint32_t cid = popNumber(L);

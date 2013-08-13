@@ -798,23 +798,7 @@ void Player::dropLoot(Container* corpse)
 
 void Player::addStorageValue(const uint32_t key, const int32_t value)
 {
-	if(IS_IN_KEYRANGE(key, RESERVED_RANGE))
-	{
-		if(IS_IN_KEYRANGE(key, OUTFITS_RANGE))
-		{
-			Outfit outfit;
-			outfit.looktype = value >> 16;
-			outfit.addons = value & 0xFF;
-			if(outfit.addons > 3)
-				std::cout << "Warning: No valid addons value key:" << key << " value: " << (int32_t)(value & 0xFF) << " player: " << getName() << std::endl;
-			else
-				m_playerOutfits.addOutfit(outfit);
-		}
-		else
-			std::cout << "Warning: unknown reserved key: " << key << " player: " << getName() << std::endl;
-	}
-	else
-		storageMap[key] = value;
+	storageMap[key] = value;
 }
 
 bool Player::getStorageValue(const uint32_t key, int32_t& value) const
@@ -859,7 +843,7 @@ Depot* Player::getDepot(uint32_t depotId, bool autoCreateDepot)
 	if(autoCreateDepot)
 	{
 		Depot* depot = NULL;
-		Item* tmpDepot = Item::CreateItem(ITEM_LOCKER1);
+		Item* tmpDepot = Item::CreateItem(ITEM_LOCKER);
 		if(tmpDepot->getContainer() && (depot = tmpDepot->getContainer()->getDepot()))
 		{
 			Item* depotChest = Item::CreateItem(ITEM_DEPOT);
@@ -1483,9 +1467,6 @@ void Player::onCreatureMove(const Creature* creature, const Tile* newTile, const
 					g_game.internalCloseTrade(this);
 			}
 		}
-
-		if(getParty())
-			getParty()->updateSharedExperience();
 	}
 }
 
@@ -1781,9 +1762,6 @@ void Player::addExperience(uint64_t exp)
 
 		g_game.changeSpeed(this, 0);
 		g_game.addCreatureHealth(this);
-
-		if(getParty())
-			getParty()->updateSharedExperience();
 
 		char levelMsg[60];
 		sprintf(levelMsg, "You advanced from Level %d to Level %d.", prevLevel, newLevel);
@@ -3494,21 +3472,7 @@ void Player::onGainExperience(uint64_t gainExp)
 	if(hasFlag(PlayerFlag_NotGainExperience))
 		gainExp = 0;
 
-	Party* party = getParty();
-	if(party && party->isSharedExperienceActive() && party->isSharedExperienceEnabled())
-	{
-		party->shareExperience(gainExp);
-		//We will get a share of the experience through the sharing mechanism
-		gainExp = 0;
-	}
-
 	Creature::onGainExperience(gainExp);
-	gainExperience(gainExp);
-}
-
-void Player::onGainSharedExperience(uint64_t gainExp)
-{
-	Creature::onGainSharedExperience(gainExp);
 	gainExperience(gainExp);
 }
 
@@ -3556,16 +3520,6 @@ void Player::changeSoul(int32_t soulChange)
 	sendStats();
 }
 
-const OutfitListType& Player::getPlayerOutfits()
-{
-	return m_playerOutfits.getOutfits();
-}
-
-bool Player::canWear(uint32_t _looktype, uint32_t _addons)
-{
-	return m_playerOutfits.isInList(_looktype, _addons, isPremium(), getSex());
-}
-
 bool Player::canLogout()
 {
 	if(isConnecting)
@@ -3580,64 +3534,9 @@ bool Player::canLogout()
 	return true;
 }
 
-void Player::genReservedStorageRange()
-{
-	uint32_t base_key;
-	//generate outfits range
-	base_key = PSTRG_OUTFITS_RANGE_START + 1;
-
-	const OutfitList& global_outfits = Outfits::getInstance()->getOutfitList(sex);
-
-	const OutfitListType& outfits = m_playerOutfits.getOutfits();
-	OutfitListType::const_iterator it;
-	for(it = outfits.begin(); it != outfits.end(); ++it)
-	{
-		uint32_t looktype = (*it)->looktype;
-		uint32_t addons = (*it)->addons;
-		if(!global_outfits.isInList(looktype, addons, isPremium(), getSex()))
-		{
-			long value = (looktype << 16) | (addons & 0xFF);
-			storageMap[base_key] = value;
-			base_key++;
-			if(base_key > PSTRG_OUTFITS_RANGE_START + PSTRG_OUTFITS_RANGE_SIZE)
-			{
-				std::cout << "Warning: [Player::genReservedStorageRange()] Player " << getName() << " with more than 500 outfits!." << std::endl;
-				break;
-			}
-		}
-	}
-}
-
-void Player::addOutfit(uint32_t _looktype, uint32_t _addons)
-{
-	Outfit outfit;
-	outfit.looktype = _looktype;
-	outfit.addons = _addons;
-	m_playerOutfits.addOutfit(outfit);
-}
-
-bool Player::remOutfit(uint32_t _looktype, uint32_t _addons)
-{
-	Outfit outfit;
-	outfit.looktype = _looktype;
-	outfit.addons = _addons;
-	return m_playerOutfits.remOutfit(outfit);
-}
-
 void Player::setSex(PlayerSex_t newSex)
 {
 	sex = newSex;
-	Outfits* outfits = Outfits::getInstance();
-	const OutfitListType& global_outfits = outfits->getOutfits(sex);
-	OutfitListType::const_iterator it;
-	Outfit outfit;
-	for(it = global_outfits.begin(); it != global_outfits.end(); ++it)
-	{
-		outfit.looktype = (*it)->looktype;
-		outfit.addons = (*it)->addons;
-		outfit.premium = (*it)->premium;
-		m_playerOutfits.addOutfit(outfit);
-	}
 }
 
 Skulls_t Player::getSkull() const
@@ -4342,44 +4241,19 @@ PartyShields_t Player::getPartyShield(const Player* player) const
 	if(!player)
 		return SHIELD_NONE;
 
-	Party* party = getParty();
-	if(party)
+	if(getParty())
 	{
-		if(party->getLeader() == player)
-		{
-			if(party->isSharedExperienceActive())
-			{
-				if(party->isSharedExperienceEnabled())
-					return SHIELD_YELLOW_SHAREDEXP;
-
-				if(party->canUseSharedExperience(player))
-					return SHIELD_YELLOW_NOSHAREDEXP;
-
-				return SHIELD_YELLOW_NOSHAREDEXP_BLINK;
-			}
+		if(getParty()->getLeader() == player)
 			return SHIELD_YELLOW;
-		}
 
-		if(party->isPlayerMember(player))
-		{
-			if(party->isSharedExperienceActive())
-			{
-				if(party->isSharedExperienceEnabled())
-					return SHIELD_BLUE_SHAREDEXP;
-
-				if(party->canUseSharedExperience(player))
-					return SHIELD_BLUE_NOSHAREDEXP;
-
-				return SHIELD_BLUE_NOSHAREDEXP_BLINK;
-			}
+		if(getParty()->isPlayerMember(player))
 			return SHIELD_BLUE;
-		}
 
 		if(isInviting(player))
 			return SHIELD_WHITEBLUE;
-	}
 
-	if(player->isInviting(this))
+	}
+	else if(player->isInviting(this))
 		return SHIELD_WHITEYELLOW;
 
 	return SHIELD_NONE;

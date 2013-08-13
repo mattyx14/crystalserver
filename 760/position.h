@@ -48,6 +48,7 @@ class Position
 		{
 			if(std::abs(float(p1.x - p2.x)) > deltax || std::abs(float(p1.y - p2.y)) > deltay || std::abs(float(p1.z - p2.z)) > deltaz)
 				return false;
+
 			return true;
 		}
 	
@@ -56,6 +57,7 @@ class Position
 		{
 			if(std::abs(float(p1.x - p2.x)) > deltax || std::abs(float(p1.y - p2.y)) > deltay)
 				return false;
+
 			return true;
 		}
 	
@@ -68,16 +70,19 @@ class Position
 		{
 			if(z < p.z)
 				return true;
+
 			if(z > p.z)
 				return false;
 
 			if(y < p.y)
 				return true;
+
 			if(y > p.y)
 				return false;
 
 			if(x < p.x)
 				return true;
+
 			if(x > p.x)
 				return false;
 
@@ -93,6 +98,7 @@ class Position
 		{
 			if(p.x == x && p.y == y && p.z == z)
 				return true;
+
 			return false;
 		}
 
@@ -100,6 +106,7 @@ class Position
 		{
 			if(p.x==x && p.y==y && p.z ==z)
 				return false;
+
 			return true;
 		}
 
@@ -136,6 +143,7 @@ class PositionEx : public Position
 		{
 			if(p.x == x && p.y == y && p.z == z && p.stackpos == stackpos)
 				return true;
+
 			return false;
 		}
 
@@ -143,6 +151,7 @@ class PositionEx : public Position
 		{
 			if(p.x == x && p.y == y && p.z == z && p.stackpos != stackpos)
 				return false;
+
 			return true;
 		}
 };

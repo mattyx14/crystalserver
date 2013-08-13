@@ -222,7 +222,6 @@ struct Outfit_t
 		lookFeet   = 0;
 		lookType   = 0;
 		lookTypeEx = 0;
-		lookAddons = 0;
 	}
 
 	uint16_t lookType;
@@ -231,7 +230,6 @@ struct Outfit_t
 	uint8_t lookBody;
 	uint8_t lookLegs;
 	uint8_t lookFeet;
-	uint8_t lookAddons;
 };
 
 struct LightInfo

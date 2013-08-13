@@ -46,16 +46,12 @@ void OutfitList::addOutfit(const Outfit& outfit)
 	for(it = m_list.begin(); it != m_list.end(); ++it)
 	{
 		if((*it)->looktype == outfit.looktype)
-		{
-			(*it)->addons = (*it)->addons | outfit.addons;
 			return;
-		}
 	}
 
 	//adding a new outfit
 	Outfit* new_outfit = new Outfit;
 	new_outfit->looktype = outfit.looktype;
-	new_outfit->addons = outfit.addons;
 	new_outfit->premium = outfit.premium;
 	m_list.push_back(new_outfit);
 }
@@ -66,22 +62,12 @@ bool OutfitList::remOutfit(const Outfit& outfit)
 	for(it = m_list.begin(); it != m_list.end(); ++it)
 	{
 		if((*it)->looktype == outfit.looktype)
-		{
-			if(outfit.addons == 0xFF)
-			{
-				delete *it;
-				m_list.erase(it);
-			}
-			else
-				(*it)->addons = (*it)->addons & (~outfit.addons);
-
 			return true;
-		}
 	}
 	return false;
 }
 
-bool OutfitList::isInList(uint32_t looktype, uint32_t addons, bool playerPremium, int32_t playerSex) const
+bool OutfitList::isInList(uint32_t looktype, bool playerPremium, int32_t playerSex) const
 {
 	OutfitListType::const_iterator it, it_;
 	const OutfitListType& global_outfits = Outfits::getInstance()->getOutfits(playerSex);
@@ -93,11 +79,9 @@ bool OutfitList::isInList(uint32_t looktype, uint32_t addons, bool playerPremium
 			{
 				if((*it_)->looktype == looktype)
 				{
-					if(((*it_)->addons & addons) == addons)
-					{
-						if(((*it)->premium && playerPremium) || !(*it)->premium)
-							return true;
-					}
+					if(((*it)->premium && playerPremium) || !(*it)->premium)
+						return true;
+
 					return false;
 				}
 			}
@@ -111,7 +95,7 @@ Outfits::Outfits()
 {
 	Outfit outfit;
 	//build default outfit lists
-	outfit.addons = 0;
+
 	outfit.premium = false;
 	for(int32_t i = PLAYER_FEMALE_1; i <= PLAYER_FEMALE_7; i++)
 	{
@@ -185,11 +169,6 @@ bool Outfits::loadFromXml()
 							outfit.looktype = intVal;
 						else
 							std::cout << "[Warning] Missing looktype on outfit: " << outfitName << std::endl;
-
-						if(readXMLInteger(p, "addons", intVal))
-							outfit.addons = intVal;
-						else
-							outfit.addons = 0;
 
 						if(readXMLInteger(p, "premium", intVal))
 							outfit.premium = (intVal == 1);

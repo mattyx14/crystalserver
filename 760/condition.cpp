@@ -1839,8 +1839,6 @@ xmlNodePtr ConditionOutfit::serialize()
 		xmlSetProp(nodeValueListNode, (const xmlChar*)"looklegs", (const xmlChar*)buffer);
 		sprintf(buffer, "%d", (*it).lookFeet);
 		xmlSetProp(nodeValueListNode, (const xmlChar*)"lookfeet", (const xmlChar*)buffer);
-		sprintf(buffer, "%d", (*it).lookAddons);
-		xmlSetProp(nodeValueListNode, (const xmlChar*)"lookaddons", (const xmlChar*)buffer);
 		xmlAddChild(nodeCondition, nodeValueListNode);
 	}
 	return nodeCondition;
@@ -1873,9 +1871,6 @@ bool ConditionOutfit::unserialize(xmlNodePtr p)
 
 			if(readXMLInteger(nodeList, "lookfeet", intValue))
 				outfit.lookFeet = intValue;
-
-			if(readXMLInteger(nodeList, "lookaddons", intValue))
-				outfit.lookAddons = intValue;
 
 			outfits.push_back(outfit);
 		}

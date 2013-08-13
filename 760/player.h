@@ -203,7 +203,6 @@ class Player : public Creature, public Cylinder
 
 		void addStorageValue(const uint32_t key, const int32_t value);
 		bool getStorageValue(const uint32_t key, int32_t& value) const;
-		void genReservedStorageRange();
 
 		inline StorageMap::const_iterator getStorageIteratorBegin() const {return storageMap.begin();}
 		inline StorageMap::const_iterator getStorageIteratorEnd() const {return storageMap.end();}
@@ -375,7 +374,7 @@ class Player : public Creature, public Cylinder
 		virtual void onTargetCreatureGainHealth(Creature* target, int32_t points);
 		virtual void onKilledCreature(Creature* target);
 		virtual void onGainExperience(uint64_t gainExp);
-		virtual void onGainSharedExperience(uint64_t gainExp);
+
 		virtual void onAttackedCreatureBlockHit(Creature* target, BlockType_t blockType);
 		virtual void onBlockHit(BlockType_t blockType);
 		virtual void onChangeZone(ZoneType_t zone);
@@ -398,10 +397,6 @@ class Player : public Creature, public Cylinder
 			{if(client) client->sendCreatureSkull(creature);}
 		void checkRedSkullTicks(int32_t ticks);
 
-		const OutfitListType& getPlayerOutfits();
-		bool canWear(uint32_t _looktype, uint32_t _addons);
-		void addOutfit(uint32_t _looktype, uint32_t _addons);
-		bool remOutfit(uint32_t _looktype, uint32_t _addons);
 		bool canLogout();
 
 		//tile

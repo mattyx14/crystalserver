@@ -37,7 +37,6 @@
 #include "iologindata.h"
 #include "house.h"
 #include "waitlist.h"
-#include "quests.h"
 #include "ban.h"
 #include "connection.h"
 #include "creatureevent.h"
@@ -823,10 +822,6 @@ void Protocol76::parsePacket(NetworkMessage &msg)
 				parseLeaveParty(msg);
 				break;
 
-			case 0xA8: // share exp
-				parseEnableSharedPartyExperience(msg);
-				break;
-
 			case 0xAA:
 				parseCreatePrivateChannel(msg);
 				break;
@@ -879,14 +874,6 @@ void Protocol76::parsePacket(NetworkMessage &msg)
 
 			case 0xE8:
 				parseDebugAssert(msg);
-				break;
-
-			case 0xF0:
-				parseQuestLog(msg);
-				break;
-
-			case 0xF1:
-				parseQuestLine(msg);
 				break;
 
 			default:
@@ -1235,20 +1222,28 @@ void Protocol76::parseRequestOutfit(NetworkMessage& msg)
 
 void Protocol76::parseSetOutfit(NetworkMessage& msg)
 {
-	uint16_t looktype = msg.GetU16();
-	uint8_t lookhead = msg.GetByte();
-	uint8_t lookbody = msg.GetByte();
-	uint8_t looklegs = msg.GetByte();
-	uint8_t lookfeet = msg.GetByte();
-	uint8_t lookaddons = msg.GetByte();
-
+	uint8_t lookType = msg.GetByte();
 	Outfit_t newOutfit;
-	newOutfit.lookType = looktype;
-	newOutfit.lookHead = lookhead;
-	newOutfit.lookBody = lookbody;
-	newOutfit.lookLegs = looklegs;
-	newOutfit.lookFeet = lookfeet;
-	newOutfit.lookAddons = lookaddons;
+	
+	// only first 4 outfits
+	uint8_t lastFemaleOutfit = 0x8B;
+	uint8_t lastMaleOutfit = 0x83;
+
+	// if premium then all 7 outfits
+	if (player->getSex() == PLAYERSEX_FEMALE && player->isPremium())
+		lastFemaleOutfit = 0x8E;
+	else if (player->getSex() == PLAYERSEX_MALE && player->isPremium())
+		lastMaleOutfit = 0x86;
+	
+	if ((player->getSex() == PLAYERSEX_FEMALE && lookType >= PLAYER_FEMALE_1 && lookType <= lastFemaleOutfit)
+		|| (player->getSex() == PLAYERSEX_MALE && lookType >= PLAYER_MALE_1 && lookType <= lastMaleOutfit))
+	{
+		newOutfit.lookType = lookType;
+		newOutfit.lookHead = msg.GetByte();
+		newOutfit.lookBody = msg.GetByte();
+		newOutfit.lookLegs = msg.GetByte();
+		newOutfit.lookFeet = msg.GetByte();
+	}
 	addGameTask(&Game::playerChangeOutfit, player->getID(), newOutfit);
 }
 
@@ -1510,36 +1505,6 @@ void Protocol76::parsePassPartyLeadership(NetworkMessage& msg)
 void Protocol76::parseLeaveParty(NetworkMessage& msg)
 {
 	addGameTask(&Game::playerLeaveParty, player->getID());
-}
-
-void Protocol76::parseEnableSharedPartyExperience(NetworkMessage& msg)
-{
-	uint8_t sharedExpActive = msg.GetByte();
-	uint8_t unknown = msg.GetByte();
-	addGameTask(&Game::playerEnableSharedPartyExperience, player->getID(), sharedExpActive, unknown);
-}
-
-void Protocol76::parseQuestLog(NetworkMessage& msg)
-{
-	NetworkMessage_ptr _msg = getOutputBuffer();
-	if(_msg)
-	{
-		TRACK_MESSAGE(_msg);
-		Quests::getInstance()->getQuestsList(player, _msg);
-	}
-}
-
-void Protocol76::parseQuestLine(NetworkMessage& msg)
-{
-	uint16_t quid = msg.GetU16();
-	NetworkMessage_ptr _msg = getOutputBuffer();
-	if(_msg)
-	{
-		TRACK_MESSAGE(_msg);
-		Quest* quest = Quests::getInstance()->getQuestByID(quid);
-		if(quest)
-			quest->getMissionList(player, _msg);
-	}
 }
 
 void Protocol76::parseViolationWindow(NetworkMessage& msg)
@@ -1856,6 +1821,7 @@ void Protocol76::sendContainer(uint32_t cid, const Container* container, bool ha
 		msg->AddString(container->getName());
 		msg->AddByte(container->capacity());
 		msg->AddByte(hasParent ? 0x01 : 0x00);
+
 		if(container->size() > 255)
 			msg->AddByte(255);
 		else
@@ -2157,7 +2123,7 @@ void Protocol76::sendUpdateTile(const Tile* tile, const Position& pos)
 			if(tile)
 			{
 				GetTileDescription(tile, msg);
-				msg->AddByte(0x00);
+				msg->AddByte(0);
 				msg->AddByte(0xFF);
 			}
 			else
@@ -2181,7 +2147,6 @@ void Protocol76::sendAddCreature(const Creature* creature, bool isLogin)
 			{
 				msg->AddByte(0x0A);
 				msg->AddU32(player->getID());
-
 				msg->AddByte(0x32);
 				msg->AddByte(0x00);
 
@@ -2193,13 +2158,8 @@ void Protocol76::sendAddCreature(const Creature* creature, bool isLogin)
 				if(violationReasons[player->getAccountType()] > 0)
 				{
 					msg->AddByte(0x0B);
-					for(int32_t i = 0; i <= 22; i++)
-					{
-						if(i <= violationReasons[player->getAccountType()])
-							msg->AddByte(violationActions[player->getAccountType()]);
-						else
-							msg->AddByte(Action_None);
-					}
+					for (uint8_t i = 0; i < 32; i++)
+						msg->AddByte(0xFF);
 				}
 
 				AddMapDescription(msg, player->getPosition());
@@ -2463,16 +2423,6 @@ void Protocol76::sendTextWindow(uint32_t windowTextId, Item* item, uint16_t maxl
 			msg->AddString(writer);
 		else
 			msg->AddString("");
-
-		time_t writtenDate = item->getDate();
-		if(writtenDate > 0)
-		{
-			char date[16];
-			formatDate2(writtenDate, date);
-			msg->AddString(date);
-		}
-		else
-			msg->AddString("");
 	}
 }
 
@@ -2489,7 +2439,6 @@ void Protocol76::sendTextWindow(uint32_t windowTextId, uint32_t itemId, const st
 		msg->AddU16(text.size());
 		msg->AddString(text);
 
-		msg->AddString("");
 		msg->AddString("");
 	}
 }
@@ -2660,10 +2609,10 @@ void Protocol76::AddPlayerStats(NetworkMessage_ptr msg)
 	msg->AddU16(player->getPlayerInfo(PLAYERINFO_MAXHEALTH));
 	msg->AddU16((int32_t)player->getFreeCapacity());
 	uint64_t experience = player->getExperience();
-	if(experience > 0x7FFFFFFF) //Windows client debugs after 2,147,483,647 exp
-		msg->AddU32(0x7FFFFFFF);
+	if(experience <= 0x7FFFFFFF)
+		msg->AddU32(player->getExperience());
 	else
-		msg->AddU32(experience);
+		msg->AddU32(0x00);
 	msg->AddU16(player->getPlayerInfo(PLAYERINFO_LEVEL));
 	msg->AddByte(player->getPlayerInfo(PLAYERINFO_LEVELPERCENT));
 	msg->AddU16(player->getMana());
@@ -2697,7 +2646,7 @@ void Protocol76::AddCreatureSpeak(NetworkMessage_ptr msg, const Creature* creatu
 	SpeakClasses type, std::string text, uint16_t channelId, uint32_t time /*= 0*/)
 {
 	msg->AddByte(0xAA);
-	msg->AddU32(0x00000000);
+	msg->AddU32(0);
 
 	//Do not add name for anonymous channel talk
 	if(type != SPEAK_CHANNEL_R2)
@@ -2750,21 +2699,24 @@ void Protocol76::AddCreatureHealth(NetworkMessage_ptr msg,const Creature* creatu
 
 void Protocol76::AddCreatureInvisible(NetworkMessage_ptr msg, const Creature* creature)
 {
-	msg->AddU16(0x00);
-	msg->AddU16(0x00);
+	if(player->canSeeInvisibility() && !creature->isInGhostMode())
+		AddCreatureOutfit(msg, creature, creature->getCurrentOutfit());
+	else
+	{
+		msg->AddByte(0);
+		msg->AddU16(0);
+	}
 }
 
 void Protocol76::AddCreatureOutfit(NetworkMessage_ptr msg, const Creature* creature, const Outfit_t& outfit)
 {
-	msg->AddU16(outfit.lookType);
-
+	msg->AddByte(outfit.lookType);
 	if(outfit.lookType != 0)
 	{
 		msg->AddByte(outfit.lookHead);
 		msg->AddByte(outfit.lookBody);
 		msg->AddByte(outfit.lookLegs);
 		msg->AddByte(outfit.lookFeet);
-		msg->AddByte(outfit.lookAddons);
 	}
 	else
 		msg->AddItemId(outfit.lookTypeEx);

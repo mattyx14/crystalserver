@@ -250,11 +250,6 @@ void mainLoader(int argc, char *argv[])
 	if(!g_monsters.loadFromXml())
 		startupErrorMessage("Unable to load monsters!");
 
-	std::cout << ":: Loading outfits" << std::endl;
-	Outfits* outfits = Outfits::getInstance();
-	if(!outfits->loadFromXml())
-		startupErrorMessage("Unable to load outfits!");
-
 	std::cout << ":: Loading experience stages" << std::endl;
 	if(!g_game.loadExperienceStages())
 		startupErrorMessage("Unable to load experience stages!");

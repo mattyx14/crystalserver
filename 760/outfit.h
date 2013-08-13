@@ -30,7 +30,6 @@
 struct Outfit
 {
 	uint32_t looktype;
-	uint32_t addons;
 	bool premium;
 };
 
@@ -45,7 +44,7 @@ public:
 	void addOutfit(const Outfit& outfit);
 	bool remOutfit(const Outfit& outfit);
 	const OutfitListType& getOutfits() const {return m_list;}
-	bool isInList(uint32_t looktype, uint32_t addons, bool playerPremium, int32_t playerSex) const;
+	bool isInList(uint32_t looktype, bool playerPremium, int32_t playerSex) const;
 	
 private:
 	OutfitListType m_list;

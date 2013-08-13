@@ -1216,16 +1216,6 @@ void Creature::onGainExperience(uint64_t gainExp)
 	}
 }
 
-void Creature::onGainSharedExperience(uint64_t gainExp)
-{
-	if(gainExp > 0)
-	{
-		std::stringstream strExp;
-		strExp << gainExp;
-		g_game.addAnimatedText(getPosition(), TEXTCOLOR_WHITE_EXP, strExp.str());
-	}
-}
-
 void Creature::onAttackedCreatureBlockHit(Creature* target, BlockType_t blockType)
 {
 	//

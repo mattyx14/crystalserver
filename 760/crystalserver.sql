@@ -73,7 +73,6 @@ CREATE TABLE `players`
 	`lookhead` INT NOT NULL DEFAULT 0,
 	`looklegs` INT NOT NULL DEFAULT 0,
 	`looktype` INT NOT NULL DEFAULT 136,
-	`lookaddons` INT NOT NULL DEFAULT 0,
 	`maglevel` INT NOT NULL DEFAULT 0,
 	`mana` INT NOT NULL DEFAULT 0,
 	`manamax` INT NOT NULL DEFAULT 0,
@@ -107,7 +106,7 @@ CREATE TABLE `players`
 	FOREIGN KEY (`group_id`) REFERENCES `groups`(`id`)
 ) ENGINE = InnoDB;
 
-INSERT INTO `players` VALUES (1, 'Account Manager', 1, 1, 1, 0, 150, 150, 0, 0, 0, 0, 0, 110, 0, 0, 0, 0, 0, 0, 0, 50, 50, 7, '', 400, 0, 0, 0, 0, 0, 0, 0, '', 0, 0, 0, 10, 10, 10, 0, 0);
+INSERT INTO `players` VALUES (1, 'Account Manager', 1, 1, 1, 0, 150, 150, 0, 0, 0, 0, 0, 110, 0, 0, 0, 0, 0, 0, 50, 50, 7, '', 400, 0, 0, 0, 0, 0, 0, 0, '', 0, 0, 0, 10, 10, 10, 0, 0);
 	
 CREATE TABLE `bans`
 (
