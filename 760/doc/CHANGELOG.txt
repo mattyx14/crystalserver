@@ -31,6 +31,35 @@
 			
 [ Milestone
 	Game protocol 7.60 (Tryller)
+	New Formula of Armor/Defense (OpenTibia SVN)
+	Weapons configurable in XML and Lua (OpenTibia SVN)
+	Wands, Rods, Burst Arrows and Poison Arrows (OpenTibia SVN)
+	Drunk and Paralyze System (OpenTibia SVN)
+	Creatures can move diagonally (OpenTibia SVN)
+	New Lua Interface (Actions, NPCs) (OpenTibia SVN)
+	Big Changes in Spells (OpenTibia SVN, TFS)
+	New Decay System (OpenTibia SVN)
+	Rings and Amulets (OpenTibia SVN)
+	New Monster AI (OpenTibia SVN)
+	Vocations configurable in XML (OpenTibia SVN, TFS)
+	Players can summon monsters (utevo res) (OpenTibia SVN)
+	Check if the player knows the spell (OpenTibia SVN, TFS)
+	Soul Points (OpenTibia SVN)
+	Last Writer of letters (OpenTibia SVN)
+	Skull System (OpenTibia SVN, TFS)
+	Party System (OpenTibia SVN, TFS)
+	Bed System (OpenTibia SVN, TFS)
+	Save System (OpenTibia SVN, TFS)
+	Mute System (OpenTibia SVN)
+	Rule Violations Report system (ctrl + r)  (OpenTibia SVN, TFS)
+	Bug report system (ctrl + z) (OpenTibia SVN, TFS)
+	Violation window system (ctrl + y) (OpenTibia SVN, TFS)
+	Walk to item (OpenTibia SVN)
+	Push, death, walk delays (OpenTibia SVN)
+	Magic effect displayed on air (OpenTibia SVN)
+	Wildcard~ for spells with params (OpenTibia SVN)
+	Ghost Mode (TFS)
+	many many more... 
 ]
 
 [ Fixed issues...

@@ -102,9 +102,7 @@ s_defcommands Commands::defined_commands[] =
 	{"/unban", &Commands::unban},
 	{"/ghost", &Commands::ghost},
 	{"/clean", &Commands::clean},
-#ifdef __ENABLE_SERVER_DIAGNOSTIC__
 	{"/serverdiag", &Commands::serverDiag},
-#endif
 	//player commands - TODO: make them talkactions
 	{"!online", &Commands::whoIsOnline},
 	{"!buyhouse", &Commands::buyHouse},
@@ -1369,13 +1367,13 @@ bool Commands::clean(Creature* creature, const std::string& cmd, const std::stri
 	return true;
 }
 
-#ifdef __ENABLE_SERVER_DIAGNOSTIC__
 bool Commands::serverDiag(Creature* creature, const std::string& cmd, const std::string& param)
 {
 	Player* player = creature->getPlayer();
 	if(!player)
 		return false;
 
+#ifdef __ENABLE_SERVER_DIAGNOSTIC__
 	std::stringstream text;
 	text << "Server diagonostic:\n";
 	text << "World:" << "\n";
@@ -1402,13 +1400,13 @@ bool Commands::serverDiag(Creature* creature, const std::string& cmd, const std:
 	text << "libxml: " << XML_DEFAULT_VERSION << "\n";
 	text << "lua: " << LUA_VERSION << "\n";
 
-	//TODO: more information that could be useful
 
 	player->sendTextMessage(MSG_STATUS_CONSOLE_BLUE, text.str().c_str());
-
+#else
+	player->sendTextMessage(MSG_STATUS_CONSOLE_BLUE, "This command requires the server to be compiled with the __ENABLE_SERVER_DIAGNOSTIC__ flag.");
+#endif
 	return true;
 }
-#endif
 
 bool Commands::ghost(Creature* creature, const std::string& cmd, const std::string& param)
 {

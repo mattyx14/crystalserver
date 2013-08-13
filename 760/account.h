@@ -26,17 +26,19 @@
 #include "definitions.h"
 #include "enums.h"
 
-class Account
+struct Account
 {
-	public:
-		Account();
-		~Account();
+	uint32_t accnumber, lastDay, premiumDays;
+	AccountType_t accountType;
+	int32_t warnings;
+    std::string recoveryKey, password;
+	std::list<std::string> charList;
 
-		uint32_t accnumber, lastDay, premiumDays;
-		AccountType_t accountType;
-		int32_t warnings;
-		std::string recoveryKey, password;
-		std::list<std::string> charList;
+	Account()
+    {
+		accnumber = 0;
+		accountType = ACCOUNT_TYPE_NORMAL;
+	}
 };
 
 #endif
