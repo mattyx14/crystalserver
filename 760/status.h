@@ -68,7 +68,7 @@ class Status
 		bool hasSlot() const;
 
 		std::string getStatusString() const;
-		void getInfo(uint32_t requestedInfo, OutputMessage* output, NetworkMessage& msg) const;
+		void getInfo(uint32_t requestedInfo, OutputMessage_ptr output, NetworkMessage& msg) const;
 
 		uint32_t getPlayersOnline() const {return m_playersOnline;}
 		uint32_t getMaxPlayersOnline() const {return m_playersMax;}

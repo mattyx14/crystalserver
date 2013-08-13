@@ -17,33 +17,31 @@
 // along with this program; if not, write to the Free Software Foundation,
 // Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //////////////////////////////////////////////////////////////////////
-#include "otpch.h"
 
-#include "definitions.h"
+#include "otpch.h"
 
 #if defined WIN32
 #include <winerror.h>
 #endif
 
 #include "protocol.h"
+#include "scheduler.h"
 #include "connection.h"
 #include "outputmessage.h"
-#include "tools.h"
-#include "scheduler.h"
 
-#include <boost/bind.hpp>
-
-void Protocol::onSendMessage(OutputMessage* msg)
+void Protocol::onSendMessage(OutputMessage_ptr msg)
 {
 	#ifdef __DEBUG_NET_DETAIL__
 	std::cout << "Protocol::onSendMessage" << std::endl;
 	#endif
+	
+	if(!m_rawMessages){
+        msg->writeMessageLength();
 
-	if(!m_rawMessages)
-		msg->writeMessageLength();
-
-	if(msg == m_outputBuffer)
-		m_outputBuffer = NULL;
+	    if(msg == m_outputBuffer){
+		    m_outputBuffer.reset();
+	    }
+    }
 }
 
 void Protocol::onRecvMessage(NetworkMessage& msg)
@@ -55,29 +53,30 @@ void Protocol::onRecvMessage(NetworkMessage& msg)
 	parsePacket(msg);
 }
 
-OutputMessage* Protocol::getOutputBuffer()
+OutputMessage_ptr Protocol::getOutputBuffer()
 {
-	if(m_outputBuffer)
+	if(m_outputBuffer){
 		return m_outputBuffer;
-	else if(m_connection)
-	{
+	}
+	else if(m_connection){
 		m_outputBuffer = OutputMessagePool::getInstance()->getOutputMessage(this);
 		return m_outputBuffer;
 	}
-	else
-		return NULL;
+	else{
+		return OutputMessage_ptr();
+	}
 }
 
 void Protocol::releaseProtocol()
 {
-	if(m_refCount > 0)
-	{
+	if(m_refCount > 0){
 		//Reschedule it and try again.
-		Scheduler::getScheduler().addEvent(createSchedulerTask(SCHEDULER_MINTICKS,
+		Scheduler::getScheduler().addEvent( createSchedulerTask(SCHEDULER_MINTICKS,
 			boost::bind(&Protocol::releaseProtocol, this)));
 	}
-	else
+	else{
 		deleteProtocolTask();
+	}
 }
 
 void Protocol::deleteProtocolTask()
@@ -86,16 +85,14 @@ void Protocol::deleteProtocolTask()
 	assert(m_refCount == 0);
 	setConnection(NULL);
 
-	if(m_outputBuffer)
-		OutputMessagePool::getInstance()->releaseMessage(m_outputBuffer);
-
 	delete this;
 }
 
 uint32_t Protocol::getIP() const
 {
-	if(getConnection())
+	if(getConnection()){
 		return getConnection()->getIP();
+	}
 
 	return 0;
 }

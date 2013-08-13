@@ -29,90 +29,114 @@ extern Game g_game;
 #include "exception.h"
 #endif
 
-bool Dispatcher::m_shutdown = false;
+Dispatcher::DispatcherState Dispatcher::m_threadState = Dispatcher::STATE_TERMINATED;
 
 Dispatcher::Dispatcher()
 {
-	OTSYS_THREAD_LOCKVARINIT(m_taskLock);
-	OTSYS_THREAD_SIGNALVARINIT(m_taskSignal);
-	OTSYS_CREATE_THREAD(Dispatcher::dispatcherThread, NULL);
+	m_taskList.clear();
+	Dispatcher::m_threadState = Dispatcher::STATE_RUNNING;
+	boost::thread(boost::bind(&Dispatcher::dispatcherThread, (void*)NULL));
 }
 
-OTSYS_THREAD_RETURN Dispatcher::dispatcherThread(void* p)
+void Dispatcher::dispatcherThread(void* p)
 {
 	#if defined __EXCEPTION_TRACER__
 	ExceptionHandler dispatcherExceptionHandler;
 	dispatcherExceptionHandler.InstallHandler();
 	#endif
 	srand((unsigned int)OTSYS_TIME());
+	#ifdef __DEBUG_SCHEDULER__
+	std::cout << "Starting Dispatcher" << std::endl;
+	#endif
 
-	while(!Dispatcher::m_shutdown)
-	{
+	OutputMessagePool* outputPool;
+
+	// NOTE: second argument defer_lock is to prevent from immediate locking
+	boost::unique_lock<boost::mutex> taskLockUnique(getDispatcher().m_taskLock, boost::defer_lock);
+
+	while(Dispatcher::m_threadState != Dispatcher::STATE_TERMINATED){
 		Task* task = NULL;
 
 		// check if there are tasks waiting
-		OTSYS_THREAD_LOCK(getDispatcher().m_taskLock, "")
+		taskLockUnique.lock();//getDispatcher().m_taskLock.lock();
 
-		if(getDispatcher().m_taskList.empty())
-		{
+		if(getDispatcher().m_taskList.empty()){
 			//if the list is empty wait for signal
-			OTSYS_THREAD_WAITSIGNAL(getDispatcher().m_taskSignal, getDispatcher().m_taskLock);
+			#ifdef __DEBUG_SCHEDULER__
+			std::cout << "Dispatcher: Waiting for task" << std::endl;
+			#endif
+			getDispatcher().m_taskSignal.wait(taskLockUnique);
 		}
 
-		if(!getDispatcher().m_taskList.empty() && !Dispatcher::m_shutdown)
-		{
+		#ifdef __DEBUG_SCHEDULER__
+		std::cout << "Dispatcher: Signalled" << std::endl;
+		#endif
+
+		if(!getDispatcher().m_taskList.empty() && (Dispatcher::m_threadState != Dispatcher::STATE_TERMINATED)){
 			// take the first task
 			task = getDispatcher().m_taskList.front();
 			getDispatcher().m_taskList.pop_front();
 		}
 
-		OTSYS_THREAD_UNLOCK(getDispatcher().m_taskLock, "");
+		taskLockUnique.unlock();
 
 		// finally execute the task...
-		if(task)
-		{
+		if(task){
 			OutputMessagePool::getInstance()->startExecutionFrame();
 			(*task)();
 			delete task;
-			OutputMessagePool::getInstance()->sendAll();
+			
+			outputPool = OutputMessagePool::getInstance();
+			if(outputPool){
+				outputPool->sendAll();
+			}
+
 			g_game.clearSpectatorCache();
+			#ifdef __DEBUG_SCHEDULER__
+			std::cout << "Dispatcher: Executing task" << std::endl;
+			#endif
 		}
 	}
-	#if defined __EXCEPTION_TRACER__
+#if defined __EXCEPTION_TRACER__
 	dispatcherExceptionHandler.RemoveHandler();
-	#endif
-	#ifndef WIN32
-	return NULL;
-	#endif
+#endif
 }
 
-void Dispatcher::addTask(Task* task)
+void Dispatcher::addTask(Task* task, bool push_front /*= false*/)
 {
-	OTSYS_THREAD_LOCK(m_taskLock, "");
-
 	bool do_signal = false;
-	if(!Dispatcher::m_shutdown)
-	{
+	m_taskLock.lock();
+	if(Dispatcher::m_threadState == Dispatcher::STATE_RUNNING){
 		do_signal = m_taskList.empty();
-		m_taskList.push_back(task);
-	}
-	#ifdef _DEBUG
-	else
-		std::cout << "Error: [Dispatcher::addTask] Dispatcher thread is terminated." << std::endl;
-	#endif
+		if(push_front){
+			m_taskList.push_front(task);
+		}
+		else {
+			m_taskList.push_back(task);
+		}
 
-	OTSYS_THREAD_UNLOCK(m_taskLock, "");
+		#ifdef __DEBUG_SCHEDULER__
+		std::cout << "Dispatcher: Added task" << std::endl;
+		#endif
+	}
+#ifdef __DEBUG_SCHEDULER__
+	else{
+		std::cout << "Error: [Dispatcher::addTask] Dispatcher thread is terminated." << std::endl;
+	}
+#endif
+
+	m_taskLock.unlock();
 
 	// send a signal if the list was empty
-	if(do_signal)
-		OTSYS_THREAD_SIGNAL_SEND(m_taskSignal);
+	if(do_signal){
+		m_taskSignal.notify_one();
+	}
 }
 
 void Dispatcher::flush()
 {
 	Task* task = NULL;
-	while(!m_taskList.empty())
-	{
+	while(!m_taskList.empty()){
 		task = getDispatcher().m_taskList.front();
 		m_taskList.pop_front();
 		(*task)();
@@ -120,12 +144,28 @@ void Dispatcher::flush()
 		OutputMessagePool::getInstance()->sendAll();
 		g_game.clearSpectatorCache();
 	}
+	#ifdef __DEBUG_SCHEDULER__
+	std::cout << "Flushing Dispatcher" << std::endl;
+	#endif
 }
 
 void Dispatcher::stop()
 {
-	OTSYS_THREAD_LOCK(m_taskLock, "");
+	m_taskLock.lock();
+	m_threadState = Dispatcher::STATE_CLOSING;
+	m_taskLock.unlock();
+	#ifdef __DEBUG_SCHEDULER__
+	std::cout << "Stopping Dispatcher" << std::endl;
+	#endif
+}
+
+void Dispatcher::shutdown()
+{
+	m_taskLock.lock();
+	m_threadState = Dispatcher::STATE_TERMINATED;
 	flush();
-	m_shutdown = true;
-	OTSYS_THREAD_UNLOCK(m_taskLock, "");
+	m_taskLock.unlock();
+	#ifdef __DEBUG_SCHEDULER__
+	std::cout << "Shutdown Dispatcher" << std::endl;
+	#endif
 }

@@ -21,55 +21,61 @@
 #ifndef __OTSERV_PROTOCOL_H__
 #define __OTSERV_PROTOCOL_H__
 
+#include "definitions.h"
+
+#include <cstdio>
+#include <cstring>
 #include <boost/utility.hpp>
+#include <boost/shared_ptr.hpp>
 
 class NetworkMessage;
 class OutputMessage;
 class Connection;
 
+typedef boost::shared_ptr<OutputMessage> OutputMessage_ptr;
+
 class Protocol : boost::noncopyable
 {
-	public:
-		Protocol(Connection* connection)
-		{
-			m_connection = connection;
-			m_rawMessages = false;
-			m_outputBuffer = NULL;
-			m_refCount = 0;
-		}
+public:
+	Protocol(Connection* connection)
+	{
+		m_connection = connection;
+		m_rawMessages = false;
+		m_refCount = 0;
+	}
+
+	virtual ~Protocol() {}
+
+	virtual void parsePacket(NetworkMessage& msg){};
+
+	void onSendMessage(OutputMessage_ptr msg);
+	void onRecvMessage(NetworkMessage& msg);
+	virtual void onRecvFirstMessage(NetworkMessage& msg) = 0;
+
+	Connection* getConnection() { return m_connection;}
+	const Connection* getConnection() const { return m_connection;}
+	void setConnection(Connection* connection) { m_connection = connection; }
+
+	uint32_t getIP() const;
+	int32_t addRef() {return ++m_refCount;}
+	int32_t unRef() {return --m_refCount;}
+
+protected:
+	//Use this function for autosend messages only
+	OutputMessage_ptr getOutputBuffer();
 	
-		virtual ~Protocol() {}
+	void setRawMessages(bool value) { m_rawMessages = value; }
 
-		virtual void parsePacket(NetworkMessage& msg){}
+	virtual void releaseProtocol();
+	virtual void deleteProtocolTask();
+	friend class Connection;
 
-		void onSendMessage(OutputMessage* msg);
-		void onRecvMessage(NetworkMessage& msg);
-		virtual void onRecvFirstMessage(NetworkMessage& msg) = 0;
+private:
 
-		Connection* getConnection() { return m_connection;}
-		const Connection* getConnection() const { return m_connection;}
-		void setConnection(Connection* connection) { m_connection = connection;}
-
-    	uint32_t getIP() const;
-
-		int32_t addRef() {return ++m_refCount;}
-		int32_t unRef() {return --m_refCount;}
-
-	protected:
-		//Use this function for autosend messages only
-		OutputMessage* getOutputBuffer();
-
-		void setRawMessages(bool value) { m_rawMessages = value; }
-
-		virtual void releaseProtocol();
-		virtual void deleteProtocolTask();
-		friend class Connection;
-	
-	private:
-		OutputMessage* m_outputBuffer;
-		Connection* m_connection;
-		bool m_rawMessages;
-		uint32_t m_refCount;
+	OutputMessage_ptr m_outputBuffer;
+	Connection* m_connection;
+	bool m_rawMessages;
+	uint32_t m_refCount;
 };
 
 #endif

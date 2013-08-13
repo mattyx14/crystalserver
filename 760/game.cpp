@@ -2081,25 +2081,6 @@ bool Game::playerCancelRuleViolation(uint32_t playerId)
 	return cancelRuleViolation(player);
 }
 
-bool Game::playerCloseNpcChannel(uint32_t playerId)
-{
-	Player* player = getPlayerByID(playerId);
-	if(!player || player->isRemoved())
-		return false;
-
-	SpectatorVec list;
-	SpectatorVec::iterator it;
-	getSpectators(list, player->getPosition());
-	Npc* npc;
-
-	for(it = list.begin(); it != list.end(); ++it)
-	{
-		if((npc = (*it)->getNpc()))
-			npc->onPlayerCloseChannel(player);
-	}
-	return true;
-}
-
 bool Game::playerReceivePing(uint32_t playerId)
 {
 	Player* player = getPlayerByID(playerId);
@@ -2879,106 +2860,6 @@ bool Game::internalCloseTrade(Player* player)
 	return true;
 }
 
-bool Game::playerPurchaseItem(uint32_t playerId, uint16_t spriteId, uint8_t count,
-	uint8_t amount)
-{
-	Player* player = getPlayerByID(playerId);
-	if(player == NULL || player->isRemoved())
-		return false;
-
-	int32_t onBuy;
-	int32_t onSell;
-
-	Npc* merchant = player->getShopOwner(onBuy, onSell);
-	if(merchant == NULL)
-		return false;
-
-	const ItemType& it = Item::items.getItemIdByClientId(spriteId);
-	if(it.id == 0)
-		return false;
-
-	uint8_t subType = 0;
-	if(it.isFluidContainer())
-	{
-		int32_t maxFluidType = sizeof(reverseFluidMap) / sizeof(uint32_t);
-		if(count < maxFluidType)
-			subType = (uint8_t)reverseFluidMap[count];
-	}
-	else
-		subType = count;
-
-	merchant->onPlayerTrade(player, SHOPEVENT_BUY, onBuy, it.id, subType, amount);
-	return true;
-}
-
-bool Game::playerSellItem(uint32_t playerId, uint16_t spriteId, uint8_t count,
-	uint8_t amount)
-{
-	Player* player = getPlayerByID(playerId);
-	if(player == NULL || player->isRemoved())
-		return false;
-
-	int32_t onBuy;
-	int32_t onSell;
-
-	Npc* merchant = player->getShopOwner(onBuy, onSell);
-	if(merchant == NULL)
-		return false;
-
-	const ItemType& it = Item::items.getItemIdByClientId(spriteId);
-	if(it.id == 0)
-		return false;
-
-	uint8_t subType = 0;
-	if(it.isFluidContainer())
-	{
-		int32_t maxFluidType = sizeof(reverseFluidMap) / sizeof(uint32_t);
-		if(count < maxFluidType)
-			subType = (uint8_t)reverseFluidMap[count];
-	}
-	else
-		subType = count;
-
-	merchant->onPlayerTrade(player, SHOPEVENT_SELL, onSell, it.id, subType, amount);
-	return true;
-}
-
-bool Game::playerCloseShop(uint32_t playerId)
-{
-	Player* player = getPlayerByID(playerId);
-	if(player == NULL || player->isRemoved())
-		return false;
-
-	player->closeShopWindow();
-	return true;
-}
-
-bool Game::playerLookInShop(uint32_t playerId, uint16_t spriteId, uint8_t count)
-{
-	Player* player = getPlayerByID(playerId);
-	if(player == NULL || player->isRemoved())
-		return false;
-
-	const ItemType& it = Item::items.getItemIdByClientId(spriteId);
-	if(it.id == 0)
-		return false;
-
-	int32_t subType = 0;
-	if(it.isFluidContainer())
-	{
-		int32_t maxFluidType = sizeof(reverseFluidMap) / sizeof(uint32_t);
-		if(count < maxFluidType)
-			subType = reverseFluidMap[count];
-	}
-	else
-		subType = count;
-
-	std::stringstream ss;
-	ss << "You see " << Item::getDescription(it, 1, NULL, subType);
-	player->sendTextMessage(MSG_INFO_DESCR, ss.str());
-	return true;
-}
-
 bool Game::playerLookAt(uint32_t playerId, const Position& pos, uint16_t spriteId, uint8_t stackPos)
 {
 	Player* player = getPlayerByID(playerId);
@@ -3091,7 +2972,7 @@ bool Game::playerFollowCreature(uint32_t playerId, uint32_t creatureId)
 	return player->setFollowCreature(followCreature);
 }
 
-bool Game::playerSetFightModes(uint32_t playerId, fightMode_t fightMode, chaseMode_t chaseMode, secureMode_t secureMode)
+bool Game::playerSetFightModes(uint32_t playerId, fightMode_t fightMode, chaseMode_t chaseMode, bool safeMode)
 {
 	Player* player = getPlayerByID(playerId);
 	if(!player || player->isRemoved())
@@ -3099,7 +2980,7 @@ bool Game::playerSetFightModes(uint32_t playerId, fightMode_t fightMode, chaseMo
 
 	player->setFightMode(fightMode);
 	player->setChaseMode(chaseMode);
-	player->setSecureMode(secureMode);
+	player->setSafeMode(safeMode);
 	return true;
 }
 
@@ -3156,7 +3037,7 @@ bool Game::playerRequestOutfit(uint32_t playerId)
 	if(!player || player->isRemoved())
 		return false;
 
-	player->sendOutfitWindow();
+	player->sendOutfitWindow(player);
 	return true;
 }
 
@@ -3223,9 +3104,6 @@ bool Game::playerSay(uint32_t playerId, uint16_t channelId, SpeakClasses type,
 		case SPEAK_CHANNEL_R1:
 		case SPEAK_CHANNEL_R2:
 			return playerTalkToChannel(player, type, text, channelId);
-			break;
-		case SPEAK_PRIVATE_PN:
-			return playerSpeakToNpc(player, text);
 			break;
 		case SPEAK_BROADCAST:
 			return playerBroadcastMessage(player, text);
@@ -3391,55 +3269,6 @@ bool Game::playerTalkToChannel(Player* player, SpeakClasses type, const std::str
 	}
 
 	g_chat.talkToChannel(player, type, text, channelId);
-	return true;
-}
-
-bool Game::playerSpeakToNpc(Player* player, const std::string& text)
-{
-	SpectatorVec list;
-	SpectatorVec::iterator it;
-	getSpectators(list, player->getPosition());
-
-	//send to npcs only
-	Npc* tmpNpc = NULL;
-	for(it = list.begin(); it != list.end(); ++it)
-	{
-		if((tmpNpc = (*it)->getNpc()))
-			(*it)->onCreatureSay(player, SPEAK_PRIVATE_PN, text);
-	}
-	return true;
-}
-
-bool Game::npcSpeakToPlayer(Npc* npc, Player* player, const std::string& text, bool publicize)
-{
-	if(player != NULL)
-	{
-		player->sendCreatureSay(npc, SPEAK_PRIVATE_NP, text);
-		player->onCreatureSay(npc, SPEAK_PRIVATE_NP, text);
-	}
-
-	if(publicize)
-	{
-		SpectatorVec list;
-		SpectatorVec::iterator it;
-		getSpectators(list, npc->getPosition());
-
-		//send to client
-		Player* tmpPlayer = NULL;
-		for(it = list.begin(); it != list.end(); ++it)
-		{
-			tmpPlayer = (*it)->getPlayer();
-			if((tmpPlayer != NULL) && (tmpPlayer != player))
-				tmpPlayer->sendCreatureSay(npc, SPEAK_SAY, text);
-		}
-
-		//event method
-		for(it = list.begin(); it != list.end(); ++it)
-		{
-			if((*it) != player)
-				(*it)->onCreatureSay(npc, SPEAK_SAY, text);
-		}
-	}
 	return true;
 }
 
@@ -4618,37 +4447,38 @@ Position Game::getClosestFreeTile(Player* player, Creature* teleportedCreature, 
 
 int32_t Game::getMotdNum()
 {
-        if(lastMotdText != g_config.getString(ConfigManager::MOTD))
-        {
-                lastMotdNum++;
-                lastMotdText = g_config.getString(ConfigManager::MOTD);
+    if(lastMotdText != g_config.getString(ConfigManager::MOTD))
+    {
+        lastMotdNum++;
+        lastMotdText = g_config.getString(ConfigManager::MOTD);
 
-                FILE* file = fopen("lastMotd.txt", "w");
-                if(file != NULL)
-                {
-                        fprintf(file, "%d", lastMotdNum);
-                        fprintf(file, "\n%s", lastMotdText.c_str());
-                        fclose(file);
-                }
+        FILE* file = fopen("lastMotd.txt", "w");
+        if(file != NULL)
+        {
+            fprintf(file, "%d", lastMotdNum);
+            fprintf(file, "\n%s", lastMotdText.c_str());
+            fclose(file);
         }
-        return lastMotdNum;
+    }
+
+    return lastMotdNum;
 }
 
 void Game::loadMotd()
 {
-        std::ifstream file("lastMotd.txt");
-        if(!file)
-        {
-                std::cout << ":: ERROR: Failed to load lastMotd.txt" << std::endl;
-                lastMotdNum = random_range(5, 500);
-                return;
-        }
+    std::ifstream file("lastMotd.txt");
+    if(!file)
+    {
+        std::cout << ":: ERROR: Failed to load lastMotd.txt" << std::endl;
+        lastMotdNum = random_range(5, 500);
+        return;
+    }
 
-        std::string tmpStr;
-        getline(file, tmpStr);
-        getline(file, lastMotdText);
-        lastMotdNum = atoi(tmpStr.c_str());
-        file.close();
+    std::string tmpStr;
+    getline(file, tmpStr);
+    getline(file, lastMotdText);
+    lastMotdNum = atoi(tmpStr.c_str());
+    file.close();
 }
 
 void Game::checkPlayersRecord()
@@ -4692,13 +4522,13 @@ void Game::loadPlayersRecord()
 		return;
 	}
 
-        int32_t tmp = fscanf(file, "%u", &lastPlayersRecord);
-        if(tmp == EOF)
-        {
-                std::cout << ":: ERROR: Failed to read playersRecord.txt" << std::endl;
-                lastPlayersRecord = 0;
-        }
-        fclose(file);
+    int32_t tmp = fscanf(file, "%u", &lastPlayersRecord);
+    if(tmp == EOF)
+    {
+        std::cout << ":: ERROR: Failed to read playersRecord.txt" << std::endl;
+        lastPlayersRecord = 0;
+    }
+    fclose(file);
 }
 
 bool Game::violationWindow(uint32_t playerId, std::string targetPlayerName, int32_t reason, int32_t action, std::string banComment, std::string statement, bool IPBanishment)

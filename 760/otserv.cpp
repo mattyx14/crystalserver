@@ -78,8 +78,9 @@ Vocations g_vocations;
 
 Server* g_server = NULL;
 
-OTSYS_THREAD_LOCKVAR g_loaderLock;
-OTSYS_THREAD_SIGNALVAR g_loaderSignal;
+boost::mutex g_loaderLock;
+boost::condition_variable g_loaderSignal;
+boost::unique_lock<boost::mutex> g_loaderUniqueLock(g_loaderLock);
 
 #ifdef __EXCEPTION_TRACER__
 #include "exception.h"
@@ -112,27 +113,22 @@ int main(int argc, char *argv[])
 	mainExceptionHandler.InstallHandler();
 	#endif
 
-        // ignore sigpipe...
-        #ifdef WIN32
-        //nothing yet
-        #else
-        struct sigaction sigh;
-        sigh.sa_handler = SIG_IGN;
-        sigh.sa_flags = 0;
-        sigemptyset(&sigh.sa_mask);
-        sigaction(SIGPIPE, &sigh, NULL);
-        #endif
-
-	OTSYS_THREAD_LOCKVARINIT(g_loaderLock);
-	OTSYS_THREAD_SIGNALVARINIT(g_loaderSignal);
+#ifndef WIN32
+	// ignore sigpipe...
+	struct sigaction sigh;
+	sigh.sa_handler = SIG_IGN;
+	sigh.sa_flags = 0;
+	sigemptyset(&sigh.sa_mask);
+	sigaction(SIGPIPE, &sigh, NULL);
+#endif
 
 	Dispatcher::getDispatcher().addTask(createTask(boost::bind(mainLoader, argc, argv)));
 
-	OTSYS_THREAD_WAITSIGNAL(g_loaderSignal, g_loaderLock);
+	g_loaderSignal.wait(g_loaderUniqueLock);
 
 	Server server(INADDR_ANY, g_config.getNumber(ConfigManager::PORT));
 	std::cout << ":: " << g_config.getString(ConfigManager::SERVER_NAME) << " Server Online!" << std::endl << std::endl;
-	g_server = &server;
+    g_server = &server;
 	server.run();
 
 #ifdef __EXCEPTION_TRACER__
@@ -409,5 +405,5 @@ void mainLoader(int argc, char *argv[])
 
 	IOLoginData::getInstance()->resetOnlineStatus();
 	g_game.setGameState(GAME_STATE_NORMAL);
-	OTSYS_THREAD_SIGNAL_SEND(g_loaderSignal);
+	g_loaderSignal.notify_all();
 }

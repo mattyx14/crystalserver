@@ -1,7 +1,7 @@
 [Project]
 FileName=CrystalServer.dev
 Name=Crystal Server
-UnitCount=150
+UnitCount=146
 Type=1
 Ver=1
 ObjFiles=
@@ -12,7 +12,7 @@ ResourceIncludes=
 MakeIncludes=
 Compiler=
 CppCompiler=-D__USE_MYSQL___@@_-D__USE_SQLITE___@@_
-Linker=-O2_@@_-lboost_regex_@@_-lboost_system_@@_-lgmp_@@_-lluasql_mysql_@@_-lluasql_sqlite_@@_-llua5.1_@@_-lmysql_@@_-lsqlite3_@@_-lwsock32_@@_-lxml2_@@_-lmysql_@@_-lws2_32_@@_-s_@@_
+Linker=-O2_@@_-lboost_regex_@@_-lboost_system_@@_-lboost_thread_@@_-lgmp_@@_-lluasql_mysql_@@_-lluasql_sqlite_@@_-llua5.1_@@_-lmysql_@@_-lsqlite3_@@_-lwsock32_@@_-lxml2_@@_-lmysql_@@_-lws2_32_@@_-s_@@_
 IsCpp=1
 Icon=CrystalServer.ico
 ExeOutput=..\server
@@ -69,37 +69,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit5]
-FileName=..\admin.cpp
-CompileCpp=1
-Folder=CrystalServer
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
 [Unit6]
-FileName=..\admin.h
-CompileCpp=1
-Folder=CrystalServer
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit7]
-FileName=..\allocator.cpp
-CompileCpp=1
-Folder=CrystalServer
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit8]
 FileName=..\allocator.h
 CompileCpp=1
 Folder=CrystalServer
@@ -109,7 +79,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit9]
+[Unit7]
 FileName=..\baseevents.cpp
 CompileCpp=1
 Folder=CrystalServer
@@ -119,7 +89,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit10]
+[Unit8]
 FileName=..\baseevents.h
 CompileCpp=1
 Folder=CrystalServer
@@ -129,7 +99,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit11]
+[Unit9]
 FileName=..\beds.cpp
 CompileCpp=1
 Folder=CrystalServer
@@ -139,7 +109,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit12]
+[Unit10]
 FileName=..\beds.h
 CompileCpp=1
 Folder=CrystalServer
@@ -149,7 +119,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit13]
+[Unit11]
 FileName=..\chat.cpp
 CompileCpp=1
 Folder=CrystalServer
@@ -159,7 +129,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit14]
+[Unit12]
 FileName=..\chat.h
 CompileCpp=1
 Folder=CrystalServer
@@ -169,7 +139,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit15]
+[Unit13]
 FileName=..\combat.cpp
 CompileCpp=1
 Folder=CrystalServer
@@ -179,7 +149,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit16]
+[Unit14]
 FileName=..\combat.h
 CompileCpp=1
 Folder=CrystalServer
@@ -189,7 +159,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit17]
+[Unit15]
 FileName=..\commands.cpp
 CompileCpp=1
 Folder=CrystalServer
@@ -199,7 +169,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit18]
+[Unit16]
 FileName=..\commands.h
 CompileCpp=1
 Folder=CrystalServer
@@ -209,7 +179,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit19]
+[Unit17]
 FileName=..\condition.cpp
 CompileCpp=1
 Folder=CrystalServer
@@ -219,7 +189,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit20]
+[Unit18]
 FileName=..\condition.h
 CompileCpp=1
 Folder=CrystalServer
@@ -229,7 +199,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit21]
+[Unit19]
 FileName=..\configmanager.cpp
 CompileCpp=1
 Folder=CrystalServer
@@ -239,7 +209,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit22]
+[Unit20]
 FileName=..\configmanager.h
 CompileCpp=1
 Folder=CrystalServer
@@ -249,7 +219,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit23]
+[Unit21]
 FileName=..\connection.cpp
 CompileCpp=1
 Folder=CrystalServer
@@ -259,7 +229,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit24]
+[Unit22]
 FileName=..\connection.h
 CompileCpp=1
 Folder=CrystalServer
@@ -269,7 +239,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit25]
+[Unit23]
 FileName=..\const.h
 CompileCpp=1
 Folder=CrystalServer
@@ -279,7 +249,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit26]
+[Unit24]
 FileName=..\container.cpp
 CompileCpp=1
 Folder=CrystalServer
@@ -289,7 +259,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit27]
+[Unit25]
 FileName=..\container.h
 CompileCpp=1
 Folder=CrystalServer
@@ -299,7 +269,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit28]
+[Unit26]
 FileName=..\creature.cpp
 CompileCpp=1
 Folder=CrystalServer
@@ -309,7 +279,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit29]
+[Unit27]
 FileName=..\creature.h
 CompileCpp=1
 Folder=CrystalServer
@@ -319,7 +289,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit30]
+[Unit28]
 FileName=..\creatureevent.cpp
 CompileCpp=1
 Folder=CrystalServer
@@ -329,7 +299,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit31]
+[Unit29]
 FileName=..\creatureevent.h
 CompileCpp=1
 Folder=CrystalServer
@@ -339,7 +309,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit32]
+[Unit30]
 FileName=..\cylinder.cpp
 CompileCpp=1
 Folder=CrystalServer
@@ -349,7 +319,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit33]
+[Unit31]
 FileName=..\cylinder.h
 CompileCpp=1
 Folder=CrystalServer
@@ -359,7 +329,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit34]
+[Unit32]
 FileName=..\database.cpp
 CompileCpp=1
 Folder=CrystalServer
@@ -369,7 +339,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit35]
+[Unit33]
 FileName=..\database.h
 CompileCpp=1
 Folder=CrystalServer
@@ -379,7 +349,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit36]
+[Unit34]
 FileName=..\databasemysql.cpp
 CompileCpp=1
 Folder=CrystalServer
@@ -389,7 +359,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit37]
+[Unit35]
 FileName=..\databasemysql.h
 CompileCpp=1
 Folder=CrystalServer
@@ -399,7 +369,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit38]
+[Unit36]
 FileName=..\databasesqlite.cpp
 CompileCpp=1
 Folder=CrystalServer
@@ -409,7 +379,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit39]
+[Unit37]
 FileName=..\databasesqlite.h
 CompileCpp=1
 Folder=CrystalServer
@@ -419,7 +389,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit40]
+[Unit38]
 FileName=..\definitions.h
 CompileCpp=1
 Folder=CrystalServer
@@ -429,7 +399,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit41]
+[Unit39]
 FileName=..\depot.cpp
 CompileCpp=1
 Folder=CrystalServer
@@ -439,7 +409,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit42]
+[Unit40]
 FileName=..\depot.h
 CompileCpp=1
 Folder=CrystalServer
@@ -449,7 +419,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit43]
+[Unit41]
 FileName=..\enums.h
 CompileCpp=1
 Folder=CrystalServer
@@ -459,7 +429,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit44]
+[Unit42]
 FileName=..\exception.cpp
 CompileCpp=1
 Folder=CrystalServer
@@ -469,7 +439,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit45]
+[Unit43]
 FileName=..\exception.h
 CompileCpp=1
 Folder=CrystalServer
@@ -479,7 +449,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit46]
+[Unit44]
 FileName=..\fileloader.cpp
 CompileCpp=1
 Folder=CrystalServer
@@ -489,7 +459,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit47]
+[Unit45]
 FileName=..\fileloader.h
 CompileCpp=1
 Folder=CrystalServer
@@ -499,7 +469,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit48]
+[Unit46]
 FileName=..\game.cpp
 CompileCpp=1
 Folder=CrystalServer
@@ -509,7 +479,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit49]
+[Unit47]
 FileName=..\game.h
 CompileCpp=1
 Folder=CrystalServer
@@ -519,7 +489,17 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit51]
+[Unit48]
+FileName=..\house.cpp
+CompileCpp=1
+Folder=CrystalServer
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit49]
 FileName=..\house.h
 CompileCpp=1
 Folder=CrystalServer
@@ -529,17 +509,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit52]
-FileName=..\housetile.cpp
-CompileCpp=1
-Folder=CrystalServer
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit53]
+[Unit51]
 FileName=..\housetile.h
 CompileCpp=1
 Folder=CrystalServer
@@ -549,7 +519,17 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit55]
+[Unit52]
+FileName=..\ioguild.cpp
+CompileCpp=1
+Folder=CrystalServer
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit53]
 FileName=..\ioguild.h
 CompileCpp=1
 Folder=CrystalServer
@@ -559,17 +539,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit56]
-FileName=..\iologindata.cpp
-CompileCpp=1
-Folder=CrystalServer
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit57]
+[Unit55]
 FileName=..\iologindata.h
 CompileCpp=1
 Folder=CrystalServer
@@ -579,7 +549,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit58]
+[Unit56]
 FileName=..\iomap.cpp
 CompileCpp=1
 Folder=CrystalServer
@@ -589,7 +559,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit59]
+[Unit57]
 FileName=..\iomap.h
 CompileCpp=1
 Folder=CrystalServer
@@ -599,7 +569,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit60]
+[Unit58]
 FileName=..\iomapserialize.cpp
 CompileCpp=1
 Folder=CrystalServer
@@ -609,7 +579,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit61]
+[Unit59]
 FileName=..\iomapserialize.h
 CompileCpp=1
 Folder=CrystalServer
@@ -619,7 +589,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit62]
+[Unit60]
 FileName=..\item.cpp
 CompileCpp=1
 Folder=CrystalServer
@@ -629,7 +599,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit63]
+[Unit61]
 FileName=..\item.h
 CompileCpp=1
 Folder=CrystalServer
@@ -639,7 +609,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit64]
+[Unit62]
 FileName=..\itemloader.h
 CompileCpp=1
 Folder=CrystalServer
@@ -649,7 +619,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit65]
+[Unit63]
 FileName=..\items.cpp
 CompileCpp=1
 Folder=CrystalServer
@@ -659,7 +629,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit66]
+[Unit64]
 FileName=..\items.h
 CompileCpp=1
 Folder=CrystalServer
@@ -669,7 +639,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit67]
+[Unit65]
 FileName=..\logger.cpp
 CompileCpp=1
 Folder=CrystalServer
@@ -679,7 +649,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit68]
+[Unit66]
 FileName=..\logger.h
 CompileCpp=1
 Folder=CrystalServer
@@ -689,7 +659,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit69]
+[Unit67]
 FileName=..\luascript.cpp
 CompileCpp=1
 Folder=CrystalServer
@@ -699,7 +669,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit70]
+[Unit68]
 FileName=..\luascript.h
 CompileCpp=1
 Folder=CrystalServer
@@ -709,7 +679,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit71]
+[Unit69]
 FileName=..\mailbox.cpp
 CompileCpp=1
 Folder=CrystalServer
@@ -719,7 +689,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit72]
+[Unit70]
 FileName=..\mailbox.h
 CompileCpp=1
 Folder=CrystalServer
@@ -729,7 +699,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit73]
+[Unit71]
 FileName=..\map.cpp
 CompileCpp=1
 Folder=CrystalServer
@@ -739,7 +709,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit74]
+[Unit72]
 FileName=..\map.h
 CompileCpp=1
 Folder=CrystalServer
@@ -749,7 +719,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit75]
+[Unit73]
 FileName=..\md5.cpp
 CompileCpp=1
 Folder=CrystalServer
@@ -759,7 +729,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit76]
+[Unit74]
 FileName=..\md5.h
 CompileCpp=1
 Folder=CrystalServer
@@ -769,7 +739,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit77]
+[Unit75]
 FileName=..\monster.cpp
 CompileCpp=1
 Folder=CrystalServer
@@ -779,7 +749,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit78]
+[Unit76]
 FileName=..\monster.h
 CompileCpp=1
 Folder=CrystalServer
@@ -789,7 +759,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit79]
+[Unit77]
 FileName=..\monsters.cpp
 CompileCpp=1
 Folder=CrystalServer
@@ -799,7 +769,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit80]
+[Unit78]
 FileName=..\monsters.h
 CompileCpp=1
 Folder=CrystalServer
@@ -809,7 +779,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit81]
+[Unit79]
 FileName=..\movement.cpp
 CompileCpp=1
 Folder=CrystalServer
@@ -819,7 +789,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit82]
+[Unit80]
 FileName=..\movement.h
 CompileCpp=1
 Folder=CrystalServer
@@ -829,7 +799,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit83]
+[Unit81]
 FileName=..\networkmessage.cpp
 CompileCpp=1
 Folder=CrystalServer
@@ -839,7 +809,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit84]
+[Unit82]
 FileName=..\networkmessage.h
 CompileCpp=1
 Folder=CrystalServer
@@ -849,7 +819,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit85]
+[Unit83]
 FileName=..\npc.cpp
 CompileCpp=1
 Folder=CrystalServer
@@ -859,7 +829,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit86]
+[Unit84]
 FileName=..\npc.h
 CompileCpp=1
 Folder=CrystalServer
@@ -869,7 +839,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit87]
+[Unit85]
 FileName=..\otpch.h
 CompileCpp=1
 Folder=CrystalServer
@@ -879,7 +849,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit88]
+[Unit86]
 FileName=..\otserv.cpp
 CompileCpp=1
 Folder=CrystalServer
@@ -889,7 +859,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit89]
+[Unit87]
 FileName=..\otsystem.h
 CompileCpp=1
 Folder=CrystalServer
@@ -899,7 +869,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit90]
+[Unit88]
 FileName=..\outfit.cpp
 CompileCpp=1
 Folder=CrystalServer
@@ -909,7 +879,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit91]
+[Unit89]
 FileName=..\outfit.h
 CompileCpp=1
 Folder=CrystalServer
@@ -919,7 +889,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit92]
+[Unit90]
 FileName=..\outputmessage.cpp
 CompileCpp=1
 Folder=CrystalServer
@@ -929,7 +899,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit93]
+[Unit91]
 FileName=..\outputmessage.h
 CompileCpp=1
 Folder=CrystalServer
@@ -939,7 +909,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit94]
+[Unit92]
 FileName=..\party.cpp
 CompileCpp=1
 Folder=CrystalServer
@@ -949,7 +919,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit95]
+[Unit93]
 FileName=..\party.h
 CompileCpp=1
 Folder=CrystalServer
@@ -959,7 +929,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit96]
+[Unit94]
 FileName=..\player.cpp
 CompileCpp=1
 Folder=CrystalServer
@@ -969,7 +939,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit97]
+[Unit95]
 FileName=..\player.h
 CompileCpp=1
 Folder=CrystalServer
@@ -979,7 +949,17 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit99]
+[Unit96]
+FileName=..\position.cpp
+CompileCpp=1
+Folder=CrystalServer
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit97]
 FileName=..\position.h
 CompileCpp=1
 Folder=CrystalServer
@@ -989,17 +969,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit100]
-FileName=..\protocol.cpp
-CompileCpp=1
-Folder=CrystalServer
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit101]
+[Unit99]
 FileName=..\protocol.h
 CompileCpp=1
 Folder=CrystalServer
@@ -1009,27 +979,27 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
+[Unit100]
+FileName=..\protocol76.cpp
+CompileCpp=1
+Folder=CrystalServer
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit101]
+FileName=..\protocol76.h
+CompileCpp=1
+Folder=CrystalServer
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
 [Unit102]
-FileName=..\protocolgame.cpp
-CompileCpp=1
-Folder=CrystalServer
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit103]
-FileName=..\protocolgame.h
-CompileCpp=1
-Folder=CrystalServer
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit104]
 FileName=..\protocollogin.cpp
 CompileCpp=1
 Folder=CrystalServer
@@ -1039,7 +1009,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit105]
+[Unit103]
 FileName=..\protocollogin.h
 CompileCpp=1
 Folder=CrystalServer
@@ -1049,7 +1019,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit106]
+[Unit104]
 FileName=..\quests.cpp
 CompileCpp=1
 Folder=CrystalServer
@@ -1059,7 +1029,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit107]
+[Unit105]
 FileName=..\quests.h
 CompileCpp=1
 Folder=CrystalServer
@@ -1069,7 +1039,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit108]
+[Unit106]
 FileName=..\raids.cpp
 CompileCpp=1
 Folder=CrystalServer
@@ -1079,7 +1049,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit109]
+[Unit107]
 FileName=..\raids.h
 CompileCpp=1
 Folder=CrystalServer
@@ -1089,7 +1059,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit110]
+[Unit108]
 FileName=..\resources.h
 CompileCpp=1
 Folder=CrystalServer
@@ -1099,27 +1069,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit111]
-FileName=..\rsa.cpp
-CompileCpp=1
-Folder=CrystalServer
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit112]
-FileName=..\rsa.h
-CompileCpp=1
-Folder=CrystalServer
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit113]
+[Unit109]
 FileName=..\scheduler.cpp
 CompileCpp=1
 Folder=CrystalServer
@@ -1129,7 +1079,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit114]
+[Unit110]
 FileName=..\scheduler.h
 CompileCpp=1
 Folder=CrystalServer
@@ -1139,17 +1089,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit115]
-FileName=..\scriptmanager.cpp
-CompileCpp=1
-Folder=CrystalServer
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit116]
+[Unit112]
 FileName=..\scriptmanager.h
 CompileCpp=1
 Folder=CrystalServer
@@ -1159,7 +1099,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit117]
+[Unit113]
 FileName=..\server.cpp
 CompileCpp=1
 Folder=CrystalServer
@@ -1169,7 +1109,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit118]
+[Unit114]
 FileName=..\server.h
 CompileCpp=1
 Folder=CrystalServer
@@ -1179,7 +1119,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit119]
+[Unit115]
 FileName=..\sha1.cpp
 CompileCpp=1
 Folder=CrystalServer
@@ -1189,7 +1129,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit120]
+[Unit116]
 FileName=..\sha1.h
 CompileCpp=1
 Folder=CrystalServer
@@ -1199,7 +1139,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit121]
+[Unit117]
 FileName=..\spawn.cpp
 CompileCpp=1
 Folder=CrystalServer
@@ -1209,7 +1149,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit122]
+[Unit118]
 FileName=..\spawn.h
 CompileCpp=1
 Folder=CrystalServer
@@ -1219,7 +1159,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit123]
+[Unit119]
 FileName=..\spells.cpp
 CompileCpp=1
 Folder=CrystalServer
@@ -1229,7 +1169,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit124]
+[Unit120]
 FileName=..\spells.h
 CompileCpp=1
 Folder=CrystalServer
@@ -1239,7 +1179,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit125]
+[Unit121]
 FileName=..\status.cpp
 CompileCpp=1
 Folder=CrystalServer
@@ -1249,7 +1189,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit126]
+[Unit122]
 FileName=..\status.h
 CompileCpp=1
 Folder=CrystalServer
@@ -1259,7 +1199,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit127]
+[Unit123]
 FileName=..\talkaction.cpp
 CompileCpp=1
 Folder=CrystalServer
@@ -1269,7 +1209,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit128]
+[Unit124]
 FileName=..\talkaction.h
 CompileCpp=1
 Folder=CrystalServer
@@ -1279,7 +1219,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit129]
+[Unit125]
 FileName=..\tasks.cpp
 CompileCpp=1
 Folder=CrystalServer
@@ -1289,7 +1229,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit130]
+[Unit126]
 FileName=..\tasks.h
 CompileCpp=1
 Folder=CrystalServer
@@ -1299,7 +1239,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit131]
+[Unit127]
 FileName=..\teleport.cpp
 CompileCpp=1
 Folder=CrystalServer
@@ -1309,7 +1249,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit132]
+[Unit128]
 FileName=..\teleport.h
 CompileCpp=1
 Folder=CrystalServer
@@ -1319,7 +1259,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit133]
+[Unit129]
 FileName=..\templates.h
 CompileCpp=1
 Folder=CrystalServer
@@ -1329,7 +1269,17 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit135]
+[Unit130]
+FileName=..\thing.cpp
+CompileCpp=1
+Folder=CrystalServer
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit131]
 FileName=..\thing.h
 CompileCpp=1
 Folder=CrystalServer
@@ -1339,7 +1289,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit136]
+[Unit132]
 FileName=..\tile.cpp
 CompileCpp=1
 Folder=CrystalServer
@@ -1349,7 +1299,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit137]
+[Unit133]
 FileName=..\tile.h
 CompileCpp=1
 Folder=CrystalServer
@@ -1359,17 +1309,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit138]
-FileName=..\tools.cpp
-CompileCpp=1
-Folder=CrystalServer
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit139]
+[Unit135]
 FileName=..\tools.h
 CompileCpp=1
 Folder=CrystalServer
@@ -1379,7 +1319,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit140]
+[Unit136]
 FileName=..\town.h
 CompileCpp=1
 Folder=CrystalServer
@@ -1389,7 +1329,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit141]
+[Unit137]
 FileName=..\trashholder.cpp
 CompileCpp=1
 Folder=CrystalServer
@@ -1399,7 +1339,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit142]
+[Unit138]
 FileName=..\trashholder.h
 CompileCpp=1
 Folder=CrystalServer
@@ -1409,7 +1349,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit143]
+[Unit139]
 FileName=..\vocation.cpp
 CompileCpp=1
 Folder=CrystalServer
@@ -1419,7 +1359,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit144]
+[Unit140]
 FileName=..\vocation.h
 CompileCpp=1
 Folder=CrystalServer
@@ -1429,7 +1369,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit145]
+[Unit141]
 FileName=..\waitlist.cpp
 CompileCpp=1
 Folder=CrystalServer
@@ -1439,8 +1379,48 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit146]
+[Unit142]
 FileName=..\waitlist.h
+CompileCpp=1
+Folder=CrystalServer
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit143]
+FileName=..\weapons.cpp
+CompileCpp=1
+Folder=CrystalServer
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit144]
+FileName=..\weapons.h
+CompileCpp=1
+Folder=CrystalServer
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit145]
+FileName=..\ban.cpp
+CompileCpp=1
+Folder=CrystalServer
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit146]
+FileName=..\ban.h
 CompileCpp=1
 Folder=CrystalServer
 Compile=1
@@ -1598,7 +1578,7 @@ ProductVersion=0.1
 AutoIncBuildNr=0
 
 [Unit50]
-FileName=..\house.cpp
+FileName=..\housetile.cpp
 CompileCpp=1
 Folder=CrystalServer
 Compile=1
@@ -1608,7 +1588,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit54]
-FileName=..\ioguild.cpp
+FileName=..\iologindata.cpp
 CompileCpp=1
 Folder=CrystalServer
 Compile=1
@@ -1618,7 +1598,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit98]
-FileName=..\position.cpp
+FileName=..\protocol.cpp
 CompileCpp=1
 Folder=CrystalServer
 Compile=1
@@ -1628,7 +1608,27 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit134]
-FileName=..\thing.cpp
+FileName=..\tools.cpp
+CompileCpp=1
+Folder=CrystalServer
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit5]
+FileName=..\allocator.cpp
+CompileCpp=1
+Folder=CrystalServer
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit111]
+FileName=..\scriptmanager.cpp
 CompileCpp=1
 Folder=CrystalServer
 Compile=1

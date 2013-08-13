@@ -106,10 +106,6 @@ Creature()
 	editHouse = NULL;
 	editListId = 0;
 
-	shopOwner = NULL;
-	purchaseCallback = -1;
-	saleCallback = -1;
-
 	pzLocked = false;
 	bloodHitCount = 0;
 	shieldBlockCount = 0;
@@ -1458,21 +1454,6 @@ void Player::onCreatureDisappear(const Creature* creature, uint32_t stackpos, bo
 	}
 }
 
-void Player::closeShopWindow()
-{
-	//unreference callbacks
-	int32_t onBuy;
-	int32_t onSell;
-
-	Npc* npc = getShopOwner(onBuy, onSell);
-	if(npc)
-	{
-		setShopOwner(NULL, -1, -1);
-		npc->onPlayerEndTrade(this, onBuy, onSell);
-		sendCloseShop();
-	}
-}
-
 void Player::onWalk(Direction& dir)
 {
 	Creature::onWalk(dir);
@@ -2156,8 +2137,6 @@ void Player::death()
 
 		if(!inventory[SLOT_BACKPACK])
 			__internalAddThing(SLOT_BACKPACK, Item::CreateItem(1987));
-
-		sendReLoginWindow();
 	}
 
 	sendStats();

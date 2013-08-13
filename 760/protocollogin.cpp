@@ -19,8 +19,9 @@
 //////////////////////////////////////////////////////////////////////
 #include "otpch.h"
 
+#include <iomanip>
+
 #include "protocollogin.h"
-#include "resources.h"
 
 #include "outputmessage.h"
 #include "connection.h"
@@ -29,8 +30,8 @@
 #include "tools.h"
 #include "iologindata.h"
 #include "ban.h"
-#include <iomanip>
 #include "game.h"
+#include "resources.h"
 
 extern ConfigManager g_config;
 extern IPList serverIPs;
@@ -51,7 +52,7 @@ void ProtocolLogin::deleteProtocolTask()
 
 void ProtocolLogin::disconnectClient(uint8_t error, const char* message)
 {
-	OutputMessage* output = OutputMessagePool::getInstance()->getOutputMessage(this, false);
+	OutputMessage_ptr output = OutputMessagePool::getInstance()->getOutputMessage(this, false);
 	if(output)
 	{
 		TRACK_MESSAGE(output);
@@ -72,12 +73,15 @@ bool ProtocolLogin::parseFirstPacket(NetworkMessage& msg)
 
 	uint32_t clientip = getConnection()->getIP();
 
-	/*uint16_t clientos =*/ msg.GetU16();
+	/*uint16_t clientos = */msg.GetU16();
 	uint16_t version  = msg.GetU16();
 	msg.SkipBytes(12);
 
-	if(version < 760 || version > 760)
+	if(version < CLIENT_VERSION_MIN || version > CLIENT_VERSION_MAX)
+    {
 		disconnectClient(0x0A, CLIENT_VERSION_STRING);
+		return false;
+	}
 
 	uint32_t accnumber = msg.GetU32();
 	std::string password = msg.GetString();
@@ -94,12 +98,6 @@ bool ProtocolLogin::parseFirstPacket(NetworkMessage& msg)
 			disconnectClient(0x0A, "You must enter your account number.");
 			return false;
 		}
-	}
-
-	if(version < CLIENT_VERSION_MIN || version > CLIENT_VERSION_MAX)
-	{
-		disconnectClient(0x0A, CLIENT_VERSION_STRING);
-		return false;
 	}
 
 	if(g_game.getGameState() == GAME_STATE_STARTUP)
@@ -141,7 +139,7 @@ bool ProtocolLogin::parseFirstPacket(NetworkMessage& msg)
 
 	g_bans.addLoginAttempt(clientip, true);
 
-	OutputMessage* output = OutputMessagePool::getInstance()->getOutputMessage(this, false);
+	OutputMessage_ptr output = OutputMessagePool::getInstance()->getOutputMessage(this, false);
 	if(output)
 	{
 		TRACK_MESSAGE(output);
@@ -187,14 +185,13 @@ bool ProtocolLogin::parseFirstPacket(NetworkMessage& msg)
 		}
 
 		//Add premium days
-		if(g_config.getString(ConfigManager::FREE_PREMIUM) == "yes")
+		if((g_config.getString(ConfigManager::FREE_PREMIUM) == "yes") || account.accountType >= ACCOUNT_TYPE_GAMEMASTER)
 			output->AddU16(65535); //client displays free premium
 		else
 			output->AddU16(account.premiumDays);
 
 		OutputMessagePool::getInstance()->send(output);
 	}
-
 	getConnection()->closeConnection();
 	return true;
 }

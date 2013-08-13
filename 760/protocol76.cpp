@@ -47,7 +47,6 @@
 #include <sstream>
 #include <time.h>
 #include <list>
-
 #include <boost/function.hpp>
 
 extern Game g_game;
@@ -386,7 +385,7 @@ bool Protocol76::login(const std::string& name, uint32_t accnumber, const std::s
 			ss << "Too many players online.\n" << "You are at place "
 				<< currentSlot << " on the waiting list.";
 
-			OutputMessage* output = OutputMessagePool::getInstance()->getOutputMessage(this, false);
+			OutputMessage_ptr output = OutputMessagePool::getInstance()->getOutputMessage(this, false);
 			if(output)
             {
 				TRACK_MESSAGE(output);
@@ -592,7 +591,7 @@ void Protocol76::onRecvFirstMessage(NetworkMessage& msg)
 
 void Protocol76::disconnectClient(uint8_t error, const char* message)
 {
-	OutputMessage* output = OutputMessagePool::getInstance()->getOutputMessage(this, false);
+	OutputMessage_ptr output = OutputMessagePool::getInstance()->getOutputMessage(this, false);
 	if(output)
 	{
 		TRACK_MESSAGE(output);
@@ -708,22 +707,6 @@ void Protocol76::parsePacket(NetworkMessage &msg)
 				parseThrow(msg);
 				break;
 
-			case 0x79: // description in shop window
-				parseLookInShop(msg);
-				break;
-
-			case 0x7A: // player bought from shop
-				parsePlayerPurchase(msg);
-				break;
-
-			case 0x7B: // player sold to shop
-				parsePlayerSale(msg);
-				break;
-
-			case 0x7C: // player closed shop window
-				parseCloseShop(msg);
-				break;
-
 			case 0x7D: // Request trade
 				parseRequestTrade(msg);
 				break;
@@ -806,10 +789,6 @@ void Protocol76::parsePacket(NetworkMessage &msg)
 
 			case 0x9D: //player cancels report
 				parseCancelRuleViolation(msg);
-				break;
-
-			case 0x9E: // close NPC
-				parseCloseNpc(msg);
 				break;
 
 			case 0xA0: // set attack and follow mode
@@ -917,7 +896,7 @@ void Protocol76::parsePacket(NetworkMessage &msg)
 	}
 }
 
-void Protocol76::GetTileDescription(const Tile* tile, NetworkMessage* msg)
+void Protocol76::GetTileDescription(const Tile* tile, NetworkMessage_ptr msg)
 {
 	if(tile)
 	{
@@ -957,7 +936,7 @@ void Protocol76::GetTileDescription(const Tile* tile, NetworkMessage* msg)
 }
 
 void Protocol76::GetMapDescription(uint16_t x, uint16_t y, unsigned char z,
-	uint16_t width, uint16_t height, NetworkMessage* msg)
+	uint16_t width, uint16_t height, NetworkMessage_ptr msg)
 {
 	int32_t skip = -1;
 	int32_t startz, endz, zstep = 0;
@@ -985,7 +964,7 @@ void Protocol76::GetMapDescription(uint16_t x, uint16_t y, unsigned char z,
 	}
 }
 
-void Protocol76::GetFloorDescription(NetworkMessage* msg, int32_t x, int32_t y, int32_t z, int32_t width, int32_t height, int32_t offset, int& skip)
+void Protocol76::GetFloorDescription(NetworkMessage_ptr msg, int32_t x, int32_t y, int32_t z, int32_t width, int32_t height, int32_t offset, int& skip)
 {
 	Tile* tile;
 	for(int32_t nx = 0; nx < width; nx++)
@@ -1179,11 +1158,6 @@ void Protocol76::parseCloseRuleViolation(NetworkMessage& msg)
 void Protocol76::parseCancelRuleViolation(NetworkMessage& msg)
 {
 	addGameTask(&Game::playerCancelRuleViolation, player->getID());
-}
-
-void Protocol76::parseCloseNpc(NetworkMessage& msg)
-{
-	addGameTask(&Game::playerCloseNpcChannel, player->getID());
 }
 
 void Protocol76::parseCancelMove(NetworkMessage& msg)
@@ -1382,23 +1356,25 @@ void Protocol76::parseFightModes(NetworkMessage& msg)
 {
 	uint8_t rawFightMode = msg.GetByte(); //1 - offensive, 2 - balanced, 3 - defensive
 	uint8_t rawChaseMode = msg.GetByte(); // 0 - stand while fightning, 1 - chase opponent
-	uint8_t rawSecureMode = msg.GetByte(); // 0 - can't attack unmarked, 1 - can attack unmarked
+	uint8_t rawSafeMode = msg.GetByte();
 
+    bool safeMode = (rawSafeMode == 1);
 	chaseMode_t chaseMode = CHASEMODE_STANDSTILL;
-	if(rawChaseMode == 1)
+
+	if(rawChaseMode == 0)
+		chaseMode = CHASEMODE_STANDSTILL;
+	else if(rawChaseMode == 1)
 		chaseMode = CHASEMODE_FOLLOW;
 
 	fightMode_t fightMode = FIGHTMODE_ATTACK;
-	if(rawFightMode == 2)
+	if(rawFightMode == 1)
+		fightMode = FIGHTMODE_ATTACK;
+	else if(rawFightMode == 2)
 		fightMode = FIGHTMODE_BALANCED;
 	else if(rawFightMode == 3)
 		fightMode = FIGHTMODE_DEFENSE;
 
-	secureMode_t secureMode = SECUREMODE_OFF;
-	if(rawSecureMode == 1)
-		secureMode = SECUREMODE_ON;
-
-	addGameTask(&Game::playerSetFightModes, player->getID(), fightMode, chaseMode, secureMode);
+	addGameTask(&Game::playerSetFightModes, player->getID(), fightMode, chaseMode, safeMode);
 }
 
 void Protocol76::parseAttack(NetworkMessage& msg)
@@ -1426,34 +1402,6 @@ void Protocol76::parseHouseWindow(NetworkMessage &msg)
 	uint32_t id = msg.GetU32();
 	const std::string text = msg.GetString();
 	addGameTask(&Game::playerUpdateHouseWindow, player->getID(), doorId, id, text);
-}
-
-void Protocol76::parseLookInShop(NetworkMessage &msg)
-{
-	uint16_t id = msg.GetU16();
-	uint16_t count = msg.GetByte();
-	addGameTask(&Game::playerLookInShop, player->getID(), id, count);
-}
-
-void Protocol76::parsePlayerPurchase(NetworkMessage &msg)
-{
-	uint16_t id = msg.GetU16();
-	uint16_t count = msg.GetByte();
-	uint16_t amount = msg.GetByte();
-	addGameTask(&Game::playerPurchaseItem, player->getID(), id, count, amount);
-}
-
-void Protocol76::parsePlayerSale(NetworkMessage &msg)
-{
-	uint16_t id = msg.GetU16();
-	uint16_t count = msg.GetByte();
-	uint16_t amount = msg.GetByte();
-	addGameTask(&Game::playerSellItem, player->getID(), id, count, amount);
-}
-
-void Protocol76::parseCloseShop(NetworkMessage &msg)
-{
-	addGameTask(&Game::playerCloseShop, player->getID());
 }
 
 void Protocol76::parseRequestTrade(NetworkMessage& msg)
@@ -1573,7 +1521,7 @@ void Protocol76::parseEnableSharedPartyExperience(NetworkMessage& msg)
 
 void Protocol76::parseQuestLog(NetworkMessage& msg)
 {
-	NetworkMessage* _msg = getOutputBuffer();
+	NetworkMessage_ptr _msg = getOutputBuffer();
 	if(_msg)
 	{
 		TRACK_MESSAGE(_msg);
@@ -1584,7 +1532,7 @@ void Protocol76::parseQuestLog(NetworkMessage& msg)
 void Protocol76::parseQuestLine(NetworkMessage& msg)
 {
 	uint16_t quid = msg.GetU16();
-	NetworkMessage* _msg = getOutputBuffer();
+	NetworkMessage_ptr _msg = getOutputBuffer();
 	if(_msg)
 	{
 		TRACK_MESSAGE(_msg);
@@ -1609,7 +1557,7 @@ void Protocol76::parseViolationWindow(NetworkMessage& msg)
 //********************** Send methods *******************************//
 void Protocol76::sendOpenPrivateChannel(const std::string& receiver)
 {
-	NetworkMessage* msg = getOutputBuffer();
+	NetworkMessage_ptr msg = getOutputBuffer();
 	if(msg)
 	{
 		TRACK_MESSAGE(msg);
@@ -1622,7 +1570,7 @@ void Protocol76::sendCreatureOutfit(const Creature* creature, const Outfit_t& ou
 {
 	if(canSee(creature))
 	{
-		NetworkMessage* msg = getOutputBuffer();
+		NetworkMessage_ptr msg = getOutputBuffer();
 		if(msg)
 		{
 			TRACK_MESSAGE(msg);
@@ -1640,7 +1588,7 @@ void Protocol76::sendCreatureInvisible(const Creature* creature)
 {
 	if(canSee(creature))
 	{
-		NetworkMessage* msg = getOutputBuffer();
+		NetworkMessage_ptr msg = getOutputBuffer();
 		if(msg)
 		{
 			TRACK_MESSAGE(msg);
@@ -1655,7 +1603,7 @@ void Protocol76::sendCreatureLight(const Creature* creature)
 {
 	if(canSee(creature))
 	{
-		NetworkMessage* msg = getOutputBuffer();
+		NetworkMessage_ptr msg = getOutputBuffer();
 		if(msg)
 		{
 			TRACK_MESSAGE(msg);
@@ -1666,7 +1614,7 @@ void Protocol76::sendCreatureLight(const Creature* creature)
 
 void Protocol76::sendWorldLight(const LightInfo& lightInfo)
 {
-	NetworkMessage* msg = getOutputBuffer();
+	NetworkMessage_ptr msg = getOutputBuffer();
 	if(msg)
 	{
 		TRACK_MESSAGE(msg);
@@ -1678,7 +1626,7 @@ void Protocol76::sendCreatureShield(const Creature* creature)
 {
 	if(canSee(creature))
 	{
-		NetworkMessage* msg = getOutputBuffer();
+		NetworkMessage_ptr msg = getOutputBuffer();
 		if(msg)
 		{
 			TRACK_MESSAGE(msg);
@@ -1695,7 +1643,7 @@ void Protocol76::sendCreatureSkull(const Creature* creature)
 	{
 		if(canSee(creature))
 		{
-			NetworkMessage* msg = getOutputBuffer();
+			NetworkMessage_ptr msg = getOutputBuffer();
 			if(msg)
 			{
 				TRACK_MESSAGE(msg);
@@ -1711,7 +1659,7 @@ void Protocol76::sendCreatureSquare(const Creature* creature, SquareColor_t colo
 {
 	if(canSee(creature))
 	{
-		NetworkMessage* msg = getOutputBuffer();
+		NetworkMessage_ptr msg = getOutputBuffer();
 		if(msg)
 		{
 			TRACK_MESSAGE(msg);
@@ -1724,7 +1672,7 @@ void Protocol76::sendCreatureSquare(const Creature* creature, SquareColor_t colo
 
 void Protocol76::sendTutorial(uint8_t tutorialId)
 {
-	NetworkMessage* msg = getOutputBuffer();
+	NetworkMessage_ptr msg = getOutputBuffer();
 	if(msg)
 	{
 		TRACK_MESSAGE(msg);
@@ -1735,7 +1683,7 @@ void Protocol76::sendTutorial(uint8_t tutorialId)
 
 void Protocol76::sendAddMarker(const Position& pos, uint8_t markType, const std::string& desc)
 {
-	NetworkMessage* msg = getOutputBuffer();
+	NetworkMessage_ptr msg = getOutputBuffer();
 	if(msg)
 	{
 		TRACK_MESSAGE(msg);
@@ -1748,7 +1696,7 @@ void Protocol76::sendAddMarker(const Position& pos, uint8_t markType, const std:
 
 void Protocol76::sendReLoginWindow()
 {
-	NetworkMessage* msg = getOutputBuffer();
+	NetworkMessage_ptr msg = getOutputBuffer();
 	if(msg)
 	{
 		TRACK_MESSAGE(msg);
@@ -1758,7 +1706,7 @@ void Protocol76::sendReLoginWindow()
 
 void Protocol76::sendStats()
 {
-	NetworkMessage* msg = getOutputBuffer();
+	NetworkMessage_ptr msg = getOutputBuffer();
 	if(msg)
 	{
 		TRACK_MESSAGE(msg);
@@ -1768,7 +1716,7 @@ void Protocol76::sendStats()
 
 void Protocol76::sendTextMessage(MessageClasses mclass, const std::string& message)
 {
-	NetworkMessage* msg = getOutputBuffer();
+	NetworkMessage_ptr msg = getOutputBuffer();
 	if(msg)
 	{
 		TRACK_MESSAGE(msg);
@@ -1778,7 +1726,7 @@ void Protocol76::sendTextMessage(MessageClasses mclass, const std::string& messa
 
 void Protocol76::sendClosePrivate(uint16_t channelId)
 {
-	NetworkMessage* msg = getOutputBuffer();
+	NetworkMessage_ptr msg = getOutputBuffer();
 	if(msg)
 	{
 		TRACK_MESSAGE(msg);
@@ -1791,7 +1739,7 @@ void Protocol76::sendClosePrivate(uint16_t channelId)
 
 void Protocol76::sendCreatePrivateChannel(uint16_t channelId, const std::string& channelName)
 {
-	NetworkMessage* msg = getOutputBuffer();
+	NetworkMessage_ptr msg = getOutputBuffer();
 	if(msg)
 	{
 		TRACK_MESSAGE(msg);
@@ -1803,7 +1751,7 @@ void Protocol76::sendCreatePrivateChannel(uint16_t channelId, const std::string&
 
 void Protocol76::sendChannelsDialog()
 {
-	NetworkMessage* msg = getOutputBuffer();
+	NetworkMessage_ptr msg = getOutputBuffer();
 	if(msg)
 	{
 		TRACK_MESSAGE(msg);
@@ -1824,7 +1772,7 @@ void Protocol76::sendChannelsDialog()
 
 void Protocol76::sendChannel(uint16_t channelId, const std::string& channelName)
 {
-	NetworkMessage* msg = getOutputBuffer();
+	NetworkMessage_ptr msg = getOutputBuffer();
 	if(msg)
 	{
 		TRACK_MESSAGE(msg);
@@ -1836,7 +1784,7 @@ void Protocol76::sendChannel(uint16_t channelId, const std::string& channelName)
 
 void Protocol76::sendRuleViolationsChannel(uint16_t channelId)
 {
-	NetworkMessage* msg = getOutputBuffer();
+	NetworkMessage_ptr msg = getOutputBuffer();
 	if(msg)
 	{
 		TRACK_MESSAGE(msg);
@@ -1854,7 +1802,7 @@ void Protocol76::sendRuleViolationsChannel(uint16_t channelId)
 
 void Protocol76::sendRemoveReport(const std::string& name)
 {
-	NetworkMessage* msg = getOutputBuffer();
+	NetworkMessage_ptr msg = getOutputBuffer();
 	if(msg)
 	{
 		TRACK_MESSAGE(msg);
@@ -1865,7 +1813,7 @@ void Protocol76::sendRemoveReport(const std::string& name)
 
 void Protocol76::sendRuleViolationCancel(const std::string& name)
 {
-	NetworkMessage* msg = getOutputBuffer();
+	NetworkMessage_ptr msg = getOutputBuffer();
 	if(msg)
 	{
 		TRACK_MESSAGE(msg);
@@ -1876,7 +1824,7 @@ void Protocol76::sendRuleViolationCancel(const std::string& name)
 
 void Protocol76::sendLockRuleViolation()
 {
-	NetworkMessage* msg = getOutputBuffer();
+	NetworkMessage_ptr msg = getOutputBuffer();
 	if(msg)
 	{
 		TRACK_MESSAGE(msg);
@@ -1886,7 +1834,7 @@ void Protocol76::sendLockRuleViolation()
 
 void Protocol76::sendIcons(int32_t icons)
 {
-	NetworkMessage* msg = getOutputBuffer();
+	NetworkMessage_ptr msg = getOutputBuffer();
 	if(msg)
 	{
 		TRACK_MESSAGE(msg);
@@ -1897,7 +1845,7 @@ void Protocol76::sendIcons(int32_t icons)
 
 void Protocol76::sendContainer(uint32_t cid, const Container* container, bool hasParent)
 {
-	NetworkMessage* msg = getOutputBuffer();
+	NetworkMessage_ptr msg = getOutputBuffer();
 	if(msg)
 	{
 		TRACK_MESSAGE(msg);
@@ -1920,49 +1868,9 @@ void Protocol76::sendContainer(uint32_t cid, const Container* container, bool ha
 	}
 }
 
-void Protocol76::sendShop(const std::list<ShopInfo>& shop)
-{
-	NetworkMessage* msg = getOutputBuffer();
-	if(msg)
-	{
-		TRACK_MESSAGE(msg);
-		msg->AddByte(0x7A);
-		if(shop.size() > 255)
-			msg->AddByte(255);
-		else
-			msg->AddByte(shop.size());
-
-		std::list<ShopInfo>::const_iterator it;
-		uint32_t i = 0;
-		for(it = shop.begin(); it != shop.end() && i < 255; ++it, ++i)
-			AddShopItem(msg, (*it));
-	}
-}
-
-void Protocol76::sendCloseShop()
-{
-	NetworkMessage* msg = getOutputBuffer();
-	if(msg)
-	{
-		TRACK_MESSAGE(msg);
-		msg->AddByte(0x7C);
-	}
-}
-
-void Protocol76::sendPlayerCash(uint32_t amount)
-{
-	NetworkMessage* msg = getOutputBuffer();
-	if(msg)
-	{
-		TRACK_MESSAGE(msg);
-		msg->AddByte(0x7B);
-		msg->AddU32(amount);
-	}
-}
-
 void Protocol76::sendTradeItemRequest(const Player* player, const Item* item, bool ack)
 {
-	NetworkMessage* msg = getOutputBuffer();
+	NetworkMessage_ptr msg = getOutputBuffer();
 	if(msg)
 	{
 		TRACK_MESSAGE(msg);
@@ -2013,7 +1921,7 @@ void Protocol76::sendTradeItemRequest(const Player* player, const Item* item, bo
 
 void Protocol76::sendCloseTrade()
 {
-	NetworkMessage* msg = getOutputBuffer();
+	NetworkMessage_ptr msg = getOutputBuffer();
 	if(msg)
 	{
 		TRACK_MESSAGE(msg);
@@ -2023,7 +1931,7 @@ void Protocol76::sendCloseTrade()
 
 void Protocol76::sendCloseContainer(uint32_t cid)
 {
-	NetworkMessage* msg = getOutputBuffer();
+	NetworkMessage_ptr msg = getOutputBuffer();
 	if(msg)
 	{
 		TRACK_MESSAGE(msg);
@@ -2038,7 +1946,7 @@ void Protocol76::sendCreatureTurn(const Creature* creature, uint8_t stackPos)
 	{
 		if(canSee(creature))
 		{
-			NetworkMessage* msg = getOutputBuffer();
+			NetworkMessage_ptr msg = getOutputBuffer();
 			if(msg)
 			{
 				TRACK_MESSAGE(msg);
@@ -2055,7 +1963,7 @@ void Protocol76::sendCreatureTurn(const Creature* creature, uint8_t stackPos)
 
 void Protocol76::sendCreatureSay(const Creature* creature, SpeakClasses type, const std::string& text)
 {
-	NetworkMessage* msg = getOutputBuffer();
+	NetworkMessage_ptr msg = getOutputBuffer();
 	if(msg)
 	{
 		TRACK_MESSAGE(msg);
@@ -2065,7 +1973,7 @@ void Protocol76::sendCreatureSay(const Creature* creature, SpeakClasses type, co
 
 void Protocol76::sendToChannel(const Creature* creature, SpeakClasses type, const std::string& text, uint16_t channelId, uint32_t time /*= 0*/)
 {
-	NetworkMessage* msg = getOutputBuffer();
+	NetworkMessage_ptr msg = getOutputBuffer();
 	if(msg)
 	{
 		TRACK_MESSAGE(msg);
@@ -2075,7 +1983,7 @@ void Protocol76::sendToChannel(const Creature* creature, SpeakClasses type, cons
 
 void Protocol76::sendCancel(const std::string& message)
 {
-	NetworkMessage* msg = getOutputBuffer();
+	NetworkMessage_ptr msg = getOutputBuffer();
 	if(msg)
 	{
 		TRACK_MESSAGE(msg);
@@ -2085,7 +1993,7 @@ void Protocol76::sendCancel(const std::string& message)
 
 void Protocol76::sendCancelTarget()
 {
-	NetworkMessage* msg = getOutputBuffer();
+	NetworkMessage_ptr msg = getOutputBuffer();
 	if(msg)
 	{
 		TRACK_MESSAGE(msg);
@@ -2095,7 +2003,7 @@ void Protocol76::sendCancelTarget()
 
 void Protocol76::sendChangeSpeed(const Creature* creature, uint32_t speed)
 {
-	NetworkMessage* msg = getOutputBuffer();
+	NetworkMessage_ptr msg = getOutputBuffer();
 	if(msg)
 	{
 		TRACK_MESSAGE(msg);
@@ -2107,7 +2015,7 @@ void Protocol76::sendChangeSpeed(const Creature* creature, uint32_t speed)
 
 void Protocol76::sendCancelWalk()
 {
-	NetworkMessage* msg = getOutputBuffer();
+	NetworkMessage_ptr msg = getOutputBuffer();
 	if(msg)
 	{
 		TRACK_MESSAGE(msg);
@@ -2118,7 +2026,7 @@ void Protocol76::sendCancelWalk()
 
 void Protocol76::sendSkills()
 {
-	NetworkMessage* msg = getOutputBuffer();
+	NetworkMessage_ptr msg = getOutputBuffer();
 	if(msg)
 	{
 		TRACK_MESSAGE(msg);
@@ -2128,7 +2036,7 @@ void Protocol76::sendSkills()
 
 void Protocol76::sendPing()
 {
-	NetworkMessage* msg = getOutputBuffer();
+	NetworkMessage_ptr msg = getOutputBuffer();
 	if(msg)
 	{
 		TRACK_MESSAGE(msg);
@@ -2140,7 +2048,7 @@ void Protocol76::sendDistanceShoot(const Position& from, const Position& to, uin
 {
 	if((canSee(from) || canSee(to)) && type <= 41)
 	{
-		NetworkMessage* msg = getOutputBuffer();
+		NetworkMessage_ptr msg = getOutputBuffer();
 		if(msg)
 		{
 			TRACK_MESSAGE(msg);
@@ -2153,7 +2061,7 @@ void Protocol76::sendMagicEffect(const Position& pos, uint8_t type)
 {
 	if(canSee(pos) && type <= 56)
 	{
-		NetworkMessage* msg = getOutputBuffer();
+		NetworkMessage_ptr msg = getOutputBuffer();
 		if(msg)
 		{
 			TRACK_MESSAGE(msg);
@@ -2166,7 +2074,7 @@ void Protocol76::sendAnimatedText(const Position& pos, uint8_t color, std::strin
 {
 	if(canSee(pos))
 	{
-		NetworkMessage* msg = getOutputBuffer();
+		NetworkMessage_ptr msg = getOutputBuffer();
 		if(msg)
 		{
 			TRACK_MESSAGE(msg);
@@ -2177,7 +2085,7 @@ void Protocol76::sendAnimatedText(const Position& pos, uint8_t color, std::strin
 
 void Protocol76::sendCreatureHealth(const Creature* creature)
 {
-	NetworkMessage* msg = getOutputBuffer();
+	NetworkMessage_ptr msg = getOutputBuffer();
 	if(msg)
 	{
 		TRACK_MESSAGE(msg);
@@ -2187,7 +2095,7 @@ void Protocol76::sendCreatureHealth(const Creature* creature)
 
 void Protocol76::sendFYIBox(const std::string& message)
 {
-	NetworkMessage* msg = getOutputBuffer();
+	NetworkMessage_ptr msg = getOutputBuffer();
 	if(msg)
 	{
 		TRACK_MESSAGE(msg);
@@ -2201,7 +2109,7 @@ void Protocol76::sendAddTileItem(const Tile* tile, const Position& pos, const It
 {
 	if(canSee(pos))
 	{
-		NetworkMessage* msg = getOutputBuffer();
+		NetworkMessage_ptr msg = getOutputBuffer();
 		if(msg)
 		{
 			TRACK_MESSAGE(msg);
@@ -2214,7 +2122,7 @@ void Protocol76::sendUpdateTileItem(const Tile* tile, const Position& pos, uint3
 {
 	if(canSee(pos))
 	{
-		NetworkMessage* msg = getOutputBuffer();
+		NetworkMessage_ptr msg = getOutputBuffer();
 		if(msg)
 		{
 			TRACK_MESSAGE(msg);
@@ -2227,7 +2135,7 @@ void Protocol76::sendRemoveTileItem(const Tile* tile, const Position& pos, uint3
 {
 	if(canSee(pos))
 	{
-		NetworkMessage* msg = getOutputBuffer();
+		NetworkMessage_ptr msg = getOutputBuffer();
 		if(msg)
 		{
 			TRACK_MESSAGE(msg);
@@ -2240,7 +2148,7 @@ void Protocol76::sendUpdateTile(const Tile* tile, const Position& pos)
 {
 	if(canSee(pos))
 	{
-		NetworkMessage* msg = getOutputBuffer();
+		NetworkMessage_ptr msg = getOutputBuffer();
 		if(msg)
 		{
 			TRACK_MESSAGE(msg);
@@ -2265,7 +2173,7 @@ void Protocol76::sendAddCreature(const Creature* creature, bool isLogin)
 {
 	if(canSee(creature->getPosition()))
 	{
-		NetworkMessage* msg = getOutputBuffer();
+		NetworkMessage_ptr msg = getOutputBuffer();
 		if(msg)
 		{
 			TRACK_MESSAGE(msg);
@@ -2329,7 +2237,7 @@ void Protocol76::sendAddCreature(const Creature* creature, bool isLogin)
 						if(!player->getLastLoginSaved() > 0)
 						{
 							tempstring += " Please choose your outfit.";
-							sendOutfitWindow();
+							sendOutfitWindow(player);
 						}
 						else
 						{
@@ -2378,7 +2286,7 @@ void Protocol76::sendRemoveCreature(const Creature* creature, const Position& po
 {
 	if(!(creature->isInGhostMode() && !player->isAccessPlayer()) && canSee(pos))
 	{
-		NetworkMessage* msg = getOutputBuffer();
+		NetworkMessage_ptr msg = getOutputBuffer();
 		if(msg)
 		{
 			TRACK_MESSAGE(msg);
@@ -2392,7 +2300,7 @@ void Protocol76::sendMoveCreature(const Creature* creature, const Tile* newTile,
 {
 	if(creature == player)
 	{
-		NetworkMessage* msg = getOutputBuffer();
+		NetworkMessage_ptr msg = getOutputBuffer();
 		if(msg)
 		{
 			TRACK_MESSAGE(msg);
@@ -2451,7 +2359,7 @@ void Protocol76::sendMoveCreature(const Creature* creature, const Tile* newTile,
 		}
 		else
 		{
-			NetworkMessage* msg = getOutputBuffer();
+			NetworkMessage_ptr msg = getOutputBuffer();
 			if(msg)
 			{
 				TRACK_MESSAGE(msg);
@@ -2471,7 +2379,7 @@ void Protocol76::sendMoveCreature(const Creature* creature, const Tile* newTile,
 //inventory
 void Protocol76::sendAddInventoryItem(slots_t slot, const Item* item)
 {
-	NetworkMessage* msg = getOutputBuffer();
+	NetworkMessage_ptr msg = getOutputBuffer();
 	if(msg)
 	{
 		TRACK_MESSAGE(msg);
@@ -2481,7 +2389,7 @@ void Protocol76::sendAddInventoryItem(slots_t slot, const Item* item)
 
 void Protocol76::sendUpdateInventoryItem(slots_t slot, const Item* item)
 {
-	NetworkMessage* msg = getOutputBuffer();
+	NetworkMessage_ptr msg = getOutputBuffer();
 	if(msg)
 	{
 		TRACK_MESSAGE(msg);
@@ -2491,7 +2399,7 @@ void Protocol76::sendUpdateInventoryItem(slots_t slot, const Item* item)
 
 void Protocol76::sendRemoveInventoryItem(slots_t slot)
 {
-	NetworkMessage* msg = getOutputBuffer();
+	NetworkMessage_ptr msg = getOutputBuffer();
 	if(msg)
 	{
 		TRACK_MESSAGE(msg);
@@ -2502,7 +2410,7 @@ void Protocol76::sendRemoveInventoryItem(slots_t slot)
 //containers
 void Protocol76::sendAddContainerItem(uint8_t cid, const Item* item)
 {
-	NetworkMessage* msg = getOutputBuffer();
+	NetworkMessage_ptr msg = getOutputBuffer();
 	if(msg)
 	{
 		TRACK_MESSAGE(msg);
@@ -2512,7 +2420,7 @@ void Protocol76::sendAddContainerItem(uint8_t cid, const Item* item)
 
 void Protocol76::sendUpdateContainerItem(uint8_t cid, uint8_t slot, const Item* item)
 {
-	NetworkMessage* msg = getOutputBuffer();
+	NetworkMessage_ptr msg = getOutputBuffer();
 	if(msg)
 	{
 		TRACK_MESSAGE(msg);
@@ -2522,7 +2430,7 @@ void Protocol76::sendUpdateContainerItem(uint8_t cid, uint8_t slot, const Item* 
 
 void Protocol76::sendRemoveContainerItem(uint8_t cid, uint8_t slot)
 {
-	NetworkMessage* msg = getOutputBuffer();
+	NetworkMessage_ptr msg = getOutputBuffer();
 	if(msg)
 	{
 		TRACK_MESSAGE(msg);
@@ -2532,7 +2440,7 @@ void Protocol76::sendRemoveContainerItem(uint8_t cid, uint8_t slot)
 
 void Protocol76::sendTextWindow(uint32_t windowTextId, Item* item, uint16_t maxlen, bool canWrite)
 {
-	NetworkMessage* msg = getOutputBuffer();
+	NetworkMessage_ptr msg = getOutputBuffer();
 	if(msg)
 	{
 		TRACK_MESSAGE(msg);
@@ -2570,7 +2478,7 @@ void Protocol76::sendTextWindow(uint32_t windowTextId, Item* item, uint16_t maxl
 
 void Protocol76::sendTextWindow(uint32_t windowTextId, uint32_t itemId, const std::string& text)
 {
-	NetworkMessage* msg = getOutputBuffer();
+	NetworkMessage_ptr msg = getOutputBuffer();
 	if(msg)
 	{
 		TRACK_MESSAGE(msg);
@@ -2589,7 +2497,7 @@ void Protocol76::sendTextWindow(uint32_t windowTextId, uint32_t itemId, const st
 void Protocol76::sendHouseWindow(uint32_t windowTextId, House* _house,
 	uint32_t listId, const std::string& text)
 {
-	NetworkMessage* msg = getOutputBuffer();
+	NetworkMessage_ptr msg = getOutputBuffer();
 	if(msg)
 	{
 		TRACK_MESSAGE(msg);
@@ -2600,64 +2508,44 @@ void Protocol76::sendHouseWindow(uint32_t windowTextId, House* _house,
 	}
 }
 
-void Protocol76::sendOutfitWindow()
+void Protocol76::sendOutfitWindow(const Player* player)
 {
-	#define MAX_NUMBER_OF_OUTFITS 25
-	NetworkMessage* msg = getOutputBuffer();
+	NetworkMessage_ptr msg = getOutputBuffer();
 	if(msg)
-	{
-		TRACK_MESSAGE(msg);
-		msg->AddByte(0xC8);
-		AddCreatureOutfit(msg, player, player->getDefaultOutfit());
+    {
+	    msg->AddByte(0xC8);
+	    AddCreatureOutfit(msg, player, player->getDefaultOutfit());
 
-		const OutfitListType& global_outfits = Outfits::getInstance()->getOutfits(player->getSex());
-		int32_t count_outfits = global_outfits.size();
-
-		if(count_outfits > MAX_NUMBER_OF_OUTFITS)
-			count_outfits = MAX_NUMBER_OF_OUTFITS;
-		else if(count_outfits == 0)
-			return;
-
-		OutfitListType::const_iterator it, it_;
-		for(it = global_outfits.begin(); it != global_outfits.end(); ++it)
-		{
-			if((*it)->premium && !player->isPremium())
-				count_outfits--;
+		switch (player->getSex())
+        {
+		case PLAYERSEX_FEMALE:
+			msg->AddByte(PLAYER_FEMALE_1);
+			if (player->isPremium())
+				msg->AddByte(PLAYER_FEMALE_7);
+			else
+				msg->AddByte(PLAYER_FEMALE_4);
+			break;
+		case PLAYERSEX_MALE:
+			msg->AddByte(PLAYER_MALE_1);
+			if (player->isPremium())
+				msg->AddByte(PLAYER_MALE_7);
+			else
+				msg->AddByte(PLAYER_MALE_4);
+			break;
+		case PLAYERSEX_OLDMALE:
+			msg->AddByte(160);
+			msg->AddByte(160);
+			break;
+		default:
+			msg->AddByte(PLAYER_MALE_1);
+			msg->AddByte(PLAYER_MALE_7);
 		}
-
-		msg->AddByte(count_outfits);
-
-		bool addedAddon;
-		const OutfitListType& player_outfits = player->getPlayerOutfits();
-		for(it = global_outfits.begin(); it != global_outfits.end() && (count_outfits > 0); ++it)
-		{
-			if(((*it)->premium && player->isPremium()) || !(*it)->premium)
-			{
-				addedAddon = false;
-				msg->AddU16((*it)->looktype);
-				msg->AddString(Outfits::getInstance()->getOutfitName((*it)->looktype));
-				//TODO: Try to avoid using loop to get addons
-				for(it_ = player_outfits.begin(); it_ != player_outfits.end(); ++it_)
-				{
-					if((*it_)->looktype == (*it)->looktype)
-					{
-						msg->AddByte((*it_)->addons);
-						addedAddon = true;
-						break;
-					}
-				}
-				if(!addedAddon)
-					msg->AddByte(0x00);
-				count_outfits--;
-			}
-		}
-		player->hasRequestedOutfit(true);
-	}
+    }
 }
 
 void Protocol76::sendVIPLogIn(uint32_t guid)
 {
-	NetworkMessage* msg = getOutputBuffer();
+	NetworkMessage_ptr msg = getOutputBuffer();
 	if(msg)
 	{
 		TRACK_MESSAGE(msg);
@@ -2668,7 +2556,7 @@ void Protocol76::sendVIPLogIn(uint32_t guid)
 
 void Protocol76::sendVIPLogOut(uint32_t guid)
 {
-	NetworkMessage* msg = getOutputBuffer();
+	NetworkMessage_ptr msg = getOutputBuffer();
 	if(msg)
 	{
 		TRACK_MESSAGE(msg);
@@ -2679,7 +2567,7 @@ void Protocol76::sendVIPLogOut(uint32_t guid)
 
 void Protocol76::sendVIP(uint32_t guid, const std::string& name, bool isOnline)
 {
-	NetworkMessage* msg = getOutputBuffer();
+	NetworkMessage_ptr msg = getOutputBuffer();
 	if(msg)
 	{
 		TRACK_MESSAGE(msg);
@@ -2691,21 +2579,21 @@ void Protocol76::sendVIP(uint32_t guid, const std::string& name, bool isOnline)
 }
 
 ////////////// Add common messages
-void Protocol76::AddMapDescription(NetworkMessage* msg, const Position& pos)
+void Protocol76::AddMapDescription(NetworkMessage_ptr msg, const Position& pos)
 {
 	msg->AddByte(0x64);
 	msg->AddPosition(player->getPosition());
 	GetMapDescription(pos.x - 8, pos.y - 6, pos.z, 18, 14, msg);
 }
 
-void Protocol76::AddTextMessage(NetworkMessage* msg, MessageClasses mclass, const std::string& message)
+void Protocol76::AddTextMessage(NetworkMessage_ptr msg, MessageClasses mclass, const std::string& message)
 {
 	msg->AddByte(0xB4);
 	msg->AddByte(mclass);
 	msg->AddString(message);
 }
 
-void Protocol76::AddAnimatedText(NetworkMessage* msg, const Position& pos,
+void Protocol76::AddAnimatedText(NetworkMessage_ptr msg, const Position& pos,
 	uint8_t color, const std::string& text)
 {
 	msg->AddByte(0x84);
@@ -2714,14 +2602,14 @@ void Protocol76::AddAnimatedText(NetworkMessage* msg, const Position& pos,
 	msg->AddString(text);
 }
 
-void Protocol76::AddMagicEffect(NetworkMessage* msg,const Position& pos, uint8_t type)
+void Protocol76::AddMagicEffect(NetworkMessage_ptr msg,const Position& pos, uint8_t type)
 {
 	msg->AddByte(0x83);
 	msg->AddPosition(pos);
 	msg->AddByte(type + 1);
 }
 
-void Protocol76::AddDistanceShoot(NetworkMessage* msg, const Position& from, const Position& to,
+void Protocol76::AddDistanceShoot(NetworkMessage_ptr msg, const Position& from, const Position& to,
 	uint8_t type)
 {
 	msg->AddByte(0x85);
@@ -2730,7 +2618,7 @@ void Protocol76::AddDistanceShoot(NetworkMessage* msg, const Position& from, con
 	msg->AddByte(type + 1);
 }
 
-void Protocol76::AddCreature(NetworkMessage* msg, const Creature* creature, bool known, uint32_t remove)
+void Protocol76::AddCreature(NetworkMessage_ptr msg, const Creature* creature, bool known, uint32_t remove)
 {
 	if(known)
 	{
@@ -2764,7 +2652,7 @@ void Protocol76::AddCreature(NetworkMessage* msg, const Creature* creature, bool
 	msg->AddByte(player->getPartyShield(creature->getPlayer()));
 }
 
-void Protocol76::AddPlayerStats(NetworkMessage* msg)
+void Protocol76::AddPlayerStats(NetworkMessage_ptr msg)
 {
 	msg->AddByte(0xA0);
 
@@ -2785,7 +2673,7 @@ void Protocol76::AddPlayerStats(NetworkMessage* msg)
 	msg->AddByte(player->getPlayerInfo(PLAYERINFO_SOUL));
 }
 
-void Protocol76::AddPlayerSkills(NetworkMessage* msg)
+void Protocol76::AddPlayerSkills(NetworkMessage_ptr msg)
 {
 	msg->AddByte(0xA1);
 
@@ -2805,7 +2693,7 @@ void Protocol76::AddPlayerSkills(NetworkMessage* msg)
 	msg->AddByte(player->getSkill(SKILL_FISH, SKILL_PERCENT));
 }
 
-void Protocol76::AddCreatureSpeak(NetworkMessage* msg, const Creature* creature,
+void Protocol76::AddCreatureSpeak(NetworkMessage_ptr msg, const Creature* creature,
 	SpeakClasses type, std::string text, uint16_t channelId, uint32_t time /*= 0*/)
 {
 	msg->AddByte(0xAA);
@@ -2822,17 +2710,6 @@ void Protocol76::AddCreatureSpeak(NetworkMessage* msg, const Creature* creature,
 	else
 		msg->AddString("");
 
-	//Add level only for players
-	if(const Player* speaker = creature->getPlayer())
-	{
-		if(type != SPEAK_RVR_ANSWER && speaker->getName() != "Account Manager")
-			msg->AddU16(speaker->getPlayerInfo(PLAYERINFO_LEVEL));
-		else
-			msg->AddU16(0x0000);
-	}
-	else
-		msg->AddU16(0x0000);
-
 	msg->AddByte(type);
 	switch(type)
 	{
@@ -2841,7 +2718,6 @@ void Protocol76::AddCreatureSpeak(NetworkMessage* msg, const Creature* creature,
 		case SPEAK_YELL:
 		case SPEAK_MONSTER_SAY:
 		case SPEAK_MONSTER_YELL:
-		case SPEAK_PRIVATE_NP:
 			msg->AddPosition(creature->getPosition());
 			break;
 
@@ -2865,20 +2741,20 @@ void Protocol76::AddCreatureSpeak(NetworkMessage* msg, const Creature* creature,
 	msg->AddString(text);
 }
 
-void Protocol76::AddCreatureHealth(NetworkMessage* msg,const Creature* creature)
+void Protocol76::AddCreatureHealth(NetworkMessage_ptr msg,const Creature* creature)
 {
 	msg->AddByte(0x8C);
 	msg->AddU32(creature->getID());
 	msg->AddByte((int32_t)std::ceil(((float)creature->getHealth()) * 100 / std::max(creature->getMaxHealth(), (int32_t)1)));
 }
 
-void Protocol76::AddCreatureInvisible(NetworkMessage* msg, const Creature* creature)
+void Protocol76::AddCreatureInvisible(NetworkMessage_ptr msg, const Creature* creature)
 {
 	msg->AddU16(0x00);
 	msg->AddU16(0x00);
 }
 
-void Protocol76::AddCreatureOutfit(NetworkMessage* msg, const Creature* creature, const Outfit_t& outfit)
+void Protocol76::AddCreatureOutfit(NetworkMessage_ptr msg, const Creature* creature, const Outfit_t& outfit)
 {
 	msg->AddU16(outfit.lookType);
 
@@ -2894,14 +2770,14 @@ void Protocol76::AddCreatureOutfit(NetworkMessage* msg, const Creature* creature
 		msg->AddItemId(outfit.lookTypeEx);
 }
 
-void Protocol76::AddWorldLight(NetworkMessage* msg, const LightInfo& lightInfo)
+void Protocol76::AddWorldLight(NetworkMessage_ptr msg, const LightInfo& lightInfo)
 {
 	msg->AddByte(0x82);
 	msg->AddByte((player->isAccessPlayer() ? 0xFF : lightInfo.level));
 	msg->AddByte(lightInfo.color);
 }
 
-void Protocol76::AddCreatureLight(NetworkMessage* msg, const Creature* creature)
+void Protocol76::AddCreatureLight(NetworkMessage_ptr msg, const Creature* creature)
 {
 	LightInfo lightInfo;
 	creature->getCreatureLight(lightInfo);
@@ -2912,14 +2788,14 @@ void Protocol76::AddCreatureLight(NetworkMessage* msg, const Creature* creature)
 }
 
 //tile
-void Protocol76::AddTileItem(NetworkMessage* msg, const Position& pos, const Item* item)
+void Protocol76::AddTileItem(NetworkMessage_ptr msg, const Position& pos, const Item* item)
 {
 	msg->AddByte(0x6A);
 	msg->AddPosition(pos);
 	msg->AddItem(item);
 }
 
-void Protocol76::AddTileCreature(NetworkMessage* msg, const Position& pos, const Creature* creature)
+void Protocol76::AddTileCreature(NetworkMessage_ptr msg, const Position& pos, const Creature* creature)
 {
 	msg->AddByte(0x6A);
 	msg->AddPosition(pos);
@@ -2930,7 +2806,7 @@ void Protocol76::AddTileCreature(NetworkMessage* msg, const Position& pos, const
 	AddCreature(msg, creature, known, removedKnown);
 }
 
-void Protocol76::UpdateTileItem(NetworkMessage* msg, const Position& pos, uint32_t stackpos, const Item* item)
+void Protocol76::UpdateTileItem(NetworkMessage_ptr msg, const Position& pos, uint32_t stackpos, const Item* item)
 {
 	if(stackpos < 10)
 	{
@@ -2941,7 +2817,7 @@ void Protocol76::UpdateTileItem(NetworkMessage* msg, const Position& pos, uint32
 	}
 }
 
-void Protocol76::RemoveTileItem(NetworkMessage* msg, const Position& pos, uint32_t stackpos)
+void Protocol76::RemoveTileItem(NetworkMessage_ptr msg, const Position& pos, uint32_t stackpos)
 {
 	if(stackpos < 10)
 	{
@@ -2951,7 +2827,7 @@ void Protocol76::RemoveTileItem(NetworkMessage* msg, const Position& pos, uint32
 	}
 }
 
-void Protocol76::MoveUpCreature(NetworkMessage* msg, const Creature* creature,
+void Protocol76::MoveUpCreature(NetworkMessage_ptr msg, const Creature* creature,
 	const Position& newPos, const Position& oldPos, uint32_t oldStackPos)
 {
 	if(creature == player)
@@ -3000,7 +2876,7 @@ void Protocol76::MoveUpCreature(NetworkMessage* msg, const Creature* creature,
 	}
 }
 
-void Protocol76::MoveDownCreature(NetworkMessage* msg, const Creature* creature,
+void Protocol76::MoveDownCreature(NetworkMessage_ptr msg, const Creature* creature,
 	const Position& newPos, const Position& oldPos, uint32_t oldStackPos)
 {
 	if(creature == player)
@@ -3048,7 +2924,7 @@ void Protocol76::MoveDownCreature(NetworkMessage* msg, const Creature* creature,
 }
 
 //inventory
-void Protocol76::AddInventoryItem(NetworkMessage* msg, slots_t slot, const Item* item)
+void Protocol76::AddInventoryItem(NetworkMessage_ptr msg, slots_t slot, const Item* item)
 {
 	if(item == NULL)
 	{
@@ -3063,7 +2939,7 @@ void Protocol76::AddInventoryItem(NetworkMessage* msg, slots_t slot, const Item*
 	}
 }
 
-void Protocol76::UpdateInventoryItem(NetworkMessage* msg, slots_t slot, const Item* item)
+void Protocol76::UpdateInventoryItem(NetworkMessage_ptr msg, slots_t slot, const Item* item)
 {
 	if(item == NULL)
 	{
@@ -3078,21 +2954,21 @@ void Protocol76::UpdateInventoryItem(NetworkMessage* msg, slots_t slot, const It
 	}
 }
 
-void Protocol76::RemoveInventoryItem(NetworkMessage* msg, slots_t slot)
+void Protocol76::RemoveInventoryItem(NetworkMessage_ptr msg, slots_t slot)
 {
 	msg->AddByte(0x79);
 	msg->AddByte(slot);
 }
 
 //containers
-void Protocol76::AddContainerItem(NetworkMessage* msg, uint8_t cid, const Item* item)
+void Protocol76::AddContainerItem(NetworkMessage_ptr msg, uint8_t cid, const Item* item)
 {
 	msg->AddByte(0x70);
 	msg->AddByte(cid);
 	msg->AddItem(item);
 }
 
-void Protocol76::UpdateContainerItem(NetworkMessage* msg, uint8_t cid, uint8_t slot, const Item* item)
+void Protocol76::UpdateContainerItem(NetworkMessage_ptr msg, uint8_t cid, uint8_t slot, const Item* item)
 {
 	msg->AddByte(0x71);
 	msg->AddByte(cid);
@@ -3100,7 +2976,7 @@ void Protocol76::UpdateContainerItem(NetworkMessage* msg, uint8_t cid, uint8_t s
 	msg->AddItem(item);
 }
 
-void Protocol76::RemoveContainerItem(NetworkMessage* msg, uint8_t cid, uint8_t slot)
+void Protocol76::RemoveContainerItem(NetworkMessage_ptr msg, uint8_t cid, uint8_t slot)
 {
 	msg->AddByte(0x72);
 	msg->AddByte(cid);
@@ -3109,7 +2985,7 @@ void Protocol76::RemoveContainerItem(NetworkMessage* msg, uint8_t cid, uint8_t s
 
 void Protocol76::sendChannelMessage(std::string author, std::string text, SpeakClasses type, uint8_t channel)
 {
-	NetworkMessage* msg = getOutputBuffer();
+	NetworkMessage_ptr msg = getOutputBuffer();
 	if(msg)
 	{
 		TRACK_MESSAGE(msg);
@@ -3121,14 +2997,4 @@ void Protocol76::sendChannelMessage(std::string author, std::string text, SpeakC
 		msg->AddU16(channel);
 		msg->AddString(text);
 	}
-}
-
-void Protocol76::AddShopItem(NetworkMessage* msg, const ShopInfo item)
-{
-	const ItemType& it = Item::items[item.itemId];
-	msg->AddU16(it.clientId);
-	msg->AddByte(item.subType);
-	msg->AddString(it.name);
-	msg->AddU32(item.buyPrice);
-	msg->AddU32(item.sellPrice);
 }

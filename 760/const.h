@@ -143,40 +143,41 @@ enum ShootType_t
 
 enum SpeakClasses
 {
-	SPEAK_SAY		= 0x01,
-	SPEAK_WHISPER		= 0x02,
-	SPEAK_YELL		= 0x03,
-	SPEAK_PRIVATE_PN	= 0x04,
-	SPEAK_PRIVATE_NP	= 0x05,
-	SPEAK_PRIVATE		= 0x06,
-	SPEAK_CHANNEL_Y		= 0x07,
-	SPEAK_RVR_CHANNEL	= 0x08,
-	SPEAK_RVR_ANSWER	= 0x09,
-	SPEAK_RVR_CONTINUE	= 0x0A,
-	SPEAK_BROADCAST		= 0x0B,
-	SPEAK_CHANNEL_R1	= 0x0C, //red - #c text
-	SPEAK_PRIVATE_RED	= 0x0D,	//@name@text
-	SPEAK_CHANNEL_O		= 0x0E,
-	SPEAK_UNKNOWN_1		= 0x0F,
-	SPEAK_CHANNEL_R2	= 0x10,	//red anonymous - #d text
-	SPEAK_UNKNOWN_2		= 0x11,
-	SPEAK_MONSTER_SAY	= 0x12,
-	SPEAK_MONSTER_YELL	= 0x13
+	SPEAK_CLASS_FIRST 	= 0x01,
+	SPEAK_SAY		= SPEAK_CLASS_FIRST,
+	SPEAK_WHISPER       = 0x02,
+	SPEAK_YELL          = 0x03,
+	SPEAK_PRIVATE       = 0x04,
+	SPEAK_CHANNEL_Y     = 0x05,	//yellow
+	SPEAK_RVR_CHANNEL   = 0x06,
+    SPEAK_RVR_ANSWER    = 0x07,
+    SPEAK_RVR_CONTINUE  = 0x08,
+    SPEAK_BROADCAST     = 0x09,
+    SPEAK_CHANNEL_R1    = 0x0A,	//red - #c text
+    SPEAK_PRIVATE_RED   = 0x0B,	//@name@text
+    SPEAK_CHANNEL_O     = 0x0C,	//orange
+    SPEAK_CHANNEL_R2    = 0x0E,	//red anonymous - #d text
+    //SPEAK_            = 0x0F,
+    SPEAK_MONSTER_YELL  = 0x11,
+    SPEAK_MONSTER_SAY   = 0x10,
+	SPEAK_CLASS_LAST 	= SPEAK_MONSTER_SAY
 };
 
 enum MessageClasses
 {
-	MSG_CLASS_FIRST			= 0x11,
-	MSG_STATUS_CONSOLE_RED		= MSG_CLASS_FIRST, /*Red message in the console*/
-	MSG_STATUS_CONSOLE_ORANGE	= 0x13, /*Orange message in the console*/
-	MSG_STATUS_WARNING		= 0x14, /*Red message in game window and in the console*/
-	MSG_EVENT_ADVANCE		= 0x15, /*White message in game window and in the console*/
-	MSG_EVENT_DEFAULT		= 0x16, /*White message at the bottom of the game window and in the console*/
-	MSG_STATUS_DEFAULT		= 0x17, /*White message at the bottom of the game window and in the console*/
-	MSG_INFO_DESCR			= 0x18, /*Green message in game window and in the console*/
-	MSG_STATUS_SMALL		= 0x19, /*White message at the bottom of the game window"*/
-	MSG_STATUS_CONSOLE_BLUE		= 0x1A, /*Blue message in the console*/
-	MSG_CLASS_LAST			= MSG_STATUS_CONSOLE_BLUE
+	MSG_CLASS_FIRST				= 0x01,
+	MSG_STATUS_CONSOLE_YELLOW	= MSG_CLASS_FIRST, /*Red message in the console*/
+    MSG_STATUS_CONSOLE_TEAL     = 0x04, //Light blue message in the console
+    MSG_STATUS_CONSOLE_ORANGE   = 0x11, //Orange message in the console
+    MSG_STATUS_WARNING          = 0x12, //Red message in game window and in the console
+    MSG_EVENT_ADVANCE           = 0x13, //White message in game window and in the console
+    MSG_EVENT_DEFAULT           = 0x14, //White message at the bottom of the game window and in the console
+    MSG_STATUS_DEFAULT          = 0x15, //White message at the bottom of the game window and in the console
+    MSG_INFO_DESCR              = 0x16, //Green message in game window and in the console
+    MSG_STATUS_SMALL            = 0x17, //White message at the bottom of the game window"
+    MSG_STATUS_CONSOLE_BLUE     = 0x18, //Blue message in the console
+    MSG_STATUS_CONSOLE_RED      = 0x19, //Red message in the console
+	MSG_CLASS_LAST				= MSG_STATUS_CONSOLE_RED
 };
 
 enum FluidColors_t

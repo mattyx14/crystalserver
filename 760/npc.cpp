@@ -52,9 +52,6 @@ uint32_t Npc::npcCount = 0;
 
 void Npcs::reload()
 {
-	for(AutoList<Npc>::listiterator it = Npc::listNpc.list.begin(); it != Npc::listNpc.list.end(); ++it)
-		it->second->closeAllShopWindows();
-
 	delete Npc::m_scriptInterface;
 	Npc::m_scriptInterface = NULL;
 
@@ -129,7 +126,6 @@ void Npc::reset()
 	talkRadius = 2;
 	idleTime = 0;
 	idleInterval = 5 * 60;
-	defaultPublic = true;
 
 	delete m_npcEventHandler;
 	m_npcEventHandler = NULL;
@@ -145,8 +141,7 @@ void Npc::reset()
 	queueList.clear();
 	m_parameters.clear();
 	itemListMap.clear();
-	responseScriptMap.clear();
-	shopPlayerList.clear();
+	responseScriptMap.clear();;
 }
 
 void Npc::reload()
@@ -277,9 +272,6 @@ bool Npc::loadFromXml(const std::string& filename)
 
 				if(readXMLInteger(p, "idleinterval", intValue))
 					idleInterval = intValue;
-
-				if(readXMLInteger(p, "defaultpublic", intValue))
-					defaultPublic = intValue != 0;
 
 				responseList = loadInteraction(p->children);
 			}
@@ -438,7 +430,6 @@ ResponseList Npc::loadInteraction(xmlNodePtr node)
 		else if(xmlStrcmp(node->name, (const xmlChar*)"interact") == 0)
 		{
 			NpcResponse::ResponseProperties prop;
-			prop.publicize = defaultPublic;
 
 			if(readXMLString(node, "keywords", strValue))
 				prop.inputList.push_back(asLowerCaseString(strValue));
@@ -543,9 +534,6 @@ ResponseList Npc::loadInteraction(xmlNodePtr node)
 						prop.responseType = RESPONSE_SCRIPT;
 						prop.output = strValue;
 					}
-
-					if(readXMLInteger(tmpNode, "public", intValue))
-						prop.publicize = (intValue == 1);
 
 					if(readXMLInteger(tmpNode, "b1", intValue))
 						scriptVars.b1 = (intValue == 1);
@@ -1039,8 +1027,7 @@ void Npc::onCreatureDisappear(const Creature* creature, uint32_t stackpos, bool 
 
 	if(creature == this)
 	{
-		//Close all open shop window's
-		closeAllShopWindows();
+
 	}
 	else if(Player* player = const_cast<Player*>(creature->getPlayer()))
 	{
@@ -1113,7 +1100,7 @@ void Npc::onCreatureSay(const Creature* creature, SpeakClasses type, const std::
 		if(m_npcEventHandler)
 			m_npcEventHandler->onCreatureSay(player, type, text);
 
-		if(type == SPEAK_SAY || type == SPEAK_PRIVATE_PN)
+		if(type == SPEAK_SAY)
 		{
 			const Position& myPos = getPosition();
 			const Position& pos = creature->getPosition();
@@ -1131,12 +1118,6 @@ void Npc::onCreatureSay(const Creature* creature, SpeakClasses type, const std::
 	}
 }
 
-void Npc::onPlayerCloseChannel(const Player* player)
-{
-	if(m_npcEventHandler)
-		m_npcEventHandler->onPlayerCloseChannel(player);
-}
-
 void Npc::onCreatureChangeOutfit(const Creature* creature, const Outfit_t& outfit)
 {
 	#ifdef __DEBUG_NPC__
@@ -1152,7 +1133,6 @@ void Npc::onPlayerEnter(Player* player, NpcState* state)
 
 void Npc::onPlayerLeave(Player* player, NpcState* state)
 {
-	player->closeShopWindow();
 	const NpcResponse* response = getResponse(player, state, EVENT_PLAYER_LEAVE);
 	executeResponse(player, state, response);
 }
@@ -1609,12 +1589,7 @@ void Npc::executeResponse(Player* player, NpcState* npcState, const NpcResponse*
 		{
 			std::string responseString = formatResponse(player, npcState, response);
 			if(!responseString.empty())
-			{
-				if(response->publicize())
-					g_game.internalCreatureSay(this, SPEAK_SAY, responseString);
-				else
-					g_game.npcSpeakToPlayer(this, player, responseString, false);
-			}
+				g_game.internalCreatureSay(this, SPEAK_SAY, responseString);
 		}
 		else
 		{
@@ -1687,9 +1662,9 @@ void Npc::executeResponse(Player* player, NpcState* npcState, const NpcResponse*
 	}
 }
 
-void Npc::doSay(std::string msg, Player* focus /*= NULL*/, bool publicize /*= false*/)
+void Npc::doSay(std::string msg)
 {
-	g_game.npcSpeakToPlayer(this, focus, msg, publicize);
+	g_game.internalCreatureSay(this, SPEAK_SAY, msg);
 }
 
 void Npc::doMove(Direction dir)
@@ -1700,83 +1675,6 @@ void Npc::doMove(Direction dir)
 void Npc::doTurn(Direction dir)
 {
 	g_game.internalCreatureTurn(this, dir);
-}
-
-uint32_t Npc::getListItemPrice(uint16_t itemId, ShopEvent_t type)
-{
-	for(ItemListMap::iterator it = itemListMap.begin(); it != itemListMap.end(); ++it)
-	{
-		std::list<ListItem>& itemList = it->second;
-		for(std::list<ListItem>::iterator iit = itemList.begin(); iit != itemList.end(); ++iit)
-		{
-			if((*iit).itemId == itemId)
-			{
-				if(type == SHOPEVENT_BUY)
-					return (*iit).buyPrice;
-				else if(type == SHOPEVENT_SELL)
-					return (*iit).sellPrice;
-			}
-		}
-	}
-	return 0;
-}
-
-void Npc::onPlayerTrade(Player* player, ShopEvent_t type, int32_t callback, uint16_t itemId,
-	uint8_t count, uint8_t amount)
-{
-	if(type == SHOPEVENT_BUY)
-	{
-		NpcState* npcState = getState(player, true);
-		if(npcState)
-		{
-			npcState->amount = amount;
-			npcState->subType = count;
-			npcState->itemId = itemId;
-			npcState->buyPrice = getListItemPrice(itemId, SHOPEVENT_BUY);
-			const NpcResponse* response = getResponse(player, npcState, EVENT_PLAYER_SHOPBUY);
-			executeResponse(player, npcState, response);
-		}
-	}
-	else if(type == SHOPEVENT_SELL)
-	{
-		NpcState* npcState = getState(player, true);
-		if(npcState)
-		{
-			npcState->amount = amount;
-			npcState->subType = count;
-			npcState->itemId = itemId;
-			npcState->sellPrice = getListItemPrice(itemId, SHOPEVENT_SELL);
-			const NpcResponse* response = getResponse(player, npcState, EVENT_PLAYER_SHOPSELL);
-			executeResponse(player, npcState, response);
-		}
-	}
-
-	if(m_npcEventHandler)
-		m_npcEventHandler->onPlayerTrade(player, callback, itemId, count, amount);
-
-	player->sendCash(g_game.getMoney(const_cast<Player*>(player)));
-}
-
-void Npc::onPlayerEndTrade(Player* player, int32_t buyCallback,
-	int32_t sellCallback)
-{
-	lua_State* L = getScriptInterface()->getLuaState();
-	if(buyCallback != -1)
-		luaL_unref(L, LUA_REGISTRYINDEX, buyCallback);
-	if(sellCallback != -1)
-		luaL_unref(L, LUA_REGISTRYINDEX, sellCallback);
-
-	removeShopPlayer(player);
-
-	NpcState* npcState = getState(player, true);
-	if(npcState)
-	{
-		const NpcResponse* response = getResponse(player, npcState, EVENT_PLAYER_SHOPCLOSE);
-		executeResponse(player, npcState, response);
-	}
-
-	if(m_npcEventHandler)
-		m_npcEventHandler->onPlayerEndTrade(player);
 }
 
 bool Npc::getNextStep(Direction& dir)
@@ -2260,9 +2158,6 @@ std::string Npc::getEventResponseName(NpcEvent_t eventType)
 		case EVENT_PLAYER_ENTER: return "onPlayerEnter"; break;
 		case EVENT_PLAYER_MOVE: return "onPlayerMove"; break;
 		case EVENT_PLAYER_LEAVE: return "onPlayerLeave"; break;
-		case EVENT_PLAYER_SHOPSELL: return "onPlayerShopSell"; break;
-		case EVENT_PLAYER_SHOPBUY: return "onPlayerShopBuy"; break;
-		case EVENT_PLAYER_SHOPCLOSE: return "onPlayerShopClose"; break;
 		default: return ""; break;
 	}
 	return "";
@@ -2319,27 +2214,6 @@ std::string Npc::formatResponse(Creature* creature, const NpcState* npcState, co
 	replaceString(responseString, "|NAME|", creature->getName());
 	replaceString(responseString, "|NPCNAME|", getName());
 	return responseString;
-}
-
-void Npc::addShopPlayer(Player* player)
-{
-	ShopPlayerList::iterator it = std::find(shopPlayerList.begin(), shopPlayerList.end(), player);
-	if(it == shopPlayerList.end())
-		shopPlayerList.push_back(player);
-}
-
-void Npc::removeShopPlayer(const Player* player)
-{
-	ShopPlayerList::iterator it = std::find(shopPlayerList.begin(), shopPlayerList.end(), player);
-	if(it != shopPlayerList.end())
-		shopPlayerList.erase(it);
-}
-
-void Npc::closeAllShopWindows()
-{
-	ShopPlayerList closeList = shopPlayerList;
-	for(ShopPlayerList::iterator it = closeList.begin(); it != closeList.end(); ++it)
-		(*it)->closeShopWindow();
 }
 
 NpcScriptInterface* Npc::getScriptInterface()
@@ -2408,8 +2282,6 @@ void NpcScriptInterface::registerFunctions()
 	lua_register(m_luaState, "setNpcState", NpcScriptInterface::luaSetNpcState);
 	lua_register(m_luaState, "getNpcName", NpcScriptInterface::luaGetNpcName);
 	lua_register(m_luaState, "getNpcParameter", NpcScriptInterface::luaGetNpcParameter);
-	lua_register(m_luaState, "openShopWindow", NpcScriptInterface::luaOpenShopWindow);
-	lua_register(m_luaState, "closeShopWindow", NpcScriptInterface::luaCloseShopWindow);
 }
 
 int32_t NpcScriptInterface::luaCreatureGetName2(lua_State* L)
@@ -2464,30 +2336,14 @@ int32_t NpcScriptInterface::luaSelfGetPos(lua_State* L)
 
 int32_t NpcScriptInterface::luaActionSay(lua_State* L)
 {
-	//selfSay(words [[, target], send_to_all])
-	// send_to_all defaults to true if there is no target, false otherwise
-	uint32_t parameters = lua_gettop(L);
-	uint32_t target = 0;
-	bool send_to_all = true;
-
-	if(parameters == 3)
-	{
-		send_to_all = (popNumber(L) == LUA_TRUE);
-		target = popNumber(L);
-	}
-	else if(parameters == 2)
-	{
-		target = popNumber(L);
-		send_to_all = false;
-	}
+    //selfSay(words)
 	std::string msg(popString(L));
-
+	
 	ScriptEnviroment* env = getScriptEnv();
 
 	Npc* npc = env->getNpc();
-	Player* focus = env->getPlayerByUID(target);
 	if(npc)
-		npc->doSay(msg, focus, send_to_all);
+		npc->doSay(msg);
 
 	return 0;
 }
@@ -2788,116 +2644,6 @@ void NpcScriptInterface::popState(lua_State* L, NpcState* &state)
 	state->scriptVars.s3 = getFieldString(L, "s3");
 }
 
-int32_t NpcScriptInterface::luaOpenShopWindow(lua_State* L)
-{
-	//openShopWindow(cid, items, onBuy callback, onSell callback)
-	int32_t buyCallback = -1;
-	int32_t sellCallback = -1;
-	std::list<ShopInfo> items;
-	Player* player = NULL;
-
-	ScriptEnviroment* env = getScriptEnv();
-	Npc* npc = env->getNpc();
-
-	if(lua_isfunction(L, -1) == 0)
-		lua_pop(L, 1); // skip it - use default value
-	else
-		sellCallback = popCallback(L);
-
-	if(lua_isfunction(L, -1) == 0)
-		lua_pop(L, 1);
-	else
-		buyCallback = popCallback(L);
-
-	if(lua_istable(L, -1) == 0)
-	{
-		reportError(__FUNCTION__, "item list is not a table.");
-		lua_pushnumber(L, LUA_ERROR);
-		return 1;
-	}
-
-	// first key
-	lua_pushnil(L);
-	while(lua_next(L, -2) != 0)
-	{
-		ShopInfo item;
-		item.itemId = getField(L, "id");
-		item.subType = getField(L, "subtype");
-		item.buyPrice = getField(L, "buy");
-		item.sellPrice = getField(L, "sell");
-		items.push_back(item);
-		lua_pop(L, 1);
-	}
-	lua_pop(L, 1);
-
-	player = env->getPlayerByUID(popNumber(L));
-	if(!player)
-	{
-		reportErrorFunc(getErrorDesc(LUA_ERROR_PLAYER_NOT_FOUND));
-		lua_pushnumber(L, LUA_ERROR);
-		return 1;
-	}
-
-	//Close any eventual other shop window currently open.
-	player->closeShopWindow();
-
-	if(!npc)
-	{
-		reportErrorFunc(getErrorDesc(LUA_ERROR_CREATURE_NOT_FOUND));
-		lua_pushnumber(L, LUA_ERROR);
-		return 1;
-	}
-
-	npc->addShopPlayer(player);
-	player->setShopOwner(npc, buyCallback, sellCallback);
-	player->sendShop(items);
-	player->sendCash(g_game.getMoney(player));
-
-	lua_pushnumber(L, LUA_NO_ERROR);
-	return 1;
-}
-
-int32_t NpcScriptInterface::luaCloseShopWindow(lua_State* L)
-{
-	//closeShopWindow(cid)
-	ScriptEnviroment* env = getScriptEnv();
-
-	Player* player = env->getPlayerByUID(popNumber(L));
-	if(!player)
-	{
-		reportErrorFunc(getErrorDesc(LUA_ERROR_PLAYER_NOT_FOUND));
-		lua_pushnumber(L, LUA_ERROR);
-		return 1;
-	}
-
-	Npc* npc = env->getNpc();
-	if(!npc)
-	{
-		reportErrorFunc(getErrorDesc(LUA_ERROR_CREATURE_NOT_FOUND));
-		lua_pushnumber(L, LUA_ERROR);
-		return 1;
-	}
-
-	int32_t buyCallback;
-	int32_t sellCallback;
-	Npc* merchant = player->getShopOwner(buyCallback, sellCallback);
-
-	//Check if we actually have a shop window with this player.
-	if(merchant == npc)
-	{
-		player->sendCloseShop();
-
-		if(buyCallback != -1)
-			luaL_unref(L, LUA_REGISTRYINDEX, buyCallback);
-		if(sellCallback != -1)
-			luaL_unref(L, LUA_REGISTRYINDEX, sellCallback);
-
-		player->setShopOwner(NULL, -1, -1);
-		npc->removeShopPlayer(player);
-	}
-	return 1;
-}
-
 NpcEventsHandler::NpcEventsHandler(Npc* npc)
 {
 	m_npc = npc;
@@ -2931,8 +2677,6 @@ NpcScript::NpcScript(std::string file, Npc* npc) :
 	m_onCreatureDisappear = m_scriptInterface->getEvent("onCreatureDisappear");
 	m_onCreatureAppear = m_scriptInterface->getEvent("onCreatureAppear");
 	m_onCreatureMove = m_scriptInterface->getEvent("onCreatureMove");
-	m_onPlayerCloseChannel = m_scriptInterface->getEvent("onPlayerCloseChannel");
-	m_onPlayerEndTrade = m_scriptInterface->getEvent("onPlayerEndTrade");
 	m_onThink = m_scriptInterface->getEvent("onThink");
 	m_loaded = true;
 }
@@ -3075,84 +2819,6 @@ void NpcScript::onCreatureSay(const Creature* creature, SpeakClasses type, const
 	}
 	else
 		std::cout << "[Error - NpcScript::onCreatureSay] NPC Name: " << m_npc->getName() << " - Call stack overflow" << std::endl;
-}
-
-void NpcScript::onPlayerTrade(const Player* player, int32_t callback, uint16_t itemid,
-	uint8_t count, uint8_t amount)
-{
-	if(callback == -1)
-		return;
-
-	//"onBuy"(cid, itemid, count, amount)
-	if(m_scriptInterface->reserveScriptEnv())
-	{
-		ScriptEnviroment* env = m_scriptInterface->getScriptEnv();
-		env->setScriptId(-1, m_scriptInterface);
-		env->setRealPos(m_npc->getPosition());
-		env->setNpc(m_npc);
-
-		uint32_t cid = env->addThing(const_cast<Player*>(player));
-		lua_State* L = m_scriptInterface->getLuaState();
-		LuaScriptInterface::pushCallback(L, callback);
-		lua_pushnumber(L, cid);
-		lua_pushnumber(L, itemid);
-		lua_pushnumber(L, count);
-		lua_pushnumber(L, amount);
-		m_scriptInterface->callFunction(4);
-		m_scriptInterface->releaseScriptEnv();
-	}
-	else
-		std::cout << "[Error - NpcScript::onPlayerTrade] NPC Name: " << m_npc->getName() << " - Call stack overflow" << std::endl;
-}
-
-void NpcScript::onPlayerCloseChannel(const Player* player)
-{
-	if(m_onPlayerCloseChannel == -1)
-		return;
-
-	//onPlayerCloseChannel(cid)
-	if(m_scriptInterface->reserveScriptEnv())
-	{
-		ScriptEnviroment* env = m_scriptInterface->getScriptEnv();
-		env->setScriptId(m_onPlayerCloseChannel, m_scriptInterface);
-		env->setRealPos(m_npc->getPosition());
-		env->setNpc(m_npc);
-
-		uint32_t cid = env->addThing(const_cast<Player*>(player));
-
-		lua_State* L = m_scriptInterface->getLuaState();
-		m_scriptInterface->pushFunction(m_onPlayerCloseChannel);
-		lua_pushnumber(L, cid);
-		m_scriptInterface->callFunction(1);
-		m_scriptInterface->releaseScriptEnv();
-	}
-	else
-		std::cout << "[Error - NpcScript::onPlayerCloseChannel] NPC Name: " << m_npc->getName() << " - Call stack overflow" << std::endl;
-}
-
-void NpcScript::onPlayerEndTrade(const Player* player)
-{
-	if(m_onPlayerCloseChannel == -1)
-		return;
-
-	//onPlayerEndTrade(cid)
-	if(m_scriptInterface->reserveScriptEnv())
-	{
-		ScriptEnviroment* env = m_scriptInterface->getScriptEnv();
-		env->setScriptId(m_onPlayerCloseChannel, m_scriptInterface);
-		env->setRealPos(m_npc->getPosition());
-		env->setNpc(m_npc);
-
-		uint32_t cid = env->addThing(const_cast<Player*>(player));
-
-		lua_State* L = m_scriptInterface->getLuaState();
-		m_scriptInterface->pushFunction(m_onPlayerEndTrade);
-		lua_pushnumber(L, cid);
-		m_scriptInterface->callFunction(1);
-		m_scriptInterface->releaseScriptEnv();
-	}
-	else
-		std::cout << "[Error - NpcScript::onPlayerEndTrade] NPC Name: " << m_npc->getName() << " - Call stack overflow" << std::endl;
 }
 
 void NpcScript::onThink()

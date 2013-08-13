@@ -275,10 +275,19 @@ ReturnValue Combat::canTargetCreature(const Player* player, const Creature* targ
 		if(isProtected(player, target->getPlayer()))
 			return RET_YOUMAYNOTATTACKTHISPLAYER;
 
-		if(player->getSecureMode() == SECUREMODE_ON && !Combat::isInPvpZone(player, target) &&
-			player->getSkullClient(target->getPlayer()) == SKULL_NONE)
-		{
-			return RET_TURNSECUREMODETOATTACKUNMARKEDPLAYERS;
+		if(player->hasSafeMode() && target->getPlayer()) 
+    	{
+			if(player->getParty()) 
+    	    {
+			    if(player->getParty()->isPlayerMember(target->getPlayer()) || player->getParty()->getLeader() == target)
+			        return Combat::canDoCombat(player, target);
+			}
+				
+			if(target->getPlayer()->getSkull() == SKULL_NONE) 
+			{
+				if(!Combat::isInPvpZone(player, target)) 
+					return RET_TURNSECUREMODETOATTACKUNMARKEDPLAYERS;
+			}
 		}
 	}
 	return Combat::canDoCombat(player, target);
