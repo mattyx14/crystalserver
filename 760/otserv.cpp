@@ -149,9 +149,9 @@ void mainLoader(int argc, char *argv[])
     	SetConsoleTitle(STATUS_SERVER_NAME);
 	#endif
 
-	std::cout << STATUS_SERVER_NAME << " - Version " << STATUS_SERVER_VERSION << "." << std::endl;
-	std::cout << "A server developed by Tryller." << std::endl;
-	std::cout << "Visit: https://github.com/tryller/crystalserver." << std::endl;
+	std::cout << ":: " << STATUS_SERVER_NAME << " - Version " << STATUS_SERVER_VERSION << "." << std::endl;
+	std::cout << ":: A server developed by Tryller." << std::endl;
+	std::cout << ":: Visit: https://github.com/tryller/crystalserver." << std::endl;
 	std::cout << std::endl;
 
 	// read global config
