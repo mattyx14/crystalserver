@@ -44,115 +44,111 @@ class Connection;
 
 class ConnectionManager
 {
-public:
-	~ConnectionManager()
-	{
-
-	}
+	public:
+		~ConnectionManager(){}
 	
-	static ConnectionManager* getInstance(){
-		static ConnectionManager instance;
-		return &instance;
-	}
+		static ConnectionManager* getInstance()
+        {
+			static ConnectionManager instance;
+			return &instance;
+		}
 	
-	Connection* createConnection(boost::asio::io_service& io_service);
-	void releaseConnection(Connection* connection);
-	void closeAll();
+		Connection* createConnection(boost::asio::io_service& io_service);
+		void releaseConnection(Connection* connection);
+		void closeAll();
 	
-protected:
+	protected:	
+		ConnectionManager(){}
 	
-	ConnectionManager()
-	{
-
-	}
-	
-	std::list<Connection*> m_connections;
-	boost::recursive_mutex m_connectionManagerLock;
+		std::list<Connection*> m_connections;
+		boost::recursive_mutex m_connectionManagerLock;
 };
 
 class Connection : boost::noncopyable
 {
-public:
-#ifdef __ENABLE_SERVER_DIAGNOSTIC__
-	static uint32_t connectionCount;
-#endif
-	enum {
-		CLOSE_STATE_NONE = 0,
-		CLOSE_STATE_REQUESTED = 1,
-		CLOSE_STATE_CLOSING = 2,
-	};
+	public:
+	#ifdef __ENABLE_SERVER_DIAGNOSTIC__
+		static uint32_t connectionCount;
+	#endif
+		enum
+        {
+			CLOSE_STATE_NONE = 0,
+			CLOSE_STATE_REQUESTED = 1,
+			CLOSE_STATE_CLOSING = 2,
+		};
 	
-private:
-	Connection(boost::asio::io_service& io_service) : m_socket(io_service)
-	{
-		m_refCount = 0;
-		m_protocol = NULL;
-		m_pendingWrite = 0;
-		m_pendingRead = 0;
-		m_closeState = CLOSE_STATE_NONE;
-		m_socketClosed = false;
-		m_writeError = false;
-		m_readError = false;
+	private:
+		Connection(boost::asio::io_service& io_service) : m_socket(io_service)
+		{
+			m_refCount = 0;
+			m_protocol = NULL;
+			m_pendingWrite = 0;
+			m_pendingRead = 0;
+			m_closeState = CLOSE_STATE_NONE;
+			m_socketClosed = false;
+			m_writeError = false;
+			m_readError = false;
 
-#ifdef __ENABLE_SERVER_DIAGNOSTIC__
-		connectionCount++;
-#endif
-	}
-	friend class ConnectionManager;
+			#ifdef __ENABLE_SERVER_DIAGNOSTIC__
+			connectionCount++;
+			#endif
+		}
+
+		friend class ConnectionManager;
 	
-public:
-	~Connection()
-	{
-		ConnectionManager::getInstance()->releaseConnection(this);
-#ifdef __ENABLE_SERVER_DIAGNOSTIC__
-		connectionCount--;
-#endif
-	}
+	public:
+		~Connection()
+		{
+			ConnectionManager::getInstance()->releaseConnection(this);
+			#ifdef __ENABLE_SERVER_DIAGNOSTIC__
+			connectionCount--;
+			#endif
+		}
 
-	boost::asio::ip::tcp::socket& getHandle() { return m_socket; }
+		boost::asio::ip::tcp::socket& getHandle() { return m_socket; }
 
-	void closeConnection();
-	void acceptConnection();
+		void closeConnection();
+		void acceptConnection();
 
-	bool send(OutputMessage_ptr msg);
+		bool send(OutputMessage_ptr msg);
 
-	uint32_t getIP() const;
+		uint32_t getIP() const;
 
-	int32_t addRef() {return ++m_refCount;}
-	int32_t unRef() {return --m_refCount;}
+		int32_t addRef() {return ++m_refCount;}
+		int32_t unRef() {return --m_refCount;}
 
-private:
-	void parseHeader(const boost::system::error_code& error);
-	void parsePacket(const boost::system::error_code& error);
+	private:
+		void parseHeader(const boost::system::error_code& error);
+		void parsePacket(const boost::system::error_code& error);
 
-	void onWriteOperation(OutputMessage_ptr msg, const boost::system::error_code& error);
+		void onWriteOperation(OutputMessage_ptr msg, const boost::system::error_code& error);
 
-	void handleReadError(const boost::system::error_code& error);
-	void handleWriteError(const boost::system::error_code& error);
+		void handleReadError(const boost::system::error_code& error);
+		void handleWriteError(const boost::system::error_code& error);
 
-	void closeConnectionTask();
-	bool closingConnection();
-	void deleteConnectionTask();
-	void releaseConnection();
+		void closeConnectionTask();
+		bool closingConnection();
+		void deleteConnectionTask();
+		void releaseConnection();
 
-	void internalSend(OutputMessage_ptr msg);
+		void internalSend(OutputMessage_ptr msg);
 
-	NetworkMessage m_msg;
-	boost::asio::ip::tcp::socket m_socket;
-	bool m_socketClosed;
+		NetworkMessage m_msg;
+		boost::asio::ip::tcp::socket m_socket;
+		bool m_socketClosed;
 
-	bool m_writeError;
-	bool m_readError;
+		bool m_writeError;
+		bool m_readError;
 
-	int32_t m_pendingWrite;
-	std::list <OutputMessage_ptr> m_outputQueue;
-	int32_t m_pendingRead;
-	uint32_t m_closeState;
-	uint32_t m_refCount;
+		int32_t m_pendingWrite;
+		std::list <OutputMessage_ptr> m_outputQueue;
+		int32_t m_pendingRead;
+		uint32_t m_closeState;
+		uint32_t m_refCount;
 
-	boost::recursive_mutex m_connectionLock;
+		boost::recursive_mutex m_connectionLock;
 
-	Protocol* m_protocol;
+		Protocol* m_protocol;
 };
 
 #endif

@@ -22,6 +22,7 @@
 #include "items.h"
 #include "spells.h"
 #include "condition.h"
+#include "movement.h"
 #include "weapons.h"
 
 #include <libxml/xmlmemory.h>
@@ -34,7 +35,9 @@ uint32_t Items::dwMajorVersion = 0;
 uint32_t Items::dwMinorVersion = 0;
 uint32_t Items::dwBuildNumber = 0;
 
+extern MoveEvents* g_moveEvents;
 extern Spells* g_spells;
+extern Weapons* g_weapons;
 
 ItemType::ItemType()
 {
@@ -130,10 +133,9 @@ ItemType::~ItemType()
 	delete condition;
 }
 
-Items::Items() :
-items(8000)
+Items::Items() // : items(35000)
 {
-	//
+	this->items = new Array<ItemType*>(20500);
 }
 
 Items::~Items()
@@ -143,18 +145,25 @@ Items::~Items()
 
 void Items::clear()
 {
-	//TODO. clear items?
+	if(this->items)
+		this->items->reset();
 }
 
 bool Items::reload()
 {
-	//TODO?
-	/*
-	for (ItemMap::iterator it = items.begin(); it != items.end(); it++)
-		delete it->second->condition;
-	return loadFromXml();
-	*/
-	return false;
+	// TODO: make this atomic somehow.
+	if(!this->items)
+		return false;
+
+	this->items->reset();
+	loadFromOtb("data/items/items.otb");
+
+	if(!loadFromXml())
+		return false;
+
+	g_moveEvents->reload();
+	g_weapons->reload();
+	return true;
 }
 
 int32_t Items::loadFromOtb(std::string file)
@@ -362,7 +371,7 @@ int32_t Items::loadFromOtb(std::string file)
 		reverseItemMap[iType->clientId] = iType->id;
 
 		// store the found item
-		items.addElement(iType, iType->id);
+		items->addElement(iType, iType->id);
 		node = f.getNextNode(node, type);
 	}
 	return ERROR_NONE;
@@ -401,7 +410,7 @@ bool Items::loadFromXml()
 
 						ItemType* iType = new ItemType();
 						iType->id = id;
-						items.addElement(iType, iType->id);
+						items->addElement(iType, iType->id);
 					}
 
 					ItemType& it = Item::items.getItemType(id);
@@ -1210,9 +1219,9 @@ bool Items::loadFromXml()
 	}
 
 	//Lets do some checks...
-	for(uint32_t i = 0; i < Item::items.size(); ++i)
+	for(uint32_t i = 0; i < items->size(); ++i)
 	{
-		const ItemType* it = Item::items.getElement(i);
+		const ItemType* it = items->getElement(i);
 		if(!it)
 			continue;
 
@@ -1225,7 +1234,7 @@ bool Items::loadFromXml()
 
 ItemType& Items::getItemType(int32_t id)
 {
-	ItemType* iType = items.getElement(id);
+	ItemType* iType = items->getElement(id);
 	if(iType){
 		return *iType;
 	}
@@ -1240,7 +1249,7 @@ ItemType& Items::getItemType(int32_t id)
 
 const ItemType& Items::getItemType(int32_t id) const
 {
-	ItemType* iType = items.getElement(id);
+	ItemType* iType = items->getElement(id);
 	if(iType)
 		return *iType;
 	else
@@ -1256,7 +1265,7 @@ const ItemType& Items::getItemIdByClientId(int32_t spriteId) const
 	ItemType* iType;
 	do
 	{
-		iType = items.getElement(i);
+		iType = items->getElement(i);
 		if(iType && iType->clientId == spriteId)
 			return *iType;
 		i++;
@@ -1275,7 +1284,7 @@ int32_t Items::getItemIdByName(const std::string& name)
 		ItemType* iType;
 		do
 		{
-			iType = items.getElement(i);
+			iType = items->getElement(i);
 			if(iType)
 			{
 				if(strcasecmp(name.c_str(), iType->name.c_str()) == 0)
@@ -1286,49 +1295,4 @@ int32_t Items::getItemIdByName(const std::string& name)
 		while(iType);
 	}
 	return -1;
-}
-
-template<typename A> 
-Array<A>::Array(uint32_t n)
-{
-	m_data = (A*)malloc(sizeof(A)*n);
-	memset(m_data, 0, sizeof(A)*n);
-	m_size = n;
-}
-
-template<typename A> 
-Array<A>::~Array()
-{
-	free(m_data);
-}
-
-template<typename A>
-A Array<A>::getElement(uint32_t id)
-{
-	if(id < m_size)
-		return m_data[id];
-	else
-		return 0;
-}
-
-template<typename A>
-const A Array<A>::getElement(uint32_t id) const
-{
-	if(id < m_size)
-		return m_data[id];
-	else
-		return 0;
-}
-
-template<typename A>
-void Array<A>::addElement(A a, uint32_t pos)
-{
-	#define INCREMENT 5000
-	if(pos >= m_size)
-	{
-		m_data = (A*)realloc(m_data, sizeof(A)*(pos + INCREMENT));
-		memset(m_data + m_size, 0, sizeof(A)*(pos + INCREMENT - m_size));
-		m_size = pos + INCREMENT;
-	}
-	m_data[pos] = a;
 }

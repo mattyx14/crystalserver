@@ -28,6 +28,9 @@
 #include "position.h"
 #include <map>
 
+#include <libxml/xmlmemory.h>
+#include <libxml/parser.h>
+
 #define SLOTP_WHEREEVER 0xFFFFFFFF
 #define SLOTP_HEAD 1
 #define	SLOTP_NECKLACE 2
@@ -264,7 +267,9 @@ class Array
 		A getElement(uint32_t id);
 		const A getElement(uint32_t id) const;
 		void addElement(A a, uint32_t pos);
-		
+
+		void reset();
+
 		uint32_t size() {return m_size;}
 	
 	private:
@@ -298,14 +303,72 @@ class Items
 
 		void addItemType(ItemType* iType);
 
-		const ItemType* getElement(uint32_t id) const {return items.getElement(id);}
-		uint32_t size() {return items.size();}
+		const ItemType* getElement(uint32_t id) const {return items->getElement(id);}
+		uint32_t size() {return items->size();}
 
 	protected:
 		typedef std::map<int32_t, int32_t> ReverseItemMap;
 		ReverseItemMap reverseItemMap;
 
-		Array<ItemType*> items;
+		Array<ItemType*>* items;
 };
 
+template<typename A>
+Array<A>::Array(uint32_t n)
+{
+	m_data = (A*)malloc(sizeof(A) * n);
+	memset(m_data, 0, sizeof(A)*n);
+	m_size = n;
+}
+
+template<typename A>
+Array<A>::~Array()
+{
+	free(m_data);
+}
+
+template<typename A>
+A Array<A>::getElement(uint32_t id)
+{
+	if(id < m_size)
+		return m_data[id];
+
+	return 0;
+}
+
+template<typename A>
+const A Array<A>::getElement(uint32_t id) const
+{
+	if(id < m_size)
+		return m_data[id];
+
+	return 0;
+}
+
+template<typename A>
+void Array<A>::addElement(A a, uint32_t pos)
+{
+#define INCREMENT 5000
+
+	if(pos >= m_size)
+    {
+		m_data = (A*)realloc(m_data, sizeof(A) * (pos + INCREMENT));
+		memset(m_data + m_size, 0, sizeof(A) * (pos + INCREMENT - m_size));
+		m_size = pos + INCREMENT;
+	}
+
+	m_data[pos] = a;
+}
+
+template<typename A>
+void Array<A>::reset()
+{
+	for(uint32_t i = 0; i < m_size; i++)
+    {
+		delete m_data[i];
+		m_data[i] = NULL;
+	}
+
+	memset(this->m_data, 0, sizeof(A) * this->m_size);
+}
 #endif
