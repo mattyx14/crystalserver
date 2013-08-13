@@ -841,10 +841,8 @@ std::string Item::getDescription(const ItemType& it, int32_t lookDistance, const
 	{
 		s << " (Arm:" << it.armor;
 
-		if(it.abilities.absorbPercentAll != 0 || it.abilities.absorbPercentDeath != 0 || 
-			it.abilities.absorbPercentDrown != 0 || it.abilities.absorbPercentEarth != 0 ||
+		if(it.abilities.absorbPercentAll != 0 || it.abilities.absorbPercentEarth != 0 ||
 			it.abilities.absorbPercentEnergy != 0 || it.abilities.absorbPercentFire != 0 ||
-			it.abilities.absorbPercentHoly != 0 || it.abilities.absorbPercentIce != 0 ||
 			it.abilities.absorbPercentLifeDrain != 0 || it.abilities.absorbPercentManaDrain != 0 ||
 			it.abilities.absorbPercentPhysical != 0)
 		{
@@ -853,24 +851,6 @@ std::string Item::getDescription(const ItemType& it, int32_t lookDistance, const
 			if(it.abilities.absorbPercentAll != 0)
 			{
 				s << " all " << std::showpos << it.abilities.absorbPercentAll << std::noshowpos << "%";
-				isBegin = false;
-			}
-
-			if(it.abilities.absorbPercentDeath != 0)
-			{
-				if(!isBegin)
-					s << ",";
-
-				s << " death " << std::showpos << it.abilities.absorbPercentDeath << std::noshowpos << "%";
-				isBegin = false;
-			}
-
-			if(it.abilities.absorbPercentDrown != 0)
-			{
-				if(!isBegin)
-					s << ",";
-
-				s << " drown " << std::showpos << it.abilities.absorbPercentDrown << std::noshowpos << "%";
 				isBegin = false;
 			}
 
@@ -898,24 +878,6 @@ std::string Item::getDescription(const ItemType& it, int32_t lookDistance, const
 					s << ",";
 
 				s << " fire " << std::showpos << it.abilities.absorbPercentFire << std::noshowpos << "%";
-				isBegin = false;
-			}
-
-			if(it.abilities.absorbPercentHoly != 0)
-			{
-				if(!isBegin)
-					s << ",";
-
-				s << " holy " << std::showpos << it.abilities.absorbPercentHoly << std::noshowpos << "%";
-				isBegin = false;
-			}
-
-			if(it.abilities.absorbPercentIce != 0)
-			{
-				if(!isBegin)
-					s << ",";
-
-				s << " ice " << std::showpos << it.abilities.absorbPercentIce << std::noshowpos << "%";
 				isBegin = false;
 			}
 

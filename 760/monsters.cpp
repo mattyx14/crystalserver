@@ -447,38 +447,6 @@ bool Monsters::deserializeSpell(xmlNodePtr node, spellBlock_t& sb, const std::st
 				maxDamage = intValue;
 				tickInterval = 10000;
 			}
-			else if(readXMLInteger(node, "drown", intValue))
-			{
-				conditionType = CONDITION_DROWN;
-
-				minDamage = intValue;
-				maxDamage = intValue;
-				tickInterval = 10000;
-			}
-			else if(readXMLInteger(node, "freeze", intValue))
-			{
-				conditionType = CONDITION_FREEZING;
-
-				minDamage = intValue;
-				maxDamage = intValue;
-				tickInterval = 10000;
-			}
-			else if(readXMLInteger(node, "dazzle", intValue))
-			{
-				conditionType = CONDITION_DAZZLED;
-
-				minDamage = intValue;
-				maxDamage = intValue;
-				tickInterval = 10000;
-			}
-			else if(readXMLInteger(node, "curse", intValue))
-			{
-				conditionType = CONDITION_CURSED;
-
-				minDamage = intValue;
-				maxDamage = intValue;
-				tickInterval = 10000;
-			}
 
 			if(readXMLInteger(node, "tick", intValue) && intValue > 0)
 				tickInterval = intValue;
@@ -622,21 +590,6 @@ bool Monsters::deserializeSpell(xmlNodePtr node, spellBlock_t& sb, const std::st
 			else if(tmpName == "energycondition")
 			{
 				conditionType = CONDITION_ENERGY;
-				tickInterval = 10000;
-			}
-			else if(tmpName == "drowncondition")
-			{
-				conditionType = CONDITION_DROWN;
-				tickInterval = 5000;
-			}
-			else if(tmpName == "freezecondition")
-			{
-				conditionType = CONDITION_FREEZING;
-				tickInterval = 10000;
-			}
-			else if(tmpName == "cursecondition")
-			{
-				conditionType = CONDITION_CURSED;
 				tickInterval = 10000;
 			}
 

@@ -940,21 +940,6 @@ bool Items::loadFromXml()
 								if(readXMLInteger(itemAttributesNode, "value", intValue))
 									it.abilities.absorbPercentEarth = intValue;
 							}
-							else if(tmpStrValue == "absorbpercentice")
-							{
-								if(readXMLInteger(itemAttributesNode, "value", intValue))
-									it.abilities.absorbPercentIce = intValue;
-							}
-							else if(tmpStrValue == "absorbpercentholy")
-							{
-								if(readXMLInteger(itemAttributesNode, "value", intValue))
-									it.abilities.absorbPercentHoly = intValue;
-							}
-							else if(tmpStrValue == "absorbpercentdeath")
-							{
-								if(readXMLInteger(itemAttributesNode, "value", intValue))
-									it.abilities.absorbPercentDeath = intValue;
-							}
 							else if(tmpStrValue == "absorbpercentlifedrain")
 							{
 								if(readXMLInteger(itemAttributesNode, "value", intValue))
@@ -964,11 +949,6 @@ bool Items::loadFromXml()
 							{
 								if(readXMLInteger(itemAttributesNode, "value", intValue))
 									it.abilities.absorbPercentManaDrain = intValue;
-							}
-							else if(tmpStrValue == "absorbpercentdrown")
-							{
-								if(readXMLInteger(itemAttributesNode, "value", intValue))
-									it.abilities.absorbPercentDrown = intValue;
 							}
 							else if(tmpStrValue == "absorbpercentphysical")
 							{
@@ -999,26 +979,6 @@ bool Items::loadFromXml()
 							{
 								if(readXMLInteger(itemAttributesNode, "value", intValue))
 									it.abilities.conditionSuppressions |= CONDITION_LIFEDRAIN;
-							}
-							else if(tmpStrValue == "suppressdrown")
-							{
-								if(readXMLInteger(itemAttributesNode, "value", intValue))
-									it.abilities.conditionSuppressions |= CONDITION_DROWN;
-							}
-							else if(tmpStrValue == "suppressfreeze")
-							{
-								if(readXMLInteger(itemAttributesNode, "value", intValue) && intValue != 0)
-									it.abilities.conditionSuppressions |= CONDITION_FREEZING;
-							}
-							else if(tmpStrValue == "suppressdazzle")
-							{
-								if(readXMLInteger(itemAttributesNode, "value", intValue) && intValue != 0)
-									it.abilities.conditionSuppressions |= CONDITION_DAZZLED;
-							}
-							else if(tmpStrValue == "suppresscurse")
-							{
-								if(readXMLInteger(itemAttributesNode, "value", intValue) && intValue != 0)
-									it.abilities.conditionSuppressions |= CONDITION_CURSED;
 							}
 							else if(tmpStrValue == "field")
 							{

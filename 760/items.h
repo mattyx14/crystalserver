@@ -71,10 +71,6 @@ struct Abilities
 		absorbPercentEarth = 0;
 		absorbPercentLifeDrain = 0;
 		absorbPercentManaDrain = 0;
-		absorbPercentDrown = 0;
-		absorbPercentIce = 0;
-		absorbPercentHoly = 0;
-		absorbPercentDeath = 0;
 
 		elementType = COMBAT_NONE;
 		elementDamage = 0;
@@ -105,10 +101,6 @@ struct Abilities
 	int16_t absorbPercentEarth;
 	int16_t absorbPercentLifeDrain;
 	int16_t absorbPercentManaDrain;
-	int16_t absorbPercentDrown;
-	int16_t absorbPercentIce;
-	int16_t absorbPercentHoly;
-	int16_t absorbPercentDeath;
 
 	//elemental damage
 	CombatType_t elementType;

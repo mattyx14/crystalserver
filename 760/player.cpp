@@ -3209,23 +3209,11 @@ void Player::onAddCombatCondition(ConditionType_t type)
 		case CONDITION_POISON:
 			sendTextMessage(MSG_STATUS_DEFAULT, "You are poisoned.");
 			break;
-		case CONDITION_DROWN:
-			sendTextMessage(MSG_STATUS_DEFAULT, "You are drowning.");
-			break;
 		case CONDITION_PARALYZE:
 			sendTextMessage(MSG_STATUS_DEFAULT, "You are paralyzed.");
 			break;
 		case CONDITION_DRUNK:
 			sendTextMessage(MSG_STATUS_DEFAULT, "You are drunk.");
-			break;
-		case CONDITION_CURSED:
-			sendTextMessage(MSG_STATUS_DEFAULT, "You are cursed.");
-			break;
-		case CONDITION_FREEZING:
-			sendTextMessage(MSG_STATUS_DEFAULT, "You are freezing.");
-			break;
-		case CONDITION_DAZZLED:
-			sendTextMessage(MSG_STATUS_DEFAULT, "You are dazzled.");
 			break;
 		default:
 			break;
