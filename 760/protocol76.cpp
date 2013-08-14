@@ -513,12 +513,12 @@ bool Protocol76::logout(bool displayEffect, bool forced)
 	return g_game.removeCreature(player);
 }
 
-bool Protocol76::parseFirstPacket(NetworkMessage& msg)
+void Protocol76::onRecvFirstMessage(NetworkMessage& msg)
 {
 	if(g_game.getGameState() == GAME_STATE_SHUTDOWN)
 	{
 		getConnection()->closeConnection();
-		return false;
+		return;
 	}
 
 	/*uint16_t clientos =*/ msg.GetU16();
@@ -532,7 +532,7 @@ bool Protocol76::parseFirstPacket(NetworkMessage& msg)
 	if(version < CLIENT_VERSION_MIN || version > CLIENT_VERSION_MAX)
 	{
 		disconnectClient(0x0A, CLIENT_VERSION_STRING);
-		return false;
+		return;
 	}
 
 	if(!accnumber)
@@ -545,26 +545,26 @@ bool Protocol76::parseFirstPacket(NetworkMessage& msg)
 		else
 		{
 			disconnectClient(0x14, "You must enter your account number.");
-			return false;
+			return;
 		}
 	}
 
 	if(g_game.getGameState() == GAME_STATE_STARTUP || g_game.getServerSaveMessage(0))
 	{
 		disconnectClient(0x14, "Gameworld is starting up. Please wait.");
-		return false;
+		return;
 	}
 
 	if(g_bans.isIpDisabled(getIP()))
 	{
 		disconnectClient(0x14, "Too many connections attempts from this IP. Try again later.");
-		return false;
+		return;
 	}
 
 	if(g_bans.isIpBanished(getIP()))
 	{
 		disconnectClient(0x14, "Your IP is banished!");
-		return false;
+		return;
 	}
 
 	std::string acc_pass;
@@ -572,20 +572,13 @@ bool Protocol76::parseFirstPacket(NetworkMessage& msg)
 	{
 		g_bans.addLoginAttempt(getIP(), false);
 		getConnection()->closeConnection();
-		return false;
+		return;
 	}
 
 	g_bans.addLoginAttempt(getIP(), true);
 
 	Dispatcher::getDispatcher().addTask(
 		createTask(boost::bind(&Protocol76::login, this, name, accnumber, password)));
-
-	return true;
-}
-
-void Protocol76::onRecvFirstMessage(NetworkMessage& msg)
-{
-	parseFirstPacket(msg);
 }
 
 void Protocol76::disconnectClient(uint8_t error, const char* message)

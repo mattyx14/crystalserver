@@ -45,14 +45,10 @@ class ProtocolLogin : public Protocol
 #endif
 		}
 
-		virtual int32_t getProtocolId() {return 0x01;}
-
 		virtual void onRecvFirstMessage(NetworkMessage& msg);
 
 	protected:
 		void disconnectClient(uint8_t error, const char* message);
-
-		bool parseFirstPacket(NetworkMessage& msg);
 
 		#ifdef __DEBUG_NET_DETAIL__
 		virtual void deleteProtocolTask();

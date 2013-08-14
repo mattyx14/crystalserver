@@ -63,12 +63,12 @@ void ProtocolLogin::disconnectClient(uint8_t error, const char* message)
 	getConnection()->closeConnection();
 }
 
-bool ProtocolLogin::parseFirstPacket(NetworkMessage& msg)
+void ProtocolLogin::onRecvFirstMessage(NetworkMessage& msg)
 {
 	if(g_game.getGameState() == GAME_STATE_SHUTDOWN)
 	{
 		getConnection()->closeConnection();
-		return false;
+		return;
 	}
 
 	uint32_t clientip = getConnection()->getIP();
@@ -80,7 +80,7 @@ bool ProtocolLogin::parseFirstPacket(NetworkMessage& msg)
 	if(version < CLIENT_VERSION_MIN || version > CLIENT_VERSION_MAX)
     {
 		disconnectClient(0x0A, CLIENT_VERSION_STRING);
-		return false;
+		return;
 	}
 
 	uint32_t accnumber = msg.GetU32();
@@ -96,26 +96,26 @@ bool ProtocolLogin::parseFirstPacket(NetworkMessage& msg)
 		else
 		{
 			disconnectClient(0x0A, "You must enter your account number.");
-			return false;
+			return;
 		}
 	}
 
 	if(g_game.getGameState() == GAME_STATE_STARTUP)
 	{
 		disconnectClient(0x0A, "Gameworld is starting up. Please wait.");
-		return false;
+		return;
 	}
 
 	if(g_bans.isIpDisabled(clientip))
 	{
 		disconnectClient(0x0A, "Too many connections attempts from this IP. Try again later.");
-		return false;
+		return;
 	}
 
 	if(g_bans.isIpBanished(clientip))
 	{
 		disconnectClient(0x0A, "Your IP is banished!");
-		return false;
+		return;
 	}
 
 	uint32_t serverip = serverIPs[0].first;
@@ -134,7 +134,7 @@ bool ProtocolLogin::parseFirstPacket(NetworkMessage& msg)
 	{
 		g_bans.addLoginAttempt(clientip, false);
 		disconnectClient(0x0A, "Account number or password is not correct.");
-		return false;
+		return;
 	}
 
 	g_bans.addLoginAttempt(clientip, true);
@@ -193,10 +193,4 @@ bool ProtocolLogin::parseFirstPacket(NetworkMessage& msg)
 		OutputMessagePool::getInstance()->send(output);
 	}
 	getConnection()->closeConnection();
-	return true;
-}
-
-void ProtocolLogin::onRecvFirstMessage(NetworkMessage& msg)
-{
-	parseFirstPacket(msg);
 }
