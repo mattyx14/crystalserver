@@ -2431,7 +2431,6 @@ void Protocol76::sendTextWindow(uint32_t windowTextId, uint32_t itemId, const st
 
 		msg->AddU16(text.size());
 		msg->AddString(text);
-
 		msg->AddString("");
 	}
 }

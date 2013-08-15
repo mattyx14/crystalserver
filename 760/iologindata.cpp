@@ -372,16 +372,7 @@ bool IOLoginData::loadPlayer(Player* player, const std::string& name, bool prelo
 	player->health = result.getDataInt("health");
 	player->healthMax = result.getDataInt("healthmax");
 
-	if(player->accessLevel > 0)
-	{
-		if(acc.accountType > 4)
-			player->defaultOutfit.lookType = 9;
-		else
-			player->defaultOutfit.lookType = 75;
-	}
-	else
-		player->defaultOutfit.lookType = result.getDataInt("looktype");
-
+	player->defaultOutfit.lookType = result.getDataInt("looktype");
 	player->defaultOutfit.lookHead = result.getDataInt("lookhead");
 	player->defaultOutfit.lookBody = result.getDataInt("lookbody");
 	player->defaultOutfit.lookLegs = result.getDataInt("looklegs");
@@ -411,6 +402,7 @@ bool IOLoginData::loadPlayer(Player* player, const std::string& name, bool prelo
 	Town* town = Towns::getInstance().getTown(player->town);
 	if(town)
 		player->masterPos = town->getTemplePosition();
+
 	Position loginPos = player->loginPosition;
 	if(loginPos.x == 0 && loginPos.y == 0 && loginPos.z == 0)
 		player->loginPosition = player->masterPos;

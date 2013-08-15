@@ -90,7 +90,7 @@ bool IOMap::loadMap(Map* map, const std::string& identifier)
 		return false;
 	}
 
-	if(root_header->version <= 0)
+/*	if(root_header->version <= 0)
 	{
 		//In otbm version 1 the count variable after splashes/fluidcontainers and stackables
 		//are saved as attributes instead, this solves alot of problems with items
@@ -98,28 +98,35 @@ bool IOMap::loadMap(Map* map, const std::string& identifier)
 		setLastErrorString("This map need to be upgraded by using the latest map editor version to be able to load correctly.");
 		return false;
 	}
-
-	if(root_header->version != 1)
+*/
+	if(root_header->version != 0)
 	{
 		setLastErrorString("Unknown OTBM version detected.");
 		return false;
 	}
-
+/*
 	if(root_header->majorVersionItems < 3)
 	{
 		setLastErrorString("This map need to be upgraded by using the latest map editor version to be able to load correctly.");
 		return false;
 	}
-
+*/
 	if(root_header->majorVersionItems > (uint32_t)Items::dwMajorVersion)
 	{
 		setLastErrorString("The map was saved with a different items.otb version, an upgraded items.otb is required.");
 		return false;
 	}
 
-	if(root_header->minorVersionItems < CLIENT_VERSION_810)
+/*	if(root_header->minorVersionItems < CLIENT_VERSION_760)
 	{
 		setLastErrorString("This map needs to be updated.");
+		return false;
+	}
+*/
+
+	if(root_header->majorVersionItems > (uint32_t)Items::dwMajorVersion)
+	{
+		setLastErrorString("The map was saved with a different items.otb version, an upgraded items.otb is required.");
 		return false;
 	}
 

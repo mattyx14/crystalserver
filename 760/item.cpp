@@ -77,16 +77,6 @@ Item* Item::CreateItem(const uint16_t _type, uint16_t _count /*= 1*/)
 			newItem = new Mailbox(_type);
 		else if(it.isBed())
 			newItem = new BedItem(_type);
-		else if(it.id >= 2210 && it.id <= 2212)
-			newItem = new Item(_type - 3, _count);
-		else if(it.id == 2215 || it.id == 2216)
-			newItem = new Item(_type - 2, _count);
-		else if(it.id >= 2202 && it.id <= 2206)
-			newItem = new Item(_type - 37, _count);
-		else if(it.id == 2640)
-			newItem = new Item(6132, _count);
-		else if(it.id == 6301)
-			newItem = new Item(6300, _count);
 		else
 			newItem = new Item(_type, _count);
 
@@ -101,6 +91,15 @@ Item* Item::CreateItem(PropStream& propStream)
 	uint16_t _id;
 	if(!propStream.GET_USHORT(_id))
 		return NULL;
+
+	const ItemType& iType = Item::items[_id];
+	uint8_t _count = 0;
+
+	if(iType.stackable || iType.isSplash() || iType.isFluidContainer())
+	{
+		if(!propStream.GET_UCHAR(_count))
+			return NULL;
+	}
 
 	return Item::CreateItem(_id, 0);
 }

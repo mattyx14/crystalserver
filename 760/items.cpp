@@ -92,7 +92,6 @@ ItemType::ItemType()
 	stopTime = false;
 	corpseType = RACE_NONE;
 	fluidSource = FLUID_NONE;
-	clientCharges = false;
 	allowDistRead = false;
 
 	isVertical = false;
@@ -203,18 +202,15 @@ int32_t Items::loadFromOtb(std::string file)
 		}
 	}
 
+	if (Items::dwMajorVersion != 2)
+    {
+		std::cout << "Not supported items.otb version." << std::endl;
+		return ERROR_INVALID_FORMAT;
+	}
+
 	if(Items::dwMajorVersion == 0xFFFFFFFF)
 		std::cout << "[Warning] Items::loadFromOtb items.otb using generic client version." << std::endl;
-	else if(Items::dwMajorVersion != 3)
-	{
-		std::cout << "Old version detected, a newer version of items.otb is required." << std::endl;
-		return ERROR_INVALID_FORMAT;
-	}
-	else if(Items::dwMinorVersion < CLIENT_VERSION_820)
-	{
-		std::cout << "A newer version of items.otb is required." << std::endl;
-		return ERROR_INVALID_FORMAT;
-	}
+
 	node = f.getChildNode(node, type);
 
 	while(node != NO_NODE)
@@ -265,22 +261,20 @@ int32_t Items::loadFromOtb(std::string file)
 		iType->pickupable = hasBitSet(FLAG_PICKUPABLE, flags);
 		iType->moveable = hasBitSet(FLAG_MOVEABLE, flags);
 		iType->stackable = hasBitSet(FLAG_STACKABLE, flags);
-
-		//not longer saved in otb_version >= 3
 		iType->floorChangeDown = hasBitSet(FLAG_FLOORCHANGEDOWN, flags);
 		iType->floorChangeNorth = hasBitSet(FLAG_FLOORCHANGENORTH, flags);
 		iType->floorChangeEast = hasBitSet(FLAG_FLOORCHANGEEAST, flags);
 		iType->floorChangeSouth = hasBitSet(FLAG_FLOORCHANGESOUTH, flags);
 		iType->floorChangeWest = hasBitSet(FLAG_FLOORCHANGEWEST, flags);
-
 		iType->alwaysOnTop = hasBitSet(FLAG_ALWAYSONTOP, flags);
 		iType->isVertical = hasBitSet(FLAG_VERTICAL, flags);
 		iType->isHorizontal = hasBitSet(FLAG_HORIZONTAL, flags);
 		iType->isHangable = hasBitSet(FLAG_HANGABLE, flags);
 		iType->allowDistRead = hasBitSet(FLAG_ALLOWDISTREAD, flags);
 		iType->rotable = hasBitSet(FLAG_ROTABLE, flags);
-		iType->canReadText = hasBitSet(FLAG_READABLE, flags);
-		iType->clientCharges = hasBitSet(FLAG_CLIENTCHARGES, flags);
+		
+		if(hasBitSet(FLAG_READABLE, flags))
+            iType->canReadText = true;
 
 		attribute_t attrib;
 		datasize_t datalen = 0;
@@ -479,7 +473,10 @@ bool Items::loadFromXml()
 							else if(tmpStrValue == "runespellname")
 							{
 								if(readXMLString(itemAttributesNode, "value", strValue))
+                                {
 									it.runeSpellName = strValue;
+									it.type = ITEM_TYPE_RUNE;
+								}
 							}
 							else if(tmpStrValue == "weight")
 							{
