@@ -688,8 +688,8 @@ MagicEffectNames magicEffectNames[] =
 	{"greenbubble",		NM_ME_POISON_RINGS},
 	{"blackspark",		NM_ME_HIT_AREA},
 	{"teleport",		NM_ME_TELEPORT},
+	{"energyarea",		NM_ME_TELEPORT},
 	{"energy",		NM_ME_ENERGY_DAMAGE},
-	{"teleport",		NM_ME_ENERGY_DAMAGE},
 	{"blueshimmer",		NM_ME_MAGIC_ENERGY},
 	{"redshimmer",		NM_ME_MAGIC_BLOOD},
 	{"greenshimmer",	NM_ME_MAGIC_POISON},
@@ -707,21 +707,23 @@ MagicEffectNames magicEffectNames[] =
 
 ShootTypeNames shootTypeNames[] =
 {
-	{"spear",		NM_SHOOT_SPEAR},
-	{"bolt",		NM_SHOOT_BOLT},
-	{"arrow",		NM_SHOOT_ARROW},
-	{"fire",		NM_SHOOT_FIRE},
-	{"energy",		NM_SHOOT_ENERGY},
-	{"poisonarrow",		NM_SHOOT_POISONARROW},
-	{"burstarrow",		NM_SHOOT_BURSTARROW},
-	{"throwingstar",	NM_SHOOT_THROWINGSTAR},
-	{"throwingknife",	NM_SHOOT_THROWINGKNIFE},
-	{"smallstone",		NM_SHOOT_SMALLSTONE},
-	{"death",		NM_SHOOT_DEATH},
-	{"largerock",		NM_SHOOT_LARGEROCK},
-	{"snowball",		NM_SHOOT_SNOWBALL},
-	{"powerbolt",		NM_SHOOT_POWERBOLT},
-	{"poison",		NM_SHOOT_POISONFIELD}
+	{"spear", NM_SHOOT_SPEAR},
+	{"bolt", NM_SHOOT_BOLT},
+	{"arrow", NM_SHOOT_ARROW},
+	{"fire", NM_SHOOT_FIRE},
+	{"energy", NM_SHOOT_ENERGY},
+	{"poisonarrow", NM_SHOOT_POISONARROW},
+	{"burstarrow", NM_SHOOT_BURSTARROW},
+	{"throwingstar", NM_SHOOT_THROWINGSTAR},
+	{"throwingknife", NM_SHOOT_THROWINGKNIFE},
+	{"smallstone", NM_SHOOT_SMALLSTONE},
+	{"death", NM_SHOOT_DEATH},
+	{"suddendeath", NM_SHOOT_DEATH},
+	{"largerock", NM_SHOOT_LARGEROCK},
+	{"snowball", NM_SHOOT_SNOWBALL},
+	{"powerbolt", NM_SHOOT_POWERBOLT},
+	{"poison", NM_SHOOT_POISONFIELD},
+	{"earth", NM_SHOOT_POISONFIELD}
 };
 
 AmmoTypeNames ammoTypeNames[] =
