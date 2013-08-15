@@ -476,10 +476,4 @@
 		<vocation name="Elder Druid" showInDescription="0"/>
 	</movevent>
 	<movevent event="DeEquip" itemid="7896" slot="legs" function="onDeEquipItem"/>
-
-	<!-- Swimming -->
-	<movevent event="StepIn" fromid="4620" toid="4625" script="swimming.lua"/>
-	<movevent event="StepOut" fromid="4620" toid="4625" script="swimming.lua"/>
-	<movevent event="StepIn" itemid="5405" script="drowning.lua"/>
-	<movevent event="StepOut" itemid="5405" script="drowning.lua"/>
 </movements>

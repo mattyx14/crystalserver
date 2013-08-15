@@ -79,8 +79,8 @@
 	timeBetweenExActions = 1000
 
 	-- Map
-	mapName = "forgotten"
-	mapAuthor = "Komic"
+	mapName = "SadTeamMapper"
+	mapAuthor = ""
 
 	-- Messaging
 	maxMessageBuffer = 4
@@ -124,5 +124,5 @@
 	-- Status
 	ownerName = ""
 	ownerEmail = ""
-	url = "http://otland.net/"
+	url = "https://github.com/tryller/crystalserver"
 	location = "Brazil"
