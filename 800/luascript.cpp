@@ -41,6 +41,7 @@
 #include "vocation.h"
 #include "teleport.h"
 #include "ban.h"
+#include "databasemanager.h"
 
 extern Game g_game;
 extern Monsters g_monsters;
@@ -61,6 +62,9 @@ uint32_t ScriptEnviroment::m_lastCombatId = 0;
 ScriptEnviroment::ConditionMap ScriptEnviroment::m_conditionMap;
 uint32_t ScriptEnviroment::m_lastConditionId = 0;
 ScriptEnviroment::StorageMap ScriptEnviroment::m_globalStorageMap;
+
+ScriptEnviroment::DBResultMap ScriptEnviroment::m_tempResults;
+uint32_t ScriptEnviroment::m_lastResultId = 0;
 
 ScriptEnviroment::ScriptEnviroment()
 {
@@ -109,26 +113,22 @@ bool ScriptEnviroment::saveGameState()
 		return true;
 
 	Database* db = Database::getInstance();
-	if(!db->connect())
+
+	if(!db->executeQuery("DELETE FROM `global_storage`"))
 		return false;
 
-	DBQuery query;
-	query << "DELETE FROM `global_storage`";
-	if(!db->executeQuery(query))
-		return false;
-
-	DBSplitInsert query_insert(db);
+	DBInsert query_insert(db);
 	query_insert.setQuery("INSERT INTO `global_storage` (`key`, `value`) VALUES ");
-	query.str("");
+	DBQuery query;
 	for(StorageMap::const_iterator it = m_globalStorageMap.begin(); it != m_globalStorageMap.end(); ++it)
 	{
-		query << "(" << it->first << ", " << it->second << ")";
+		query << it->first << ", " << it->second;
 		if(!query_insert.addRow(query.str()))
 			return false;
 
 		query.str("");
 	}
-	if(!query_insert.executeQuery())
+	if(!query_insert.execute())
 		return false;
 
 	return true;
@@ -140,24 +140,19 @@ bool ScriptEnviroment::loadGameState()
 		return true;
 
 	Database* db = Database::getInstance();
-	if(!db->connect())
-		return false;
 
-	DBQuery query;
-	DBResult result;
-	query << "SELECT `key`, `value` FROM `global_storage`";
-	if(db->storeQuery(query, result))
+	DBResult* result;
+	if((result = db->storeQuery("SELECT `key`, `value` FROM `global_storage`")))
 	{
-		if(result.getNumRows() == 0)
-			return false;
-
-		for(uint32_t i = 0; i < result.getNumRows(); ++i)
+		do
 		{
-			int32_t key = result.getDataInt("key", i);
-			int32_t value = result.getDataInt("value", i);
+			int32_t key = result->getDataInt("key");
+			int32_t value = result->getDataInt("value");
 
 			m_globalStorageMap[key] = value;
 		}
+		while(result->next());
+		db->freeResult(result);
 	}
 	return true;
 }
@@ -412,6 +407,37 @@ void ScriptEnviroment::removeTempItem(Item* item)
 	ItemList::iterator it = std::find(m_tempItems.begin(), m_tempItems.end(), item);
 	if(it != m_tempItems.end())
 		m_tempItems.erase(it);
+}
+
+uint32_t ScriptEnviroment::addResult(DBResult* res)
+{
+	uint32_t newResultId = m_lastResultId + 1;
+	m_tempResults[newResultId] = res;
+
+	m_lastResultId++;
+	return m_lastResultId;
+}
+
+bool ScriptEnviroment::removeResult(uint32_t id)
+{
+	DBResultMap::iterator it = m_tempResults.find(id);
+	if(it == m_tempResults.end())
+		return false;
+
+	if(it->second)
+		Database::getInstance()->freeResult(it->second);
+
+	m_tempResults.erase(it);
+	return true;
+}
+
+DBResult* ScriptEnviroment::getResultByID(uint32_t id)
+{
+	DBResultMap::iterator it = m_tempResults.find(id);
+	if(it != m_tempResults.end())
+		return it->second;
+
+	return NULL;
 }
 
 void ScriptEnviroment::addGlobalStorageValue(const uint32_t key, const int32_t value)
@@ -676,23 +702,6 @@ bool LuaScriptInterface::initState()
 		return false;
 
 	luaL_openlibs(m_luaState);
-
-	#if defined __USE_MYSQL__ && defined __USE_SQLITE__
-	if(g_config.getNumber(ConfigManager::SQLTYPE) == SQL_TYPE_MYSQL)
-		luaopen_luasql_mysql(m_luaState);
-	else
-	{
-		#ifdef WIN32
-		luaopen_luasql_sqlite3(m_luaState);
-		#endif
-	}
-	#elif defined __USE_MYSQL__
-	luaopen_luasql_mysql(m_luaState);
-	#elif defined __USE_SQLITE__
-	#ifdef WIN32
-	luaopen_luasql_sqlite3(m_luaState);
-	#endif
-	#endif
 
 	registerFunctions();
 
@@ -966,13 +975,12 @@ double LuaScriptInterface::popFloatNumber(lua_State* L)
 	return (double)lua_tonumber(L, 0);
 }
 
-const char* LuaScriptInterface::popString(lua_State* L)
+std::string LuaScriptInterface::popString(lua_State* L)
 {
 	lua_pop(L,1);
 	const char* str = lua_tostring(L, 0);
-	if(!str || strlen(str) == 0){
-		return "";
-	}
+	if(!str || *str == '\0')
+		return std::string();
 
 	return str;
 }
@@ -1713,8 +1721,8 @@ void LuaScriptInterface::registerFunctions()
 	//getPlayersByIPAddress(ip[, mask = 0xFFFFFFFF])
 	lua_register(m_luaState, "getPlayersByIPAddress", LuaScriptInterface::luaGetPlayersByIPAddress);
 
-	//escapeString(str)
-	lua_register(m_luaState, "escapeString", LuaScriptInterface::luaEscapeString);
+	//db table
+	luaL_register(m_luaState, "db", LuaScriptInterface::luaDatabaseTable);
 
 	//debugPrint(text)
 	lua_register(m_luaState, "debugPrint", LuaScriptInterface::luaDebugPrint);
@@ -2239,7 +2247,7 @@ int32_t LuaScriptInterface::luaDoFeedPlayer(lua_State* L)
 int32_t LuaScriptInterface::luaDoPlayerSendCancel(lua_State* L)
 {
 	//doPlayerSendCancel(cid, text)
-	const char * text = popString(L);
+	std::string text = popString(L);
 	uint32_t cid = popNumber(L);
 
 	ScriptEnviroment* env = getScriptEnv();
@@ -2356,7 +2364,7 @@ int32_t LuaScriptInterface::luaDoCreatureSay(lua_State* L)
 {
 	//doCreatureSay(uid,text,type)
 	uint32_t type = popNumber(L);
-	const char * text = popString(L);
+	std::string text = popString(L);
 	uint32_t cid = popNumber(L);
 
 	ScriptEnviroment* env = getScriptEnv();
@@ -2935,7 +2943,7 @@ int32_t LuaScriptInterface::luaDoSetCreatureDropLoot(lua_State* L)
 int32_t LuaScriptInterface::luaDoShowTextDialog(lua_State* L)
 {
 	//doShowTextDialog(cid, itemid, text)
-	const char* text = popString(L);
+	std::string text = popString(L);
 	uint32_t itemId = popNumber(L);
 	uint32_t cid = popNumber(L);
 
@@ -3505,7 +3513,7 @@ int32_t LuaScriptInterface::luaDoSetItemActionId(lua_State* L)
 int32_t LuaScriptInterface::luaDoSetItemText(lua_State* L)
 {
 	//doSetItemText(uid, text)
-	const char *text = popString(L);
+	std::string text = popString(L);
 	uint32_t uid = popNumber(L);
 
 	ScriptEnviroment* env = getScriptEnv();
@@ -3528,7 +3536,7 @@ int32_t LuaScriptInterface::luaDoSetItemText(lua_State* L)
 int32_t LuaScriptInterface::luaDoSetItemSpecialDescription(lua_State* L)
 {
 	//doSetItemSpecialDescription(uid, desc)
-	const char *desc = popString(L);
+	std::string desc = popString(L);
 	uint32_t uid = popNumber(L);
 
 	ScriptEnviroment* env = getScriptEnv();
@@ -3606,7 +3614,7 @@ int32_t LuaScriptInterface::luaDoSummonCreature(lua_State* L)
 	//doSummonCreature(name, pos)
 	PositionEx pos;
 	popPosition(L, pos);
-	const char *name = popString(L);
+	std::string name = popString(L);
 
 	ScriptEnviroment* env = getScriptEnv();
 
@@ -3786,8 +3794,8 @@ int32_t LuaScriptInterface::luaDoPlayerSetSex(lua_State* L)
 int32_t LuaScriptInterface::luaDebugPrint(lua_State* L)
 {
 	//debugPrint(text)
-	const char * text = popString(L);
-	reportErrorFunc(std::string(text));
+	std::string text = popString(L);
+	reportErrorFunc(text);
 	return 0;
 }
 
@@ -4626,7 +4634,7 @@ int32_t LuaScriptInterface::luaAddOutfitCondition(lua_State* L)
 int32_t LuaScriptInterface::luaSetCombatCallBack(lua_State* L)
 {
 	//setCombatCallBack(combat, key, function_name)
-	const char* function = popString(L);
+	std::string function = popString(L);
 	std::string function_str(function);
 	CallBackParam_t key = (CallBackParam_t)popNumber(L);
 	uint32_t combatId = popNumber(L);
@@ -5776,7 +5784,7 @@ int32_t LuaScriptInterface::luaDoPlayerSetGuildId(lua_State* L)
 int32_t LuaScriptInterface::luaDoPlayerSetGuildRank(lua_State* L)
 {
 	//doPlayerSetGuildRank(cid, rank)
-	const char* rank = popString(L);
+	std::string rank = popString(L);
 	uint32_t cid = popNumber(L);
 
 	ScriptEnviroment* env = getScriptEnv();
@@ -5797,7 +5805,7 @@ int32_t LuaScriptInterface::luaDoPlayerSetGuildRank(lua_State* L)
 int32_t LuaScriptInterface::luaDoPlayerSetGuildNick(lua_State* L)
 {
 	//doPlayerSetGuildNick(cid, nick)
-	const char* nick = popString(L);
+	std::string nick = popString(L);
 	uint32_t cid = popNumber(L);
 
 	ScriptEnviroment* env = getScriptEnv();
@@ -5818,7 +5826,7 @@ int32_t LuaScriptInterface::luaDoPlayerSetGuildNick(lua_State* L)
 int32_t LuaScriptInterface::luaGetGuildId(lua_State* L)
 {
 	//getGuildId(guild_name)
-	const char* name = popString(L);
+	std::string name = popString(L);
 
 	uint32_t guildId;
 	if(IOGuild::getInstance()->getGuildIdByName(guildId, std::string(name)))
@@ -5954,7 +5962,7 @@ int32_t LuaScriptInterface::luaIsMoveable(lua_State* L)
 int32_t LuaScriptInterface::luaGetPlayerByName(lua_State* L)
 {
 	//getPlayerByName(name)
-	const char* name = popString(L);
+	std::string name = popString(L);
 
 	ScriptEnviroment* env = getScriptEnv();
 
@@ -6052,7 +6060,7 @@ int32_t LuaScriptInterface::luaGetAccountNumberByPlayerName(lua_State* L)
 int32_t LuaScriptInterface::luaGetPlayerGUIDByName(lua_State* L)
 {
 	//getPlayerGUIDByName(name)
-	const char* name = popString(L);
+	std::string name = popString(L);
 
 	Player* player = g_game.getPlayerByName(name);
 	uint32_t value = LUA_NULL;
@@ -6073,7 +6081,7 @@ int32_t LuaScriptInterface::luaGetPlayerGUIDByName(lua_State* L)
 int32_t LuaScriptInterface::luaRegisterCreatureEvent(lua_State* L)
 {
 	//registerCreatureEvent(cid, name)
-	const char* name = popString(L);
+	std::string name = popString(L);
 	uint32_t cid = popNumber(L);
 
 	ScriptEnviroment* env = getScriptEnv();
@@ -7111,13 +7119,19 @@ int32_t LuaScriptInterface::luaSaveData(lua_State* L)
 	return 1;
 }
 
-int32_t LuaScriptInterface::luaEscapeString(lua_State* L)
+const luaL_Reg LuaScriptInterface::luaDatabaseTable[] =
 {
-	//escapeString(str)
-	std::string str = popString(L);
-	lua_pushstring(L, Database::escapeString(str).c_str());
-	return 1;
-}
+	{"query", LuaScriptInterface::luaDatabaseExecute},
+	{"storeQuery", LuaScriptInterface::luaDatabaseStoreQuery},
+	{"escapeString", LuaScriptInterface::luaDatabaseEscapeString},
+	{"escapeBlob", LuaScriptInterface::luaDatabaseEscapeBlob},
+	{"lastInsertId", LuaScriptInterface::luaDatabaseLastInsertId},
+	{"stringComparer", LuaScriptInterface::luaDatabaseStringComparer},
+	{"updateLimiter", LuaScriptInterface::luaDatabaseUpdateLimiter},
+	{"connected", LuaScriptInterface::luaDatabaseConnected},
+	{"tableExists", LuaScriptInterface::luaDatabaseTableExists},
+	{NULL,NULL}
+};
 
 int32_t LuaScriptInterface::luaGetOnlinePlayers(lua_State* L)
 {
@@ -7197,3 +7211,71 @@ SHIFTOP(int32_t, LeftShift, <<)
 SHIFTOP(int32_t, RightShift, >>)
 SHIFTOP(uint32_t, ULeftShift, <<)
 SHIFTOP(uint32_t, URightShift, >>)
+
+
+int32_t LuaScriptInterface::luaDatabaseExecute(lua_State* L)
+{
+	DBQuery query;
+	lua_pushboolean(L, Database::getInstance()->executeQuery(popString(L)));
+	return 1;
+}
+
+int32_t LuaScriptInterface::luaDatabaseStoreQuery(lua_State* L)
+{
+	ScriptEnviroment* env = getScriptEnv();
+
+	DBQuery query;
+	if(DBResult* res = Database::getInstance()->storeQuery(popString(L)))
+		lua_pushnumber(L, env->addResult(res));
+	else
+		lua_pushboolean(L, false);
+
+	return 1;
+}
+
+int32_t LuaScriptInterface::luaDatabaseEscapeString(lua_State* L)
+{
+	DBQuery query;
+	lua_pushstring(L, Database::getInstance()->escapeString(popString(L)).c_str());
+	return 1;
+}
+
+int32_t LuaScriptInterface::luaDatabaseEscapeBlob(lua_State* L)
+{
+	uint32_t length = popNumber(L);
+	DBQuery query;
+
+	lua_pushstring(L, Database::getInstance()->escapeBlob(popString(L).c_str(), length).c_str());
+	return 1;
+}
+
+int32_t LuaScriptInterface::luaDatabaseLastInsertId(lua_State* L)
+{
+	DBQuery query;
+	lua_pushnumber(L, Database::getInstance()->getLastInsertId());
+	return 1;
+}
+
+int32_t LuaScriptInterface::luaDatabaseStringComparer(lua_State* L)
+{
+	lua_pushstring(L, Database::getInstance()->getStringComparer().c_str());
+	return 1;
+}
+
+int32_t LuaScriptInterface::luaDatabaseUpdateLimiter(lua_State* L)
+{
+	lua_pushstring(L, Database::getInstance()->getUpdateLimiter().c_str());
+	return 1;
+}
+
+int32_t LuaScriptInterface::luaDatabaseConnected(lua_State* L)
+{
+	lua_pushboolean(L, Database::getInstance()->isConnected());
+	return 1;
+}
+
+int32_t LuaScriptInterface::luaDatabaseTableExists(lua_State* L)
+{
+	lua_pushboolean(L, DatabaseManager::getInstance()->tableExists(popString(L)));
+	return 1;
+}

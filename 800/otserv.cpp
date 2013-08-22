@@ -71,6 +71,7 @@
 #endif
 
 #include "admin.h"
+#include "databasemanager.h"
 
 #ifdef __OTSERV_ALLOCATOR__
 #include "allocator.h"
@@ -284,52 +285,51 @@ void mainLoader()
 	g_otservRSA = new RSA();
 	g_otservRSA->setKey(p, q, d);
 
-	std::cout << ":: Testing SQL connection... ";
-	#if defined __USE_MYSQL__ && defined __USE_SQLITE__
-	std::string sqlType = asLowerCaseString(g_config.getString(ConfigManager::SQL_TYPE));
-	if(sqlType == "mysql")
-	{
-		g_config.setNumber(ConfigManager::SQLTYPE, SQL_TYPE_MYSQL);
-		std::cout << "MySQL." << std::endl;
-		Database* db = Database::getInstance();
-		if(!db->connect())
-			startupErrorMessage("Failed to connect to database, read doc/MYSQL_HELP for information or try SqLite which doesn't require any connection.");
-	}
-	else if(sqlType == "sqlite")
-	{
-		g_config.setNumber(ConfigManager::SQLTYPE, SQL_TYPE_SQLITE);
-		std::cout << "SqLite." << std::endl;
-		FILE* sqliteFile = fopen(g_config.getString(ConfigManager::SQLITE_DB).c_str(), "r");
-		if(sqliteFile == NULL)
-			startupErrorMessage("Failed to connect to sqlite database file, make sure it exists and is readable.");
-		fclose(sqliteFile);
-	}
-	else
-		startupErrorMessage("Unkwown sqlType, valid sqlTypes are: 'mysql' and 'sqlite'.");
-	#elif defined __USE_MYSQL__
-	std::cout << "MySQL." << std::endl;
+	std::cout << ":: Loading database driver..." << std::flush;
 	Database* db = Database::getInstance();
-	if(!db->connect())
-		startupErrorMessage("Failed to connect to database, read doc/MYSQL_HELP for information or try SqLite which doesn't require any connection.");
-	#elif defined __USE_SQLITE__
-	std::cout << "SqLite." << std::endl;
-	FILE* sqliteFile = fopen(g_config.getString(ConfigManager::SQLITE_DB).c_str(), "r");
-	if(sqliteFile == NULL)
-		startupErrorMessage("Failed to connect to sqlite database file, make sure it exists and is readable.");
-	fclose(sqliteFile);
-	#else
-	startupErrorMessage("Unknown sqlType... terminating!");
-	#endif
+	if(!db->isConnected())
+	{
+		switch(db->getDatabaseEngine())
+		{
+			case DATABASE_ENGINE_MYSQL:
+				startupErrorMessage("Failed to connect to database, read doc/MYSQL_HELP for information or try SQLite which doesn't require any connection.");
+				return;
+
+			case DATABASE_ENGINE_SQLITE:
+				startupErrorMessage("Failed to connect to sqlite database file, make sure it exists and is readable.");
+				return;
+
+			default:
+				startupErrorMessage("Unkwown sqlType in config.lua, valid sqlTypes are: \"mysql\" and \"sqlite\".");
+				return;
+		}
+	}
+	std::cout << " " << db->getClientName() << " " << db->getClientVersion() << std::endl;
+
+	// run database manager
+	std::cout << ">> Running database manager" << std::endl;
+	DatabaseManager* dbManager = DatabaseManager::getInstance();
+	if(!dbManager->isDatabaseSetup())
+	{
+		startupErrorMessage("The database you have specified in config.lua is empty, please import the schema to the database.");
+		return;
+	}
+
+	for(uint32_t version = dbManager->updateDatabase(); version != 0; version = dbManager->updateDatabase())
+		std::cout << "> Database has been updated to version " << version << "." << std::endl;
+
+	dbManager->checkTriggers();
+	dbManager->checkEncryption();
+
+	if(g_config.getString(ConfigManager::OPTIMIZE_DATABASE) == "yes" && !dbManager->optimizeTables())
+		std::cout << "> No tables were optimized." << std::endl;
 
 	//load bans
 	std::cout << ":: Loading bans" << std::endl;
 	#ifndef __CONSOLE__
 	SendMessage(gui.m_statusBar, WM_SETTEXT, 0, (LPARAM)">> Loading bans");
 	#endif
-
-	g_bans.init();
-	if(!g_bans.loadBans())
-		startupErrorMessage("Unable to load bans!");
+	g_bans.initialize();
 
 	//load vocations
 	std::cout << ":: Loading vocations" << std::endl;

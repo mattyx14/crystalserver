@@ -428,7 +428,7 @@ bool Chat::talkToChannel(Player* player, SpeakClasses type, const std::string& t
 								{
 									uint32_t guid;
 									IOLoginData::getInstance()->getGuidByName(guid, param);
-									if(!IOGuild::getInstance()->hasGuild(guid))
+									if(!IOLoginData::getInstance()->hasGuild(guid))
 									{
 										if(!IOGuild::getInstance()->isInvitedToGuild(guid, player->getGuildId()))
 										{
@@ -462,7 +462,7 @@ bool Chat::talkToChannel(Player* player, SpeakClasses type, const std::string& t
 						{
 							sprintf(buffer, "%s has left the guild.", player->getName().c_str());
 							guildChannel->talk(player, SPEAK_CHANNEL_R2, buffer);
-							player->resetGuildInformation();
+							player->leaveGuild();
 						}
 						else
 							player->sendCancel("You cannot leave your guild because you are the leader of it, you have to pass the leadership to another member of your guild or disband the guild.");
@@ -606,7 +606,7 @@ bool Chat::talkToChannel(Player* player, SpeakClasses type, const std::string& t
 												{
 													sprintf(buffer, "%s has been kicked from the guild by %s.", paramPlayer->getName().c_str(), player->getName().c_str());
 													guildChannel->talk(player, SPEAK_CHANNEL_R2, buffer);
-													paramPlayer->resetGuildInformation();
+													paramPlayer->leaveGuild();
 												}
 												else
 													player->sendCancel("You may only kick players with a guild rank below your.");
@@ -625,7 +625,7 @@ bool Chat::talkToChannel(Player* player, SpeakClasses type, const std::string& t
 							{
 								uint32_t guid;
 								IOLoginData::getInstance()->getGuidByName(guid, param);
-								if(IOGuild::getInstance()->hasGuild(guid))
+								if(IOLoginData::getInstance()->hasGuild(guid))
 								{
 									if(player->getGuildId() == IOGuild::getInstance()->getGuildId(guid))
 									{
@@ -677,7 +677,7 @@ bool Chat::talkToChannel(Player* player, SpeakClasses type, const std::string& t
 										{
 											sprintf(buffer, "%s has been kicked from the guild by %s.", param.c_str(), player->getName().c_str());
 											guildChannel->talk(player, SPEAK_CHANNEL_R2, buffer);
-											IOLoginData::getInstance()->resetGuildInformation(guid);
+											IOLoginData::getInstance()->leaveGuild(guid);
 										}
 									}
 								}
@@ -752,7 +752,7 @@ bool Chat::talkToChannel(Player* player, SpeakClasses type, const std::string& t
 							{
 								uint32_t guid;
 								IOLoginData::getInstance()->getGuidByName(guid, (std::string&)param1);
-								if(IOGuild::getInstance()->hasGuild(guid))
+								if(IOLoginData::getInstance()->hasGuild(guid))
 								{
 									if(param2.length() > 3)
 									{

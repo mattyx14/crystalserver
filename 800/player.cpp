@@ -50,8 +50,8 @@ extern Chat g_chat;
 extern Vocations g_vocations;
 extern MoveEvents* g_moveEvents;
 extern Weapons* g_weapons;
-extern Ban g_bans;
 extern CreatureEvents* g_creatureEvents;
+
 #ifndef __CONSOLE__
 extern GUI gui;
 #endif
@@ -3673,11 +3673,11 @@ void Player::addUnjustifiedDead(const Player* attacked)
 	{
 		Account account = IOLoginData::getInstance()->loadAccount(accountNumber);
 		if(account.warnings > 3)
-			g_bans.addAccountDeletion(accountNumber, time(NULL), 20, 7, "No comment.", 0);
+			IOBan::getInstance()->addAccountDeletion(accountNumber, time(NULL), 20, 7, "No comment.", 0);
 		else if(account.warnings == 3)
-			g_bans.addAccountBan(accountNumber, time(NULL) + (30 * 86400), 20, 4, "No comment.", 0);
+			IOBan::getInstance()->addAccountBan(accountNumber, time(NULL) + (30 * 86400), 20, 4, "No comment.", 0);
 		else
-			g_bans.addAccountBan(accountNumber, time(NULL) + (7 * 86400), 20, 2, "No comment.", 0);
+			IOBan::getInstance()->addAccountBan(accountNumber, time(NULL) + (7 * 86400), 20, 2, "No comment.", 0);
 
 		uint32_t playerId = getID();
 		g_game.addMagicEffect(getPosition(), NM_ME_MAGIC_POISON);
@@ -3785,7 +3785,7 @@ void Player::manageAccount(const std::string &text)
 				IOLoginData::getInstance()->getGuidByName(_guid, namelockedPlayer);
 				if(IOLoginData::getInstance()->changeName(_guid, newCharacterName))
 				{
-					g_bans.removePlayerNamelock(_guid);
+					IOBan::getInstance()->removePlayerNamelock(_guid);
 
 					talkState[1] = true;
 					talkState[2] = false;
@@ -4247,7 +4247,7 @@ bool Player::isInvitedToGuild(uint32_t guild_id) const
 	return false;
 }
 
-void Player::resetGuildInformation()
+void Player::leaveGuild()
 {
 	sendClosePrivate(0x00);
 	guildId = 0;

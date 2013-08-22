@@ -71,11 +71,11 @@ class IOLoginData
 		bool getGuidByName(uint32_t& guid, std::string& name);
 		bool getGuidByNameEx(uint32_t &guid, bool& specialVip, std::string& name);
 		bool getNameByGuid(uint32_t guid, std::string& name);
-		bool playerExists(std::string name);
+		bool playerExists(std::string& name);
 		bool playerExists(uint32_t guid);
 		int32_t getLevel(uint32_t guid);
 		bool isPremium(uint32_t guid);
-		bool resetGuildInformation(uint32_t guid);
+		bool leaveGuild(uint32_t guid);
 		bool changeName(uint32_t guid, std::string newName);
 		uint32_t getAccountNumberByName(std::string name);
 		bool createCharacter(uint32_t accountNumber, std::string characterName, int32_t vocationId, PlayerSex_t sex);
@@ -83,6 +83,7 @@ class IOLoginData
 		bool addStorageValue(uint32_t guid, uint32_t storageKey, uint32_t storageValue);
 		const PlayerGroup* getPlayerGroup(uint32_t groupid);
 		uint32_t getLastIPByName(std::string name);
+		bool hasGuild(uint32_t guid);
 
 	protected:
 		bool storeNameByGuid(Database &mysql, uint32_t guid);
@@ -98,8 +99,8 @@ class IOLoginData
 
 		typedef std::map<int32_t ,std::pair<Item*, int32_t> > ItemMap;
 
-		void loadItems(ItemMap& itemMap, DBResult& result);
-		bool saveItems(const Player* player, const ItemBlockList& itemList, DBSplitInsert& query_insert);
+		void loadItems(ItemMap& itemMap, DBResult* result);
+		bool saveItems(const Player* player, const ItemBlockList& itemList, DBInsert& query_insert);
 
 		typedef std::map<uint32_t, std::string> NameCacheMap;
 		typedef std::map<std::string, uint32_t, StringCompareCase> GuidCacheMap;

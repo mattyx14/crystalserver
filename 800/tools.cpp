@@ -826,34 +826,33 @@ std::string getSkillName(uint16_t skillid)
 	{
 		case SKILL_FIST:
 			return "fist fighting";
-			break;
+
 		case SKILL_CLUB:
 			return "club fighting";
-			break;
+
 		case SKILL_SWORD:
 			return "sword fighting";
-			break;
+
 		case SKILL_AXE:
 			return "axe fighting";
-			break;
+
 		case SKILL_DIST:
 			return "distance fighting";
-			break;
+
 		case SKILL_SHIELD:
 			return "shielding";
-			break;
+
 		case SKILL_FISH:
 			return "fishing";
-			break;
-		case MAGLEVEL:
+
+		case SKILL__MAGLEVEL:
 			return "magic level";
-			break;
-		case LEVEL:
+
+		case SKILL__LEVEL:
 			return "level";
-			break;
+
 		default:
 			return "unknown";
-			break;
 	}
 }
 

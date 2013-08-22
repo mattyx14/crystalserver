@@ -29,22 +29,13 @@
 extern "C"
 {
 	#include <lua.h>
-
-        #ifdef __USE_MYSQL__
-        extern int luaopen_luasql_mysql(lua_State*);
-        #endif
-        #ifdef __USE_SQLITE__
-        #ifdef WIN32
-        extern int luaopen_luasql_sqlite3(lua_State*);
-        #endif
-        #endif
-
 	#include <lauxlib.h>
 	#include <lualib.h>
 }
 
 #include "position.h"
 #include "definitions.h"
+#include "database.h"
 
 class Thing;
 class Creature;
@@ -131,6 +122,10 @@ class ScriptEnviroment
 		void addTempItem(Item* item);
 		void removeTempItem(Item* item);
 
+		DBResult* getResultByID(uint32_t id);
+		uint32_t addResult(DBResult* res);
+		bool removeResult(uint32_t id);
+
 		void addGlobalStorageValue(const uint32_t key, const int32_t value);
 		bool getGlobalStorageValue(const uint32_t key, int32_t& value) const;
 
@@ -166,6 +161,7 @@ class ScriptEnviroment
 		typedef std::map<uint32_t, Combat*> CombatMap;
 		typedef std::map<uint32_t, Condition*> ConditionMap;
 		typedef std::list<Item*> ItemList;
+		typedef std::map<uint32_t, DBResult*> DBResultMap;
 
 		//script file id
 		int32_t m_scriptId;
@@ -199,6 +195,10 @@ class ScriptEnviroment
 		//condition map
 		static uint32_t m_lastConditionId;
 		static ConditionMap m_conditionMap;
+
+		//result map
+		static uint32_t m_lastResultId;
+		static DBResultMap m_tempResults;
 
 		//for npc scripts
 		Npc* m_curNpc;
@@ -319,7 +319,7 @@ class LuaScriptInterface
 		static void popPosition(lua_State* L, Position& position, uint32_t& stackpos);
 		static uint32_t popNumber(lua_State* L);
 		static double popFloatNumber(lua_State* L);
-		static const char* popString(lua_State* L);
+		static std::string popString(lua_State* L);
 		static int32_t popCallback(lua_State* L);
 
 		static int32_t getField(lua_State* L, const char* key);
@@ -597,7 +597,17 @@ class LuaScriptInterface
 
 		static int32_t luaGetOnlinePlayers(lua_State* L);
 		static int32_t luaSaveData(lua_State* L);
-		static int32_t luaEscapeString(lua_State* L);
+
+		static const luaL_Reg luaDatabaseTable[10];
+		static int32_t luaDatabaseExecute(lua_State* L);
+		static int32_t luaDatabaseStoreQuery(lua_State* L);
+		static int32_t luaDatabaseEscapeString(lua_State* L);
+		static int32_t luaDatabaseEscapeBlob(lua_State* L);
+		static int32_t luaDatabaseLastInsertId(lua_State* L);
+		static int32_t luaDatabaseStringComparer(lua_State* L);
+		static int32_t luaDatabaseUpdateLimiter(lua_State* L);
+		static int32_t luaDatabaseConnected(lua_State* L);
+		static int32_t luaDatabaseTableExists(lua_State* L);
 
 		static int32_t luaDoAddMark(lua_State* L);
 		//

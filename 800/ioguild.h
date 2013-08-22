@@ -41,10 +41,11 @@ class IOGuild
 		bool getGuildIdByName(uint32_t& guildId, const std::string& guildName);
 		uint32_t getRankIdByGuildIdAndLevel(uint32_t guildId, uint32_t guildLevel);
 		bool guildExists(uint32_t guildId);
+		std::string getGuildNameById(uint32_t id);
 		std::string getRankName(int16_t guildLevel, uint32_t guildId);
 		bool changeRankName(std::string oldRankName, std::string newRankName, uint32_t guildId);
 		bool rankNameExists(std::string rankName, uint32_t guildId);
-		bool hasGuild(uint32_t guildId);
+
 		bool isInvitedToGuild(uint32_t guid, uint32_t guildId);
 		bool invitePlayerToGuild(uint32_t guid, uint32_t guildId);
 		bool revokeGuildInvite(uint32_t guid, uint32_t guildId);

@@ -60,18 +60,18 @@ bool ConfigManager::loadFile(const std::string& _filename)
 		m_confString[MYSQL_PASS] = getGlobalString(L, "mysqlPass", "");
 		m_confString[MYSQL_DB] = getGlobalString(L, "mysqlDatabase", "crystalserver");
 		m_confString[SQLITE_DB] = getGlobalString(L, "sqliteDatabase");
-		#if defined __USE_MYSQL__ && defined __USE_SQLITE__
-		m_confString[SQL_TYPE] = getGlobalString(L, "sqlType");
+		#ifdef MULTI_SQL_DRIVERS
+		m_confString[SQL_TYPE] = getGlobalString(L, "sqlType", "sqlite");
 		#endif
 		m_confString[PASSWORDTYPE] = getGlobalString(L, "passwordType", "plain");
-		#if defined __USE_MYSQL__ && defined __USE_SQLITE__
-		m_confInteger[SQLTYPE] = SQL_TYPE_NONE;
-		#endif
+
 		m_confInteger[PASSWORD_TYPE] = PASSWORD_TYPE_PLAIN;
 		m_confString[SERVERSAVE_ENABLED] = getGlobalString(L, "serverSaveEnabled", "yes");
 		m_confInteger[SERVERSAVE_H] = getGlobalNumber(L, "serverSaveHour", 3);
 		m_confString[SAVE_GLOBAL_STORAGE] = getGlobalString(L, "saveGlobalStorage", "no");
 		m_confString[INGAME_GUILD_SYSTEM] = getGlobalString(L, "ingameGuildSystem", "yes");
+		m_confString[OPTIMIZE_DATABASE] = getGlobalString(L, "startupDatabaseOptimization", "yes");
+
 	}
 
 	m_confString[LOGIN_MSG] = getGlobalString(L, "loginMessage", "Welcome to Crystal Server!");

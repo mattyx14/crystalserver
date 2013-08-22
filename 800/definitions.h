@@ -41,13 +41,11 @@
 	#endif
 #endif
 
-#if defined __USE_MYSQL__ && defined __USE_SQLITE__
-enum sqlType_t
-{
-	SQL_TYPE_NONE = 0,
-	SQL_TYPE_SQLITE = 1,
-	SQL_TYPE_MYSQL = 2
-};
+#undef MULTI_SQL_DRIVERS
+#define SQL_DRIVERS __USE_SQLITE__+__USE_MYSQL__
+
+#if SQL_DRIVERS > 1
+#define MULTI_SQL_DRIVERS
 #endif
 
 enum passwordType_t

@@ -74,7 +74,7 @@ class ConfigManager
 			SERVERSAVE_ENABLED,
 			FREE_PREMIUM,
 			SQLITE_DB,
-			#if defined __USE_MYSQL__ && defined __USE_SQLITE__
+			#ifdef MULTI_SQL_DRIVERS
 			SQL_TYPE,
 			#endif
 			PASSWORDTYPE,
@@ -85,6 +85,7 @@ class ConfigManager
 			SAVE_GLOBAL_STORAGE,
 			INGAME_GUILD_SYSTEM,
 			REPLACE_KICK_ON_LOGIN,
+			OPTIMIZE_DATABASE,
 			LAST_STRING_CONFIG /* this must be the last one */
 		};
 
@@ -125,9 +126,6 @@ class ConfigManager
 			PROTECTION_LEVEL,
 			DEATH_LOSE_PERCENT,
 			PASSWORD_TYPE,
-			#if defined __USE_MYSQL__ && defined __USE_SQLITE__
-			SQLTYPE,
-			#endif
 			STATUSQUERY_TIMEOUT,
 			FRAG_TIME,
 			WHITE_SKULL_TIME,

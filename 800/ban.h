@@ -91,12 +91,21 @@ struct LoginBlock
 	uint32_t numberOfLogins;
 };
 
+struct ConnectBlock
+{
+	uint64_t startTime;
+	uint64_t blockTime;
+	uint32_t count;
+};
+
 typedef std::list< IpBanStruct > IpBanList;
 typedef std::list< PlayerNamelockStruct > PlayerNamelockList;
 typedef std::list< AccountNotationStruct > AccountNotationList;
 typedef std::list< AccountBanStruct > AccountBanList;
 typedef std::list< AccountDeletionStruct > AccountDeletionList;
+
 typedef std::map<uint32_t, LoginBlock > IpLoginMap;
+typedef std::map<uint32_t, ConnectBlock > IpConnectMap;
 
 enum BanType_t
 {
@@ -112,50 +121,21 @@ class Ban
 	public:
 		Ban();
 		virtual ~Ban() {}
-		void init();
 
-		bool isIpBanished(uint32_t clientip);
-		bool isPlayerNamelocked(const std::string& name);
+		void initialize();
+		bool acceptConnection(uint32_t clientip);
+		void addLoginAttempt(uint32_t clientip, bool isSuccess);
 		bool isIpDisabled(uint32_t clientip);
 
-		void addIpBan(uint32_t ip, uint32_t mask, uint64_t time);
-		void addPlayerNamelock(uint32_t playerId);
-		void addAccountBan(uint32_t account, uint64_t time, int32_t reasonId, int32_t actionId, std::string comment, uint32_t bannedBy);
-		void addAccountDeletion(uint32_t account, uint64_t time, int32_t reasonId, int32_t actionId, std::string comment, uint32_t bannedBy);
-		void addAccountNotation(uint32_t account, uint64_t time, std::string comment, uint32_t bannedBy);
-		void addLoginAttempt(uint32_t clientip, bool isSuccess);
-
-		bool getBanInformation(uint32_t account, uint32_t& bannedBy, uint32_t& banTime, int32_t& reason, int32_t& action, std::string& comment, bool& deletion);
-		int32_t getNotationsCount(uint32_t account);
-
-		bool removeAccountBan(uint32_t account);
-		bool removeAccountNotations(uint32_t account);
-		bool removeAccountDeletion(uint32_t account);
-		bool removeIPBan(uint32_t ip);
-		bool removePlayerNamelock(uint32_t guid);
-
-		bool loadBans();
-		bool saveBans();
-
-		const IpBanList& getIpBans();
-		const PlayerNamelockList& getPlayerNamelocks();
-		const AccountBanList& getAccountBans();
-
 	protected:
-		IpBanList ipBanList;
-		PlayerNamelockList playerNamelockList;
-		AccountNotationList accountNotationList;
-		AccountBanList accountBanList;
-		AccountDeletionList accountDeletionList;
 		IpLoginMap ipLoginMap;
+		IpConnectMap ipConnectMap;
 
 		uint32_t loginTimeout;
 		uint32_t maxLoginTries;
 		uint32_t retryTimeout;
 
 		OTSYS_THREAD_LOCKVAR banLock;
-
-		friend class IOBan;
 };
 
 class IOBan
@@ -167,8 +147,24 @@ class IOBan
 			return &instance;
 		}
 
-		virtual bool loadBans(Ban& banclass);
-		virtual bool saveBans(const Ban& banclass);
+		bool isIpBanished(uint32_t clientip);
+		bool isPlayerNamelocked(const std::string& name);
+		bool isAccountBanned(uint32_t account);
+
+		void addIpBan(uint32_t ip, uint32_t mask, uint64_t time);
+		void addPlayerNamelock(uint32_t playerId, uint32_t time, uint32_t reasonId, uint32_t actionId, std::string comment, uint32_t bannedBy);
+		void addAccountBan(uint32_t account, uint64_t time, int32_t reasonId, int32_t actionId, std::string comment, uint32_t bannedBy);
+		void addAccountDeletion(uint32_t account, uint64_t time, int32_t reasonId, int32_t actionId, std::string comment, uint32_t bannedBy);
+		void addAccountNotation(uint32_t account, uint64_t time, uint32_t reasonId, uint32_t actionId, std::string comment, uint32_t bannedBy);
+
+		bool getBanInformation(uint32_t account, uint32_t& bannedBy, uint32_t& banTime, int32_t& reason, int32_t& action, std::string& comment, bool& deletion);
+		int32_t getNotationsCount(uint32_t account);
+
+		bool removeAccountBan(uint32_t account);
+		bool removeAccountNotations(uint32_t account);
+		bool removeAccountDeletion(uint32_t account);
+		bool removeIPBan(uint32_t ip);
+		bool removePlayerNamelock(uint32_t guid);
 
 	protected:
 		IOBan() {}

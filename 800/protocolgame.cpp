@@ -293,7 +293,7 @@ bool ProtocolGame::login(const std::string& name, uint32_t accnumber, const std:
 		}
 
 		bool letNamelockedLogin = true;
-		if(g_bans.isPlayerNamelocked(name) && accnumber > 1)
+		if(IOBan::getInstance()->isPlayerNamelocked(name) && accnumber > 1)
 		{
 			if(g_config.getString(ConfigManager::ACCOUNT_MANAGER) == "yes")
 			{
@@ -331,7 +331,7 @@ bool ProtocolGame::login(const std::string& name, uint32_t accnumber, const std:
 			int32_t reason = 0, action = 0;
 			std::string comment = "";
 			bool deletion = false;
-			if(g_bans.getBanInformation(accnumber, bannedBy, banTime, reason, action, comment, deletion))
+			if(IOBan::getInstance()->getBanInformation(accnumber, bannedBy, banTime, reason, action, comment, deletion))
 			{
 				uint64_t timeNow = time(NULL);
 				if((deletion && banTime != 0) || banTime > timeNow)
@@ -574,7 +574,7 @@ bool ProtocolGame::parseFirstPacket(NetworkMessage& msg)
 		return false;
 	}
 
-	if(g_bans.isIpBanished(getIP()))
+	if(IOBan::getInstance()->isIpBanished(getIP()))
 	{
 		disconnectClient(0x14, "Your IP is banished!");
 		return false;
@@ -604,10 +604,14 @@ void ProtocolGame::onRecvFirstMessage(NetworkMessage& msg)
 void ProtocolGame::disconnectClient(uint8_t error, const char* message)
 {
 	OutputMessage* output = OutputMessagePool::getInstance()->getOutputMessage(this, false);
-	TRACK_MESSAGE(output);
-	output->AddByte(error);
-	output->AddString(message);
-	OutputMessagePool::getInstance()->send(output);
+	if(output)
+	{
+		TRACK_MESSAGE(output);
+		output->AddByte(error);
+		output->AddString(message);
+		OutputMessagePool::getInstance()->send(output);
+	}
+
 	disconnect();
 }
 

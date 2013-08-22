@@ -65,7 +65,6 @@ extern Commands commands;
 extern Chat g_chat;
 extern TalkActions* g_talkActions;
 extern Spells* g_spells;
-extern Ban g_bans;
 extern Vocations g_vocations;
 
 Game::Game()
@@ -206,9 +205,7 @@ void Game::saveGameState(bool savePlayers)
 		}
 	}
 
-	g_bans.saveBans();
 	map->saveMap();
-
 	ScriptEnviroment::saveGameState();
 }
 
@@ -4222,62 +4219,64 @@ Highscore Game::getHighscore(unsigned short skill)
 {
 	Highscore hs;
 	Database* db = Database::getInstance();
-	if(!db->connect())
-		return hs;
 
 	DBQuery query;
-	DBResult result, tmpResult;
 	uint32_t highscoresTop = g_config.getNumber(ConfigManager::HIGHSCORES_TOP);
-	if(skill >= 7)
+	if(skill > SKILL_LAST)
 	{
-		if(skill == 7)
+		if(skill == SKILL__MAGLEVEL)
 			query << "SELECT `name`, `maglevel` FROM `players` ORDER BY `maglevel` DESC, `manaspent` DESC LIMIT " << highscoresTop;
-		else
+		else if(skill == SKILL__LEVEL)
 			query << "SELECT `name`, `level` FROM `players` ORDER BY `level` DESC, `experience` DESC LIMIT " << highscoresTop;
+		else
+			return hs;
 
-		if(db->storeQuery(query, result))
+		DBResult* result;
+		if((result = db->storeQuery(query.str())))
 		{
-			for(uint32_t i = 0; i < result.getNumRows(); ++i)
+			do
 			{
 				uint32_t level;
-				if(skill == 7)
-					level = result.getDataInt("maglevel", i);
+				if(skill == SKILL__MAGLEVEL)
+					level = result->getDataInt("maglevel");
 				else
-					level = result.getDataInt("level", i);
+					level = result->getDataInt("level");
 
-				std::string name = result.getDataString("name", i);
-				if(name.length() > 0)
-					hs.push_back(make_pair(name, level));
+				hs.push_back(make_pair(result->getDataString("name"), level));
 
 				highscoresTop--;
 				if(highscoresTop == 0)
 					break;
 			}
+			while(result->next());
+			db->freeResult(result);
 		}
 	}
 	else
 	{
 		query << "SELECT * FROM `player_skills` WHERE `skillid`=" << skill << " ORDER BY `value` DESC, `count` DESC";
-		if(db->storeQuery(query, result))
+
+		DBResult* result;
+		if((result = db->storeQuery(query.str())))
 		{
-			for(uint32_t i = 0; i < result.getNumRows(); ++i)
+			do
 			{
-				uint32_t level = result.getDataInt("value", i);
-				uint32_t id = result.getDataInt("player_id", i);
-				std::string name;
-				query << "SELECT `name` FROM `players` WHERE `id` = " << id;
+				query.str("");
+				query << "SELECT `name` FROM `players` WHERE `id` = " << result->getDataInt("player_id") << ";";
 
-				if(db->storeQuery(query, tmpResult))
-					name = tmpResult.getDataString("name", 0);
-
-				query.reset();
-				if(name.length() > 0)
-					hs.push_back(make_pair(name, level));
+				DBResult* tmpResult;
+				if((tmpResult = db->storeQuery(query.str())))
+				{
+					hs.push_back(make_pair(tmpResult->getDataString("name"), result->getDataInt("value")));
+					db->freeResult(tmpResult);
+				}
 
 				highscoresTop--;
 				if(highscoresTop == 0)
 					break;
 			}
+			while(result->next());
+			db->freeResult(result);
 		}
 	}
 	return hs;
@@ -4579,19 +4578,19 @@ bool Game::violationWindow(uint32_t playerId, std::string targetPlayerName, int3
 	{
 		case 0:
 		{
-			g_bans.addAccountNotation(account.accnumber, time(NULL), banComment, player->getGUID());
-			if(g_bans.getNotationsCount(account.accnumber) > 2)
+			IOBan::getInstance()->addAccountNotation(account.accnumber, time(NULL), reason, action, banComment, player->getGUID());
+			if(IOBan::getInstance()->getNotationsCount(account.accnumber) > 2)
 			{
 				account.warnings++;
 				if(account.warnings > 3)
 				{
 					action = 7;
-					g_bans.addAccountDeletion(account.accnumber, time(NULL), reason, action, banComment, player->getGUID());
+					IOBan::getInstance()->addAccountDeletion(account.accnumber, time(NULL), reason, action, banComment, player->getGUID());
 				}
 				else if(account.warnings == 3)
-					g_bans.addAccountBan(account.accnumber, (time(NULL) + (30 * 86400)), reason, action, banComment, player->getGUID());
+					IOBan::getInstance()->addAccountBan(account.accnumber, (time(NULL) + (30 * 86400)), reason, action, banComment, player->getGUID());
 				else
-					g_bans.addAccountBan(account.accnumber, (time(NULL) + (7 * 86400)), reason, action, "4 notations received, auto banishment.", player->getGUID());
+					IOBan::getInstance()->addAccountBan(account.accnumber, (time(NULL) + (7 * 86400)), reason, action, "4 notations received, auto banishment.", player->getGUID());
 			}
 			else
 				isNotation = true;
@@ -4600,7 +4599,7 @@ bool Game::violationWindow(uint32_t playerId, std::string targetPlayerName, int3
 
 		case 1:
 		{
-			g_bans.addPlayerNamelock(guid);
+			IOBan::getInstance()->addPlayerNamelock(guid, time(NULL), reason, action, banComment, player->getGUID());
 			break;
 		}
 
@@ -4609,16 +4608,17 @@ bool Game::violationWindow(uint32_t playerId, std::string targetPlayerName, int3
 			if(account.warnings > 3)
 			{
 				action = 7;
-				g_bans.addAccountDeletion(account.accnumber, time(NULL), reason, action, banComment, player->getGUID());
+				IOBan::getInstance()->addAccountDeletion(account.accnumber, time(NULL), reason, action, banComment, player->getGUID());
 			}
 			else
 			{
 				account.warnings++;
 				if(account.warnings == 3)
-					g_bans.addAccountBan(account.accnumber, (time(NULL) + (30 * 86400)), reason, action, banComment, player->getGUID());
+					IOBan::getInstance()->addAccountBan(account.accnumber, (time(NULL) + (30 * 86400)), reason, action, banComment, player->getGUID());
 				else
-					g_bans.addAccountBan(account.accnumber, (time(NULL) + (7 * 86400)), reason, action, banComment, player->getGUID());
-				g_bans.addPlayerNamelock(guid);
+					IOBan::getInstance()->addAccountBan(account.accnumber, (time(NULL) + (7 * 86400)), reason, action, banComment, player->getGUID());
+				
+				IOBan::getInstance()->addPlayerNamelock(guid, time(NULL), reason, action, banComment, player->getGUID());
 			}
 			break;
 		}
@@ -4628,12 +4628,12 @@ bool Game::violationWindow(uint32_t playerId, std::string targetPlayerName, int3
 			if(account.warnings < 3)
 			{
 				account.warnings = 3;
-				g_bans.addAccountBan(account.accnumber, (time(NULL) + (30 * 86400)), reason, action, banComment, player->getGUID());
+				IOBan::getInstance()->addAccountBan(account.accnumber, (time(NULL) + (30 * 86400)), reason, action, banComment, player->getGUID());
 			}
 			else
 			{
 				action = 7;
-				g_bans.addAccountDeletion(account.accnumber, time(NULL), reason, action, banComment, player->getGUID());
+				IOBan::getInstance()->addAccountDeletion(account.accnumber, time(NULL), reason, action, banComment, player->getGUID());
 			}
 			break;
 		}
@@ -4643,13 +4643,13 @@ bool Game::violationWindow(uint32_t playerId, std::string targetPlayerName, int3
 			if(account.warnings < 3)
 			{
 				account.warnings = 3;
-				g_bans.addAccountBan(account.accnumber, (time(NULL) + (30 * 86400)), reason, action, banComment, player->getGUID());
-				g_bans.addPlayerNamelock(guid);
+				IOBan::getInstance()->addAccountBan(account.accnumber, (time(NULL) + (30 * 86400)), reason, action, banComment, player->getGUID());
+				IOBan::getInstance()->addPlayerNamelock(guid, time(NULL), reason, action, banComment, player->getGUID());
 			}
 			else
 			{
 				action = 7;
-				g_bans.addAccountDeletion(account.accnumber, time(NULL), reason, action, banComment, player->getGUID());
+				IOBan::getInstance()->addAccountDeletion(account.accnumber, time(NULL), reason, action, banComment, player->getGUID());
 			}
 			break;
 		}
@@ -4660,14 +4660,14 @@ bool Game::violationWindow(uint32_t playerId, std::string targetPlayerName, int3
 			if(account.warnings > 3)
 			{
 				action = 7;
-				g_bans.addAccountDeletion(account.accnumber, time(NULL), reason, action, banComment, player->getGUID());
+				IOBan::getInstance()->addAccountDeletion(account.accnumber, time(NULL), reason, action, banComment, player->getGUID());
 			}
 			else
 			{
 				if(account.warnings == 3)
-					g_bans.addAccountBan(account.accnumber, (time(NULL) + (30 * 86400)), reason, action, banComment, player->getGUID());
+					IOBan::getInstance()->addAccountBan(account.accnumber, (time(NULL) + (30 * 86400)), reason, action, banComment, player->getGUID());
 				else
-					g_bans.addAccountBan(account.accnumber, (time(NULL) + (7 * 86400)), reason, action, banComment, player->getGUID());
+					IOBan::getInstance()->addAccountBan(account.accnumber, (time(NULL) + (7 * 86400)), reason, action, banComment, player->getGUID());
 			}
 			break;
 		}
@@ -4699,7 +4699,7 @@ bool Game::violationWindow(uint32_t playerId, std::string targetPlayerName, int3
 		{
 			uint32_t ip = targetPlayer->lastIP;
 			if(ip > 0)
-				g_bans.addIpBan(ip, 0xFFFFFFFF, (time(NULL) + 86400));
+				IOBan::getInstance()->addIpBan(ip, 0xFFFFFFFF, (time(NULL) + 86400));
 		}
 
 		if(!isNotation)
@@ -4714,11 +4714,11 @@ bool Game::violationWindow(uint32_t playerId, std::string targetPlayerName, int3
 	{
 		uint32_t lastip = IOLoginData::getInstance()->getLastIPByName(targetPlayerName);
 		if(lastip != 0)
-			g_bans.addIpBan(lastip, 0xFFFFFFFF, (time(NULL) + 86400));
+			IOBan::getInstance()->addIpBan(lastip, 0xFFFFFFFF, (time(NULL) + 86400));
 	}
 
 	if(!isNotation)
-		g_bans.removeAccountNotations(account.accnumber);
+		IOBan::getInstance()->removeAccountNotations(account.accnumber);
 
 	IOLoginData::getInstance()->saveAccount(account);
 	return true;

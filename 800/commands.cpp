@@ -56,7 +56,6 @@ extern ConfigManager g_config;
 extern Actions* g_actions;
 extern Monsters g_monsters;
 extern Npcs g_npcs;
-extern Ban g_bans;
 extern TalkActions* g_talkActions;
 extern MoveEvents* g_moveEvents;
 extern Spells* g_spells;
@@ -387,7 +386,7 @@ bool Commands::banPlayer(Creature* creature, const std::string& cmd, const std::
 		playerBan->sendTextMessage(MSG_STATUS_CONSOLE_RED, "You have been banned.");
 		uint32_t ip = playerBan->lastIP;
 		if(ip > 0)
-			g_bans.addIpBan(ip, 0xFFFFFFFF, (time(NULL) + 86400));
+			IOBan::getInstance()->addIpBan(ip, 0xFFFFFFFF, (time(NULL) + 86400));
 
 		playerBan->kickPlayer(true);
 		return true;
@@ -726,7 +725,7 @@ bool Commands::getInfo(Creature* creature, const std::string& cmd, const std::st
 			"maglvl:    " << paramPlayer->magLevel << std::endl <<
 			"speed:     " << paramPlayer->getSpeed() <<std::endl <<
 			"position:  " << paramPlayer->getPosition() << std::endl <<
-			"notations: " << g_bans.getNotationsCount(paramPlayer->getAccount()) << std::endl <<
+			"notations: " << IOBan::getInstance()->getNotationsCount(paramPlayer->getAccount()) << std::endl <<
 			"ip:        " << ipText(ip);
 		player->sendTextMessage(MSG_STATUS_CONSOLE_BLUE, info.str().c_str());
 	}
@@ -1296,26 +1295,27 @@ bool Commands::createGuild(Creature* creature, const std::string& cmd, const std
 bool Commands::unban(Creature* creature, const std::string& cmd, const std::string& param)
 {
 	Player* player = creature->getPlayer();
+	uint32_t accountNumber = atoi(param.c_str());
+	bool removedIPBan = false;
+	std::string name = param;
 	if(player)
 	{
-		uint32_t accountNumber = atoi(param.c_str());
-		bool removedIPBan = false;
-		if(IOLoginData::getInstance()->playerExists(param))
+		if(IOLoginData::getInstance()->playerExists(name))
 		{
 			accountNumber = IOLoginData::getInstance()->getAccountNumberByName(param);
 
 			uint32_t lastIP = IOLoginData::getInstance()->getLastIPByName(param);
 			if(lastIP != 0)
-				removedIPBan = g_bans.removeIPBan(lastIP);
+				removedIPBan = IOBan::getInstance()->removeIPBan(lastIP);
 		}
 
-		if(g_bans.removeAccountBan(accountNumber))
+		if(IOBan::getInstance()->removeAccountBan(accountNumber))
 		{
 			char buffer[70];
 			sprintf(buffer, "%s has been unbanned.", param.c_str());
 			player->sendTextMessage(MSG_INFO_DESCR, buffer);
 		}
-		else if(g_bans.removeAccountDeletion(accountNumber))
+		else if(IOBan::getInstance()->removeAccountDeletion(accountNumber))
 		{
 			char buffer[70];
 			sprintf(buffer, "%s has been undeleted.", param.c_str());

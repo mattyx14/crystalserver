@@ -1,5 +1,16 @@
 	-- Crystal Server Config
 
+	-- SQL Connection
+	sqlType = "sqlite"
+	passwordType = "plain"
+	startupDatabaseOptimization = "yes"
+	mysqlHost = "localhost"
+	mysqlUser = "root"
+	mysqlPass = ""
+	mysqlPort = 3306
+	mysqlDatabase = "crystalserver"
+	sqliteDatabase = "crystalserver.s3db"
+
 	-- Account Manager
 	accountManager = "yes"
 	newPlayerChooseVoc = "no"
@@ -77,13 +88,6 @@
 	-- Messaging
 	maxMessageBuffer = 4
 
-	-- MySQL
-	mysqlHost = "localhost"
-	mysqlUser = "root"
-	mysqlPass = ""
-	mysqlDatabase = "crystalserver"
-	mysqlPort = 3306
-
 	-- Premium Account
 	freePremium = "no"
 
@@ -116,13 +120,6 @@
 	-- Spawns
 	deSpawnRange = 2
 	deSpawnRadius = 50
-
-	-- SqLite
-	sqliteDatabase = "crystalserver.s3db"
-
-	-- SQL
-	sqlType = "sqlite"
-	passwordType = "plain"
 
 	-- Startup
 	defaultPriority = "high"
