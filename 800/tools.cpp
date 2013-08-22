@@ -710,29 +710,7 @@ MagicEffectNames magicEffectNames[] =
 	{"stun",		NM_ME_STUN},
 	{"sleep",		NM_ME_SLEEP},
 	{"watercreature",	NM_ME_WATERCREATURE},
-	{"groundshaker",	NM_ME_GROUNDSHAKER},
-	{"hearts",		NM_ME_HEARTS},
-	{"fireattack",		NM_ME_FIREATTACK},
-	{"energyarea",		NM_ME_ENERGY_AREA},
-	{"smallclouds",		NM_ME_SMALLCLOUDS},
-	{"holydamage",		NM_ME_HOLYDAMAGE},
-	{"bigclouds",		NM_ME_BIGCLOUDS},
-	{"icearea",		NM_ME_ICEAREA},
-	{"icetornado",		NM_ME_ICETORNADO},
-	{"iceattack",		NM_ME_ICEATTACK},
-	{"stones",		NM_ME_STONES},
-	{"smallplants",		NM_ME_SMALLPLANTS},
-	{"carniphila",		NM_ME_CARNIPHILA},
-	{"purpleenergy",	NM_ME_PURPLEENERGY},
-	{"yellowenergy",	NM_ME_YELLOWENERGY},
-	{"holyarea",		NM_ME_HOLYAREA},
-	{"bigplants",		NM_ME_BIGPLANTS},
-	{"cake",		NM_ME_CAKE},
-	{"giantice",		NM_ME_GIANTICE},
-	{"watersplash",		NM_ME_WATERSPLASH},
-	{"plantattack",		NM_ME_PLANTATTACK},
-	{"tutorialarrow",	NM_ME_TUTORIALARROW},
-	{"tutorialsquare",	NM_ME_TUTORIALSQUARE}
+	{"groundshaker",	NM_ME_GROUNDSHAKER}
 };
 
 ShootTypeNames shootTypeNames[] =
@@ -764,21 +742,7 @@ ShootTypeNames shootTypeNames[] =
 	{"whirlwindsword",	NM_SHOOT_WHIRLWINDSWORD},
 	{"whirlwindaxe",	NM_SHOOT_WHIRLWINDAXE},
 	{"whirlwindclub",	NM_SHOOT_WHIRLWINDCLUB},
-	{"etherealspear",	NM_SHOOT_ETHEREALSPEAR},
-	{"ice",			NM_SHOOT_ICE},
-	{"earth",		NM_SHOOT_EARTH},
-	{"holy",		NM_SHOOT_HOLY},
-	{"suddendeath",		NM_SHOOT_SUDDENDEATH},
-	{"flasharrow",		NM_SHOOT_FLASHARROW},
-	{"flammingarrow",	NM_SHOOT_FLAMMINGARROW},
-	{"shiverarrow",		NM_SHOOT_SHIVERARROW},
-	{"energyball",		NM_SHOOT_ENERGYBALL},
-	{"smallice",		NM_SHOOT_SMALLICE},
-	{"smallholy",		NM_SHOOT_SMALLHOLY},
-	{"smallearth",		NM_SHOOT_SMALLEARTH},
-	{"eartharrow",		NM_SHOOT_EARTHARROW},
-	{"explosion",		NM_SHOOT_EXPLOSION},
-	{"cake",		NM_SHOOT_CAKE}
+	{"etherealspear",	NM_SHOOT_ETHEREALSPEAR}
 };
 
 AmmoTypeNames ammoTypeNames[] =

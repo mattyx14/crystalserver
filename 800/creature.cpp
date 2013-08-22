@@ -1148,7 +1148,7 @@ void Creature::onTickCondition(ConditionType_t type, bool& bRemove)
 		{
 			case CONDITION_FIRE: bRemove = (field->getCombatType() != COMBAT_FIREDAMAGE); break;
 			case CONDITION_ENERGY: bRemove = (field->getCombatType() != COMBAT_ENERGYDAMAGE); break;
-			case CONDITION_POISON: bRemove = (field->getCombatType() != COMBAT_EARTHDAMAGE); break;
+			case CONDITION_POISON: bRemove = (field->getCombatType() != COMBAT_POISONDAMAGE); break;
 			case CONDITION_DROWN: bRemove = (field->getCombatType() != COMBAT_DROWNDAMAGE); break;
 			default: break;
 		}
@@ -1210,16 +1210,6 @@ void Creature::onGainExperience(uint64_t gainExp)
 			getMaster()->onGainExperience(gainExp);
 		}
 
-		std::stringstream strExp;
-		strExp << gainExp;
-		g_game.addAnimatedText(getPosition(), TEXTCOLOR_WHITE_EXP, strExp.str());
-	}
-}
-
-void Creature::onGainSharedExperience(uint64_t gainExp)
-{
-	if(gainExp > 0)
-	{
 		std::stringstream strExp;
 		strExp << gainExp;
 		g_game.addAnimatedText(getPosition(), TEXTCOLOR_WHITE_EXP, strExp.str());

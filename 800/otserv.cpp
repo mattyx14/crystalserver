@@ -122,7 +122,7 @@ OTSYS_THREAD_SIGNALVAR g_loaderSignal;
 void startupErrorMessage(std::string errorStr)
 {
 	if(errorStr.length() > 0)
-		std::cout << "> ERROR: " << errorStr << std::endl;
+		std::cout << ":: ERROR: " << errorStr << std::endl;
 
 	#ifdef WIN32
 	#ifndef __CONSOLE__
@@ -184,7 +184,7 @@ int main(int argc, char *argv[])
 	OTSYS_THREAD_WAITSIGNAL(g_loaderSignal, g_loaderLock);
 
 	Server server(INADDR_ANY, g_config.getNumber(ConfigManager::PORT));
-	std::cout << ">> " << g_config.getString(ConfigManager::SERVER_NAME) << " Server Online!" << std::endl << std::endl;
+	std::cout << ":: " << g_config.getString(ConfigManager::SERVER_NAME) << " Server Online!" << std::endl << std::endl;
 	#ifndef __CONSOLE__
 	SendMessage(gui.m_statusBar, WM_SETTEXT, 0, (LPARAM)">> Status: Online!");
 	gui.m_connections = true;
@@ -222,7 +222,7 @@ void mainLoader()
 	std::cout << "Visit: https://github.com/tryller/crystalserver." << std::endl;
 
 	#if defined __DEBUG__MOVESYS__ || defined __DEBUG_HOUSES__ || defined __DEBUG_MAILBOX__ || defined __DEBUG_LUASCRIPTS__ || defined __DEBUG_RAID__ || defined __DEBUG_NET__
-	std::cout << ">> Debugging:";
+	std::cout << ":: Debugging:";
 	#ifdef __DEBUG__MOVESYS__
 	std::cout << " MOVESYS";
 	#endif
@@ -250,24 +250,17 @@ void mainLoader()
 
 	#if !defined(WIN32) && !defined(__ROOT_PERMISSION__)
 	if(getuid() == 0 || geteuid() == 0)
-		std::cout << "> WARNING: " << STATUS_SERVER_NAME << " has been executed as root user, it is recommended to execute is as a normal user." << std::endl;
+		std::cout << ":: WARNING: " << STATUS_SERVER_NAME << " has been executed as root user, it is recommended to execute is as a normal user." << std::endl;
 	#endif
 
 	std::cout << std::endl;
 
 	// read global config
-	std::cout << ">> Loading config" << std::endl;
+	std::cout << ":: Loading config" << std::endl;
 	#ifndef __CONSOLE__
 	SendMessage(gui.m_statusBar, WM_SETTEXT, 0, (LPARAM)">> Loading config");
 	#endif
-	#if !defined(WIN32) && !defined(__NO_HOMEDIR_CONF__)
-	std::string configpath;
-	configpath = getenv("HOME");
-	configpath += "/.otserv/config.lua";
-	if(!g_config.loadFile(configpath))
-	#else
 	if(!g_config.loadFile("config.lua"))
-	#endif
 		startupErrorMessage("Unable to load config.lua!");
 
 	#ifdef WIN32
@@ -281,7 +274,7 @@ void mainLoader()
   	#endif
 
 	//load RSA key
-	std::cout << ">> Loading RSA key" << std::endl;
+	std::cout << ":: Loading RSA key" << std::endl;
 	#ifndef __CONSOLE__
 	SendMessage(gui.m_statusBar, WM_SETTEXT, 0, (LPARAM)">> Loading RSA Key");
 	#endif
@@ -291,7 +284,7 @@ void mainLoader()
 	g_otservRSA = new RSA();
 	g_otservRSA->setKey(p, q, d);
 
-	std::cout << ">> Testing SQL connection... ";
+	std::cout << ":: Testing SQL connection... ";
 	#if defined __USE_MYSQL__ && defined __USE_SQLITE__
 	std::string sqlType = asLowerCaseString(g_config.getString(ConfigManager::SQL_TYPE));
 	if(sqlType == "mysql")
@@ -329,7 +322,7 @@ void mainLoader()
 	#endif
 
 	//load bans
-	std::cout << ">> Loading bans" << std::endl;
+	std::cout << ":: Loading bans" << std::endl;
 	#ifndef __CONSOLE__
 	SendMessage(gui.m_statusBar, WM_SETTEXT, 0, (LPARAM)">> Loading bans");
 	#endif
@@ -339,7 +332,7 @@ void mainLoader()
 		startupErrorMessage("Unable to load bans!");
 
 	//load vocations
-	std::cout << ">> Loading vocations" << std::endl;
+	std::cout << ":: Loading vocations" << std::endl;
 	#ifndef __CONSOLE__
 	SendMessage(gui.m_statusBar, WM_SETTEXT, 0, (LPARAM)">> Loading vocations");
 	#endif
@@ -347,7 +340,7 @@ void mainLoader()
 		startupErrorMessage("Unable to load vocations!");
 
 	//load commands
-	std::cout << ">> Loading commands" << std::endl;
+	std::cout << ":: Loading commands" << std::endl;
 	#ifndef __CONSOLE__
 	SendMessage(gui.m_statusBar, WM_SETTEXT, 0, (LPARAM)">> Loading commands");
 	#endif
@@ -355,7 +348,7 @@ void mainLoader()
 		startupErrorMessage("Unable to load commands!");
 
 	// load item data
-	std::cout << ">> Loading items" << std::endl;
+	std::cout << ":: Loading items" << std::endl;
 	#ifndef __CONSOLE__
 	SendMessage(gui.m_statusBar, WM_SETTEXT, 0, (LPARAM)">> Loading items");
 	#endif
@@ -370,14 +363,14 @@ void mainLoader()
 			startupErrorMessage("Unable to load items (XML)!");
 	}
 
-	std::cout << ">> Loading script systems" << std::endl;
+	std::cout << ":: Loading script systems" << std::endl;
 	#ifndef __CONSOLE__
 	SendMessage(gui.m_statusBar, WM_SETTEXT, 0, (LPARAM)">> Loading script systems");
 	#endif
 	if(!ScriptingManager::getInstance()->loadScriptSystems())
 		startupErrorMessage("");
 
-	std::cout << ">> Loading monsters" << std::endl;
+	std::cout << ":: Loading monsters" << std::endl;
 	#ifndef __CONSOLE__
 	SendMessage(gui.m_statusBar, WM_SETTEXT, 0, (LPARAM)">> Loading monsters");
 	#endif
@@ -389,7 +382,7 @@ void mainLoader()
 			startupErrorMessage("Unable to load monsters!");
 	}
 
-	std::cout << ">> Loading outfits" << std::endl;
+	std::cout << ":: Loading outfits" << std::endl;
 	#ifndef __CONSOLE__
 	SendMessage(gui.m_statusBar, WM_SETTEXT, 0, (LPARAM)">> Loading outfits");
 	#endif
@@ -398,14 +391,14 @@ void mainLoader()
 		startupErrorMessage("Unable to load outfits!");
 
 	g_adminConfig = new AdminProtocolConfig();
-	std::cout << ">> Loading admin protocol config" << std::endl;
+	std::cout << ":: Loading admin protocol config" << std::endl;
 	#ifndef __CONSOLE__
 	SendMessage(gui.m_statusBar, WM_SETTEXT, 0, (LPARAM)">> Loading admin protocol config");
 	#endif
 	if(!g_adminConfig->loadXMLConfig())
 		startupErrorMessage("Unable to load admin protocol config!");
 
-	std::cout << ">> Loading experience stages" << std::endl;
+	std::cout << ":: Loading experience stages" << std::endl;
 	#ifndef __CONSOLE__
 	SendMessage(gui.m_statusBar, WM_SETTEXT, 0, (LPARAM)">> Loading experience stages");
 	#endif
@@ -416,20 +409,20 @@ void mainLoader()
 	if(passwordType == "md5")
 	{
 		g_config.setNumber(ConfigManager::PASSWORD_TYPE, PASSWORD_TYPE_MD5);
-		std::cout << ">> Using MD5 passwords" << std::endl;
+		std::cout << ":: Using MD5 passwords" << std::endl;
 	}
 	else if(passwordType == "sha1")
 	{
 		g_config.setNumber(ConfigManager::PASSWORD_TYPE, PASSWORD_TYPE_SHA1);
-		std::cout << ">> Using SHA1 passwords" << std::endl;
+		std::cout << ":: Using SHA1 passwords" << std::endl;
 	}
 	else
 	{
 		g_config.setNumber(ConfigManager::PASSWORD_TYPE, PASSWORD_TYPE_PLAIN);
-		std::cout << ">> Using plaintext passwords" << std::endl;
+		std::cout << ":: Using plaintext passwords" << std::endl;
 	}
 
-	std::cout << ">> Checking world type... ";
+	std::cout << ":: Checking world type... ";
 	std::string worldType = asLowerCaseString(g_config.getString(ConfigManager::WORLD_TYPE));
 	if(worldType == "pvp")
 		g_game.setWorldType(WORLD_TYPE_PVP);
@@ -439,7 +432,7 @@ void mainLoader()
 		g_game.setWorldType(WORLD_TYPE_PVP_ENFORCED);
 	else
 	{
-		std::cout << std::endl << "> ERROR: Unknown world type: " << g_config.getString(ConfigManager::WORLD_TYPE) << std::endl;
+		std::cout << std::endl << ":: ERROR: Unknown world type: " << g_config.getString(ConfigManager::WORLD_TYPE) << std::endl;
 		startupErrorMessage("");
 	}
 	std::cout << asUpperCaseString(worldType) << std::endl;
@@ -449,14 +442,14 @@ void mainLoader()
 	status->setMapAuthor(g_config.getString(ConfigManager::MAP_AUTHOR));
 	status->setMapName(g_config.getString(ConfigManager::MAP_NAME));
 
-	std::cout << ">> Loading map" << std::endl;
+	std::cout << ":: Loading map" << std::endl;
 	#ifndef __CONSOLE__
 	SendMessage(gui.m_statusBar, WM_SETTEXT, 0, (LPARAM)">> Loading map");
 	#endif
 	if(!g_game.loadMap(g_config.getString(ConfigManager::MAP_NAME)))
 		startupErrorMessage("");
 
-	std::cout << ">> Setting gamestate to: GAME_STATE_INIT" << std::endl;
+	std::cout << ":: Setting gamestate to: GAME_STATE_INIT" << std::endl;
 	g_game.setGameState(GAME_STATE_INIT);
 
 	g_game.timedHighscoreUpdate();
@@ -511,7 +504,7 @@ void mainLoader()
 			Scheduler::getScheduler().addEvent(createSchedulerTask(hoursLeftInMS + minutesLeftInMS, boost::bind(&Game::prepareServerSave, &g_game)));
 	}
 
-	std::cout << ">> All modules has been loaded, server starting up..." << std::endl;
+	std::cout << ":: All modules has been loaded, server starting up..." << std::endl;
 
 	std::pair<uint32_t, uint32_t> IpNetMask;
 	IpNetMask.first  = inet_addr("127.0.0.1");
@@ -556,7 +549,7 @@ void mainLoader()
 
 	#if !defined(WIN32) && !defined(__ROOT_PERMISSION__)
 	if(getuid() == 0 || geteuid() == 0)
-		std::cout << "> WARNING: " << STATUS_SERVER_NAME << " has been executed as root user, it is recommended to execute is as a normal user." << std::endl;
+		std::cout << ":: WARNING: " << STATUS_SERVER_NAME << " has been executed as root user, it is recommended to execute is as a normal user." << std::endl;
 	#endif
 
 	IOLoginData::getInstance()->resetOnlineStatus();

@@ -111,7 +111,7 @@ bool IOMap::loadMap(Map* map, const std::string& identifier)
 	if(root_header->minorVersionItems > (uint32_t)Items::dwMinorVersion)
 		std::cout << "Warning: [OTBM loader] This map needs an updated items.otb." <<std::endl;
 
-	std::cout << "> Map size: " << root_header->width << "x" << root_header->height << "." << std::endl;
+	std::cout << ":: Map size: " << root_header->width << "x" << root_header->height << "." << std::endl;
 	map->mapWidth = root_header->width;
 	map->mapHeight = root_header->height;
 
@@ -451,6 +451,6 @@ bool IOMap::loadMap(Map* map, const std::string& identifier)
 		nodeMapData = f.getNextNode(nodeMapData, type);
 	}
 
-	std::cout << "> Map loading time: " << (OTSYS_TIME() - start) / (1000.) << " seconds." << std::endl;
+	std::cout << ":: Map loading time: " << (OTSYS_TIME() - start) / (1000.) << " seconds." << std::endl;
 	return true;
 }

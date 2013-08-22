@@ -107,11 +107,6 @@ class ProtocolGame : public Protocol
 		void parseTextWindow(NetworkMessage& msg);
 		void parseHouseWindow(NetworkMessage& msg);
 
-		void parseLookInShop(NetworkMessage& msg);
-		void parsePlayerPurchase(NetworkMessage& msg);
-		void parsePlayerSale(NetworkMessage& msg);
-		void parseCloseShop(NetworkMessage& msg);
-
 		void parseQuestLog(NetworkMessage& msg);
 		void parseQuestLine(NetworkMessage& msg);
 
@@ -120,7 +115,6 @@ class ProtocolGame : public Protocol
 		void parseRevokePartyInvite(NetworkMessage& msg);
 		void parsePassPartyLeadership(NetworkMessage& msg);
 		void parseLeaveParty(NetworkMessage& msg);
-		void parseEnableSharedPartyExperience(NetworkMessage& msg);
 
 		//trade methods
 		void parseRequestTrade(NetworkMessage& msg);
@@ -142,7 +136,7 @@ class ProtocolGame : public Protocol
 		void parseOpenChannel(NetworkMessage& msg);
 		void parseOpenPriv(NetworkMessage& msg);
 		void parseCloseChannel(NetworkMessage& msg);
-		void parseCloseNpc(NetworkMessage& msg);
+
 		void parseProcessRuleViolation(NetworkMessage& msg);
 		void parseCloseRuleViolation(NetworkMessage& msg);
 		void parseCancelRuleViolation(NetworkMessage& msg);
@@ -182,15 +176,11 @@ class ProtocolGame : public Protocol
 		void sendTextMessage(MessageClasses mclass, const std::string& message);
 		void sendReLoginWindow();
 
-		void sendTutorial(uint8_t tutorialId);
 		void sendAddMarker(const Position& pos, uint8_t markType, const std::string& desc);
 
 		void sendCreatureSkull(const Creature* creature);
 		void sendCreatureShield(const Creature* creature);
-
-		void sendShop(const std::list<ShopInfo>& shop);
-		void sendCloseShop();
-		void sendPlayerCash(uint32_t amount);
+		
 		void sendTradeItemRequest(const Player* player, const Item* item, bool ack);
 		void sendCloseTrade();
 
@@ -283,9 +273,6 @@ class ProtocolGame : public Protocol
 
 		//rule violation window
 		void parseViolationWindow(NetworkMessage& msg);
-
-		//shop
-		void AddShopItem(NetworkMessage* msg, const ShopInfo item);
 
 		friend class Player;
 

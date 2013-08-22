@@ -850,10 +850,9 @@ std::string Item::getDescription(const ItemType& it, int32_t lookDistance, const
 	{
 		s << " (Arm:" << it.armor;
 
-		if(it.abilities.absorbPercentAll != 0 || it.abilities.absorbPercentDeath != 0 || 
-			it.abilities.absorbPercentDrown != 0 || it.abilities.absorbPercentEarth != 0 ||
+		if(it.abilities.absorbPercentAll != 0 || 
+			it.abilities.absorbPercentDrown != 0 || it.abilities.absorbPercentPoison != 0 ||
 			it.abilities.absorbPercentEnergy != 0 || it.abilities.absorbPercentFire != 0 ||
-			it.abilities.absorbPercentHoly != 0 || it.abilities.absorbPercentIce != 0 ||
 			it.abilities.absorbPercentLifeDrain != 0 || it.abilities.absorbPercentManaDrain != 0 ||
 			it.abilities.absorbPercentPhysical != 0)
 		{
@@ -862,15 +861,6 @@ std::string Item::getDescription(const ItemType& it, int32_t lookDistance, const
 			if(it.abilities.absorbPercentAll != 0)
 			{
 				s << " all " << std::showpos << it.abilities.absorbPercentAll << std::noshowpos << "%";
-				isBegin = false;
-			}
-
-			if(it.abilities.absorbPercentDeath != 0)
-			{
-				if(!isBegin)
-					s << ",";
-
-				s << " death " << std::showpos << it.abilities.absorbPercentDeath << std::noshowpos << "%";
 				isBegin = false;
 			}
 
@@ -883,12 +873,12 @@ std::string Item::getDescription(const ItemType& it, int32_t lookDistance, const
 				isBegin = false;
 			}
 
-			if(it.abilities.absorbPercentEarth != 0)
+			if(it.abilities.absorbPercentPoison != 0)
 			{
 				if(!isBegin)
 					s << ",";
 
-				s << " earth " << std::showpos << it.abilities.absorbPercentEarth << std::noshowpos << "%";
+				s << " poison " << std::showpos << it.abilities.absorbPercentPoison << std::noshowpos << "%";
 				isBegin = false;
 			}
 
@@ -907,24 +897,6 @@ std::string Item::getDescription(const ItemType& it, int32_t lookDistance, const
 					s << ",";
 
 				s << " fire " << std::showpos << it.abilities.absorbPercentFire << std::noshowpos << "%";
-				isBegin = false;
-			}
-
-			if(it.abilities.absorbPercentHoly != 0)
-			{
-				if(!isBegin)
-					s << ",";
-
-				s << " holy " << std::showpos << it.abilities.absorbPercentHoly << std::noshowpos << "%";
-				isBegin = false;
-			}
-
-			if(it.abilities.absorbPercentIce != 0)
-			{
-				if(!isBegin)
-					s << ",";
-
-				s << " ice " << std::showpos << it.abilities.absorbPercentIce << std::noshowpos << "%";
 				isBegin = false;
 			}
 
@@ -1071,22 +1043,6 @@ std::string Item::getDescription(const ItemType& it, int32_t lookDistance, const
 		double weight = (item == NULL ? it.weight : item->getWeight());
 		if(weight > 0)
 			s << std::endl << getWeightDescription(it, weight);
-	}
-
-	if(it.abilities.elementType != COMBAT_NONE && it.charges != 0)
-	{
-		s << " It is temporarily enchanted with ";
-		std::string strElement = "";
-		int32_t elementDamage = it.abilities.elementDamage;
-		switch(it.abilities.elementType)
-		{
-			case COMBAT_ICEDAMAGE: strElement = "ice"; break;
-			case COMBAT_EARTHDAMAGE: strElement = "earth"; break;
-			case COMBAT_FIREDAMAGE: strElement = "fire"; break;
-			case COMBAT_ENERGYDAMAGE: strElement = "energy"; break;
-			default: break;
-		}
-		s << strElement << " (" << it.attack - elementDamage << " physical + " << elementDamage << " " << strElement << " damage).";
 	}
 
 	if(item && item->getSpecialDescription() != "")

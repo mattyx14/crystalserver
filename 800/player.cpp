@@ -112,10 +112,6 @@ Creature()
 	editHouse = NULL;
 	editListId = 0;
 
-	shopOwner = NULL;
-	purchaseCallback = -1;
-	saleCallback = -1;
-
 	pzLocked = false;
 	bloodHitCount = 0;
 	shieldBlockCount = 0;
@@ -1470,21 +1466,6 @@ void Player::onCreatureDisappear(const Creature* creature, uint32_t stackpos, bo
 	}
 }
 
-void Player::closeShopWindow()
-{
-	//unreference callbacks
-	int32_t onBuy;
-	int32_t onSell;
-
-	Npc* npc = getShopOwner(onBuy, onSell);
-	if(npc)
-	{
-		setShopOwner(NULL, -1, -1);
-		npc->onPlayerEndTrade(this, onBuy, onSell);
-		sendCloseShop();
-	}
-}
-
 void Player::onWalk(Direction& dir)
 {
 	Creature::onWalk(dir);
@@ -1514,9 +1495,6 @@ void Player::onCreatureMove(const Creature* creature, const Tile* newTile, const
 					g_game.internalCloseTrade(this);
 			}
 		}
-
-		if(getParty())
-			getParty()->updateSharedExperience();
 	}
 }
 
@@ -1813,9 +1791,6 @@ void Player::addExperience(uint64_t exp)
 		g_game.changeSpeed(this, 0);
 		g_game.addCreatureHealth(this);
 
-		if(getParty())
-			getParty()->updateSharedExperience();
-
 		char levelMsg[60];
 		sprintf(levelMsg, "You advanced from Level %d to Level %d.", prevLevel, newLevel);
 		sendTextMessage(MSG_EVENT_ADVANCE, levelMsg);
@@ -1973,12 +1948,12 @@ BlockType_t Player::blockHit(Creature* attacker, CombatType_t combatType, int32_
 					break;
 				}
 
-				case COMBAT_EARTHDAMAGE:
+				case COMBAT_POISONDAMAGE:
 				{
-					if(it.abilities.absorbPercentEarth != 0)
+					if(it.abilities.absorbPercentPoison != 0)
 					{
-						damage = (int32_t)std::ceil(damage * ((float)(100 - it.abilities.absorbPercentEarth) / 100));
-						absorbedDamage = (it.abilities.absorbPercentEarth > 0);
+						damage = (int32_t)std::ceil(damage * ((float)(100 - it.abilities.absorbPercentPoison) / 100));
+						absorbedDamage = (it.abilities.absorbPercentPoison > 0);
 					}
 					break;
 				}
@@ -2009,36 +1984,6 @@ BlockType_t Player::blockHit(Creature* attacker, CombatType_t combatType, int32_
 					{
 						damage = (int32_t)std::ceil(damage * ((float)(100 - it.abilities.absorbPercentDrown) / 100));
 						absorbedDamage = (it.abilities.absorbPercentDrown > 0);
-					}
-					break;
-				}
-
-				case COMBAT_ICEDAMAGE:
-				{
-					if(it.abilities.absorbPercentIce != 0)
-					{
-						damage = (int32_t)std::ceil(damage * ((float)(100 - it.abilities.absorbPercentIce) / 100));
-						absorbedDamage = (it.abilities.absorbPercentIce > 0);
-					}
-					break;
-				}
-
-				case COMBAT_HOLYDAMAGE:
-				{
-					if(it.abilities.absorbPercentHoly != 0)
-					{
-						damage = (int32_t)std::ceil(damage * ((float)(100 - it.abilities.absorbPercentHoly) / 100));
-						absorbedDamage = (it.abilities.absorbPercentHoly > 0);
-					}
-					break;
-				}
-
-				case COMBAT_DEATHDAMAGE:
-				{
-					if(it.abilities.absorbPercentDeath != 0)
-					{
-						damage = (int32_t)std::ceil(damage * ((float)(100 - it.abilities.absorbPercentDeath) / 100));
-						absorbedDamage = (it.abilities.absorbPercentDeath > 0);
 					}
 					break;
 				}
@@ -3313,15 +3258,7 @@ void Player::onAddCombatCondition(ConditionType_t type)
 		case CONDITION_DRUNK:
 			sendTextMessage(MSG_STATUS_DEFAULT, "You are drunk.");
 			break;
-		case CONDITION_CURSED:
-			sendTextMessage(MSG_STATUS_DEFAULT, "You are cursed.");
-			break;
-		case CONDITION_FREEZING:
-			sendTextMessage(MSG_STATUS_DEFAULT, "You are freezing.");
-			break;
-		case CONDITION_DAZZLED:
-			sendTextMessage(MSG_STATUS_DEFAULT, "You are dazzled.");
-			break;
+
 		default:
 			break;
 	}
@@ -3527,21 +3464,7 @@ void Player::onGainExperience(uint64_t gainExp)
 	if(hasFlag(PlayerFlag_NotGainExperience))
 		gainExp = 0;
 
-	Party* party = getParty();
-	if(party && party->isSharedExperienceActive() && party->isSharedExperienceEnabled())
-	{
-		party->shareExperience(gainExp);
-		//We will get a share of the experience through the sharing mechanism
-		gainExp = 0;
-	}
-
 	Creature::onGainExperience(gainExp);
-	gainExperience(gainExp);
-}
-
-void Player::onGainSharedExperience(uint64_t gainExp)
-{
-	Creature::onGainSharedExperience(gainExp);
 	gainExperience(gainExp);
 }
 
@@ -4370,49 +4293,24 @@ void Player::setGroupId(int32_t newId)
 	}
 }
 
-PartyShields_t Player::getPartyShield(const Player* player) const
+Shields_t Player::getPartyShield(const Player* player) const
 {
 	if(!player)
 		return SHIELD_NONE;
 
-	Party* party = getParty();
-	if(party)
+	if(getParty())
 	{
-		if(party->getLeader() == player)
-		{
-			if(party->isSharedExperienceActive())
-			{
-				if(party->isSharedExperienceEnabled())
-					return SHIELD_YELLOW_SHAREDEXP;
-
-				if(party->canUseSharedExperience(player))
-					return SHIELD_YELLOW_NOSHAREDEXP;
-
-				return SHIELD_YELLOW_NOSHAREDEXP_BLINK;
-			}
+		if(getParty()->getLeader() == player)
 			return SHIELD_YELLOW;
-		}
 
-		if(party->isPlayerMember(player))
-		{
-			if(party->isSharedExperienceActive())
-			{
-				if(party->isSharedExperienceEnabled())
-					return SHIELD_BLUE_SHAREDEXP;
-
-				if(party->canUseSharedExperience(player))
-					return SHIELD_BLUE_NOSHAREDEXP;
-
-				return SHIELD_BLUE_NOSHAREDEXP_BLINK;
-			}
+		if(getParty()->isPlayerMember(player))
 			return SHIELD_BLUE;
-		}
 
 		if(isInviting(player))
 			return SHIELD_WHITEBLUE;
-	}
 
-	if(player->isInviting(this))
+	}
+	else if(player->isInviting(this))
 		return SHIELD_WHITEYELLOW;
 
 	return SHIELD_NONE;

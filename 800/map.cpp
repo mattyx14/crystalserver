@@ -1291,6 +1291,6 @@ uint32_t Map::clean()
 		else
 			leafS = getLeaf(0, ny + FLOOR_SIZE);
 	}
-	std::cout << "> Cleaning time: " << (OTSYS_TIME() - start) / (1000.) << " seconds, collected " << count << " item" << (count != 1 ? "s" : "") << "." << std::endl;
+	std::cout << ":: Cleaning time: " << (OTSYS_TIME() - start) / (1000.) << " seconds, collected " << count << " item" << (count != 1 ? "s" : "") << "." << std::endl;
 	return count;
 }

@@ -54,21 +54,11 @@ class Party
 		bool disbandParty() {return (memberList.empty() && inviteList.empty());}
 		bool canOpenCorpse(uint32_t ownerId);
 
-		void shareExperience(uint64_t experience);
-		bool setSharedExperience(Player* player, bool _sharedExpActive);
-		bool isSharedExperienceActive() const {return sharedExpActive;}
-		bool isSharedExperienceEnabled() const {return sharedExpEnabled;}
-		bool canUseSharedExperience(const Player* player) const;
-		void updateSharedExperience();
-
 		void addPlayerHealedMember(Player* player, uint32_t points);
 		void addPlayerDamageMonster(Player* player, uint32_t points);
 		void clearPlayerPoints(Player* player);
 
 	protected:
-		bool sharedExpActive;
-		bool sharedExpEnabled;
-
 		Player* leader;
 		PlayerVector memberList;
 		PlayerVector inviteList;
@@ -81,8 +71,6 @@ class Party
 		};
 		typedef std::map<uint32_t, CountBlock_t> CountMap;
 		CountMap pointMap;
-
-		bool canEnableSharedExperience();
 };
 
 #endif

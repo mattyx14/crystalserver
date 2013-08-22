@@ -170,7 +170,7 @@ class Player : public Creature, public Cylinder
 
 		void setParty(Party* _party) {party = _party;}
 		Party* getParty() const {return party;}
-		PartyShields_t getPartyShield(const Player* player) const;
+		Shields_t getPartyShield(const Player* player) const;
 		bool isInviting(const Player* player) const;
 		bool isPartner(const Player* player) const;
 		void sendPlayerPartyIcons(Player* player);
@@ -302,28 +302,6 @@ class Player : public Creature, public Cylinder
 		tradestate_t getTradeState() {return tradeState;}
 		Item* getTradeItem() {return tradeItem;}
 
-		//shop functions
-		void setShopOwner(Npc* owner, int32_t onBuy, int32_t onSell)
-		{
-			shopOwner = owner;
-			purchaseCallback = onBuy;
-			saleCallback = onSell;
-		}
-
-		Npc* getShopOwner(int32_t& onBuy, int32_t& onSell)
-		{
-			onBuy = purchaseCallback;
-			onSell = saleCallback;
-			return shopOwner;
-		}
-
-		const Npc* getShopOwner(int32_t& onBuy, int32_t& onSell) const
-		{
-			onBuy = purchaseCallback;
-			onSell = saleCallback;
-			return shopOwner;
-		}
-
 		//V.I.P. functions
 		void notifyLogIn(Player* player);
 		void notifyLogOut(Player* player);
@@ -342,7 +320,6 @@ class Player : public Creature, public Cylinder
 		virtual void onWalkComplete();
 
 		void stopWalk();
-		void closeShopWindow();
 
 		void setChaseMode(chaseMode_t mode);
 		void setFightMode(fightMode_t mode);
@@ -404,7 +381,7 @@ class Player : public Creature, public Cylinder
 		virtual void onTargetCreatureGainHealth(Creature* target, int32_t points);
 		virtual void onKilledCreature(Creature* target);
 		virtual void onGainExperience(uint64_t gainExp);
-		virtual void onGainSharedExperience(uint64_t gainExp);
+
 		virtual void onAttackedCreatureBlockHit(Creature* target, BlockType_t blockType);
 		virtual void onBlockHit(BlockType_t blockType);
 		virtual void onChangeZone(ZoneType_t zone);
@@ -563,12 +540,7 @@ class Player : public Creature, public Cylinder
 			{if(client) client->sendTextWindow(windowTextId, itemId, text);}
 		void sendToChannel(Creature* creature, SpeakClasses type, const std::string& text, uint16_t channelId, uint32_t time = 0) const
 			{if(client) client->sendToChannel(creature, type, text, channelId, time);}
-		void sendShop(const std::list<ShopInfo>& shop) const
-			{if(client) client->sendShop(shop);}
-		void sendCash(uint32_t amount) const
-			{if(client) client->sendPlayerCash(amount);}
-		void sendCloseShop() const
-			{if(client) client->sendCloseShop();}
+			
 		void sendTradeItemRequest(const Player* player, const Item* item, bool ack) const
 			{if(client) client->sendTradeItemRequest(player, item, ack);}
 		void sendTradeClose() const
@@ -593,8 +565,7 @@ class Player : public Creature, public Cylinder
 			{if(client) client->sendLockRuleViolation();}
 		void sendRuleViolationCancel(const std::string& name)
 			{if(client) client->sendRuleViolationCancel(name);}
-		void sendTutorial(uint8_t tutorialId)
-			{if(client) client->sendTutorial(tutorialId);}
+
 		void sendAddMarker(const Position& pos, uint8_t markType, const std::string& desc)
 			{if (client) client->sendAddMarker(pos, markType, desc);}
 
@@ -772,9 +743,6 @@ class Player : public Creature, public Cylinder
 		Player* tradePartner;
 		tradestate_t tradeState;
 		Item* tradeItem;
-		Npc* shopOwner;
-		int32_t purchaseCallback;
-		int32_t saleCallback;
 
 		std::string name;
 		std::string nameDescription;

@@ -929,22 +929,7 @@ bool Items::loadFromXml()
 								tmpStrValue == "absorbpercentearth")
 							{
 								if(readXMLInteger(itemAttributesNode, "value", intValue))
-									it.abilities.absorbPercentEarth = intValue;
-							}
-							else if(tmpStrValue == "absorbpercentice")
-							{
-								if(readXMLInteger(itemAttributesNode, "value", intValue))
-									it.abilities.absorbPercentIce = intValue;
-							}
-							else if(tmpStrValue == "absorbpercentholy")
-							{
-								if(readXMLInteger(itemAttributesNode, "value", intValue))
-									it.abilities.absorbPercentHoly = intValue;
-							}
-							else if(tmpStrValue == "absorbpercentdeath")
-							{
-								if(readXMLInteger(itemAttributesNode, "value", intValue))
-									it.abilities.absorbPercentDeath = intValue;
+									it.abilities.absorbPercentPoison = intValue;
 							}
 							else if(tmpStrValue == "absorbpercentlifedrain")
 							{
@@ -996,21 +981,6 @@ bool Items::loadFromXml()
 								if(readXMLInteger(itemAttributesNode, "value", intValue))
 									it.abilities.conditionSuppressions |= CONDITION_DROWN;
 							}
-							else if(tmpStrValue == "suppressfreeze")
-							{
-								if(readXMLInteger(itemAttributesNode, "value", intValue) && intValue != 0)
-									it.abilities.conditionSuppressions |= CONDITION_FREEZING;
-							}
-							else if(tmpStrValue == "suppressdazzle")
-							{
-								if(readXMLInteger(itemAttributesNode, "value", intValue) && intValue != 0)
-									it.abilities.conditionSuppressions |= CONDITION_DAZZLED;
-							}
-							else if(tmpStrValue == "suppresscurse")
-							{
-								if(readXMLInteger(itemAttributesNode, "value", intValue) && intValue != 0)
-									it.abilities.conditionSuppressions |= CONDITION_CURSED;
-							}
 							else if(tmpStrValue == "field")
 							{
 								it.group = ITEM_GROUP_MAGICFIELD;
@@ -1034,20 +1004,13 @@ bool Items::loadFromXml()
 									else if(tmpStrValue == "poison")
 									{
 										conditionDamage = new ConditionDamage(CONDITIONID_COMBAT, CONDITION_POISON);
-										combatType = COMBAT_EARTHDAMAGE;
+										combatType = COMBAT_POISONDAMAGE;
 									}
 									else if(tmpStrValue == "drown")
 									{
 										conditionDamage = new ConditionDamage(CONDITIONID_COMBAT, CONDITION_DROWN);
 										combatType = COMBAT_DROWNDAMAGE;
 									}
-									/*
-									else if(tmpStrValue == "physical")
-									{
-										damageCondition = new ConditionDamage(CONDITIONID_COMBAT, CONDITION_PHYSICAL);
-										combatType = COMBAT_PHYSICALDAMAGE;
-									}
-									*/
 									else
 										std::cout << "Warning: [Items::loadFromXml] " << "Unknown field value " << strValue << std::endl;
 
@@ -1160,20 +1123,12 @@ bool Items::loadFromXml()
 								if(readXMLInteger(itemAttributesNode, "value", intValue))
 									it.transformToFree = intValue;
 							}
-							else if(tmpStrValue == "elementice")
+							else if(tmpStrValue == "elementearth" || tmpStrValue == "elementpoison")
 							{
 								if(readXMLInteger(itemAttributesNode, "value", intValue))
 								{
 									it.abilities.elementDamage = intValue;
-									it.abilities.elementType = COMBAT_ICEDAMAGE;
-								}
-							}
-							else if(tmpStrValue == "elementearth")
-							{
-								if(readXMLInteger(itemAttributesNode, "value", intValue))
-								{
-									it.abilities.elementDamage = intValue;
-									it.abilities.elementType = COMBAT_EARTHDAMAGE;
+									it.abilities.elementType = COMBAT_POISONDAMAGE;
 								}
 							}
 							else if(tmpStrValue == "elementfire")
@@ -1220,16 +1175,17 @@ bool Items::loadFromXml()
 		if((it->transformToFree != 0 || it->transformToOnUse[PLAYERSEX_FEMALE] != 0 || it->transformToOnUse[PLAYERSEX_MALE] != 0) && it->type != ITEM_TYPE_BED)
 			std::cout << "Warning: [Items::loadFromXml] Item " << it->id << " is not set as a bed-type." << std::endl;
 	}
+
 	return true;
 }
 
 ItemType& Items::getItemType(int32_t id)
 {
 	ItemType* iType = items.getElement(id);
-	if(iType){
+	if(iType)
 		return *iType;
-	}
-	else{
+	else
+	{
 		#ifdef __DEBUG__
 		std::cout << "WARNING! unknown itemtypeid " << id << ". using defaults." << std::endl;
 		#endif
@@ -1259,6 +1215,7 @@ const ItemType& Items::getItemIdByClientId(int32_t spriteId) const
 		iType = items.getElement(i);
 		if(iType && iType->clientId == spriteId)
 			return *iType;
+
 		i++;
 	}
 	while(iType);

@@ -62,16 +62,13 @@ enum CombatType_t
 	COMBAT_NONE		= 0,
 	COMBAT_PHYSICALDAMAGE	= 1,
 	COMBAT_ENERGYDAMAGE	= 2,
-	COMBAT_EARTHDAMAGE	= 4,
+	COMBAT_POISONDAMAGE	= 4,
 	COMBAT_FIREDAMAGE	= 8,
 	COMBAT_UNDEFINEDDAMAGE	= 16,
 	COMBAT_LIFEDRAIN	= 32,
 	COMBAT_MANADRAIN	= 64,
 	COMBAT_HEALING		= 128,
-	COMBAT_DROWNDAMAGE	= 256,
-	COMBAT_ICEDAMAGE	= 512,
-	COMBAT_HOLYDAMAGE	= 1024,
-	COMBAT_DEATHDAMAGE      = 2048
+	COMBAT_DROWNDAMAGE	= 256
 };
 
 enum CombatParam_t
@@ -253,32 +250,6 @@ struct LightInfo
 		level = _level;
 		color = _color;
 	}
-};
-
-struct ShopInfo
-{
-	uint32_t itemId;
-	int32_t subType;
-	uint32_t buyPrice;
-	uint32_t sellPrice;
-	// Name can be found using Item::items[itemId].
-	
-	ShopInfo()
-	{
-		itemId = 0;
-		subType = 1;
-		buyPrice = 0;
-		sellPrice = 0;
-	};
-
-	ShopInfo(uint32_t _itemId, int32_t _subType = 0,
-		uint32_t _buyPrice = 0, uint32_t _sellPrice = 0)
-	{
-		itemId = _itemId;
-		subType = _subType;
-		buyPrice = _buyPrice;
-		sellPrice = _sellPrice;
-	};
 };
 
 #endif

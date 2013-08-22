@@ -72,8 +72,6 @@ class NpcScriptInterface : public LuaScriptInterface
 		static int32_t luaSetNpcState(lua_State* L);
 		static int32_t luaGetNpcName(lua_State* L);
 		static int32_t luaGetNpcParameter(lua_State* L);
-		static int32_t luaOpenShopWindow(lua_State* L);
-		static int32_t luaCloseShopWindow(lua_State* L);
 
 	private:
 		virtual bool initState();
@@ -92,10 +90,7 @@ class NpcEventsHandler
 		virtual void onCreatureDisappear(const Creature* creature) {}
 		virtual void onCreatureMove(const Creature* creature, const Position& oldPos, const Position& newPos) {}
 		virtual void onCreatureSay(const Creature* creature, SpeakClasses, const std::string& text) {}
-		virtual void onPlayerTrade(const Player* player, int32_t callback, uint16_t itemid,
-			uint8_t count, uint8_t amount) {}
-		virtual void onPlayerCloseChannel(const Player* player) {}
-		virtual void onPlayerEndTrade(const Player* player) {}
+		
 		virtual void onThink() {}
 
 		bool isLoaded();
@@ -115,10 +110,7 @@ class NpcScript : public NpcEventsHandler
 		virtual void onCreatureDisappear(const Creature* creature);
 		virtual void onCreatureMove(const Creature* creature, const Position& oldPos, const Position& newPos);
 		virtual void onCreatureSay(const Creature* creature, SpeakClasses, const std::string& text);
-		virtual void onPlayerTrade(const Player* player, int32_t callback, uint16_t itemid,
-			uint8_t count, uint8_t amount);
-		virtual void onPlayerCloseChannel(const Player* player);
-		virtual void onPlayerEndTrade(const Player* player);
+
 		virtual void onThink();
 
 	private:
@@ -128,8 +120,6 @@ class NpcScript : public NpcEventsHandler
 		int32_t m_onCreatureDisappear;
 		int32_t m_onCreatureMove;
 		int32_t m_onCreatureSay;
-		int32_t m_onPlayerCloseChannel;
-		int32_t m_onPlayerEndTrade;
 		int32_t m_onThink;
 };
 
@@ -209,23 +199,7 @@ enum NpcEvent_t
 	EVENT_IDLE,
 	EVENT_PLAYER_ENTER,
 	EVENT_PLAYER_MOVE,
-	EVENT_PLAYER_LEAVE,
-	EVENT_PLAYER_SHOPSELL,
-	EVENT_PLAYER_SHOPBUY,
-	EVENT_PLAYER_SHOPCLOSE
-
-	/*
-	EVENT_CREATURE_ENTER,
-	EVENT_CREATURE_MOVE,
-	EVENT_CREATURE_LEAVE,
-	*/
-};
-
-enum ShopEvent_t
-{
-	SHOPEVENT_SELL,
-	SHOPEVENT_BUY,
-	SHOPEVENT_CLOSE
+	EVENT_PLAYER_LEAVE
 };
 
 struct ResponseAction
@@ -319,7 +293,6 @@ class NpcResponse
 				storageValue = -1;
 				storageComp = STORAGE_EQUAL;
 				knowSpell = "";
-				publicize = true;
 			}
 
 			int32_t topic;
@@ -336,7 +309,6 @@ class NpcResponse
 			std::string knowSpell;
 			ActionList actionList;
 			std::list<ListItem> itemList;
-			bool publicize;
 		};
 
 		NpcResponse(const ResponseProperties& _prop,
@@ -380,7 +352,6 @@ class NpcResponse
 		const std::string& getText() const {return prop.output;}
 		int32_t getAmount() const {return prop.amount;}
 		void setAmount(int32_t _amount) { prop.amount = _amount;}
-		bool publicize() const {return prop.publicize;}
 
 		std::string formatResponseString(Creature* creature) const;
 		void addAction(ResponseAction action) {prop.actionList.push_back(action);}
@@ -452,17 +423,11 @@ class Npc : public Creature
 		virtual const std::string& getName() const {return name;}
 		virtual const std::string& getNameDescription() const {return name;}
 
-		void doSay(std::string msg, Player* focus = NULL, bool publicize = false);
+		void doSay(std::string msg);
 		void doMove(Direction dir);
 		void doTurn(Direction dir);
 		void doMoveTo(Position pos);
 		bool isLoaded() {return loaded;}
-
-		void onPlayerCloseChannel(const Player* player);
-		void onPlayerTrade(Player* player, ShopEvent_t type, int32_t callback, uint16_t itemId,
-			uint8_t count, uint8_t amount);
-		void onPlayerEndTrade(Player* player, int32_t buyCallback,
-			int32_t sellCallback);
 
 		void setCreatureFocus(Creature* creature);
 
@@ -525,11 +490,6 @@ class Npc : public Creature
 
 		NpcState* getState(const Player* player, bool makeNew = true);
 
-		void addShopPlayer(Player* player);
-		void removeShopPlayer(const Player* player);
-		void closeAllShopWindows();
-		uint32_t getListItemPrice(uint16_t itemId, ShopEvent_t type);
-
 		std::string name;
 		std::string m_filename;
 		uint32_t walkTicks;
@@ -541,11 +501,7 @@ class Npc : public Creature
 		int32_t talkRadius;
 		int32_t idleTime;
 		int32_t idleInterval;
-		bool defaultPublic;
 		int32_t focusCreature;
-
-		typedef std::list<Player*> ShopPlayerList;
-		ShopPlayerList shopPlayerList;
 
 		typedef std::map<std::string, std::list<ListItem> > ItemListMap;
 		ItemListMap itemListMap;

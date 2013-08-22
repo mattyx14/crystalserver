@@ -1906,7 +1906,7 @@ bool Game::playerBroadcastMessage(Player* player, const std::string& text)
 	if(!player->hasFlag(PlayerFlag_CanBroadcast))
 		return false;
 
-	std::cout << "> " << player->getName() << " broadcasted: \"" << text << "\"." << std::endl;
+	std::cout << ":: " << player->getName() << " broadcasted: \"" << text << "\"." << std::endl;
 	for(AutoList<Player>::listiterator it = Player::listPlayer.list.begin(); it != Player::listPlayer.list.end(); ++it)
 		(*it).second->sendCreatureSay(player, SPEAK_BROADCAST, text);
 	return true;
@@ -2076,25 +2076,6 @@ bool Game::playerCancelRuleViolation(uint32_t playerId)
 		return false;
 
 	return cancelRuleViolation(player);
-}
-
-bool Game::playerCloseNpcChannel(uint32_t playerId)
-{
-	Player* player = getPlayerByID(playerId);
-	if(!player || player->isRemoved())
-		return false;
-
-	SpectatorVec list;
-	SpectatorVec::iterator it;
-	getSpectators(list, player->getPosition());
-	Npc* npc;
-
-	for(it = list.begin(); it != list.end(); ++it)
-	{
-		if((npc = (*it)->getNpc()))
-			npc->onPlayerCloseChannel(player);
-	}
-	return true;
 }
 
 bool Game::playerReceivePing(uint32_t playerId)
@@ -2891,106 +2872,6 @@ bool Game::internalCloseTrade(Player* player)
 	return true;
 }
 
-bool Game::playerPurchaseItem(uint32_t playerId, uint16_t spriteId, uint8_t count,
-	uint8_t amount)
-{
-	Player* player = getPlayerByID(playerId);
-	if(player == NULL || player->isRemoved())
-		return false;
-
-	int32_t onBuy;
-	int32_t onSell;
-
-	Npc* merchant = player->getShopOwner(onBuy, onSell);
-	if(merchant == NULL)
-		return false;
-
-	const ItemType& it = Item::items.getItemIdByClientId(spriteId);
-	if(it.id == 0)
-		return false;
-
-	uint8_t subType = 0;
-	if(it.isFluidContainer())
-	{
-		int32_t maxFluidType = sizeof(reverseFluidMap) / sizeof(uint32_t);
-		if(count < maxFluidType)
-			subType = (uint8_t)reverseFluidMap[count];
-	}
-	else
-		subType = count;
-
-	merchant->onPlayerTrade(player, SHOPEVENT_BUY, onBuy, it.id, subType, amount);
-	return true;
-}
-
-bool Game::playerSellItem(uint32_t playerId, uint16_t spriteId, uint8_t count,
-	uint8_t amount)
-{
-	Player* player = getPlayerByID(playerId);
-	if(player == NULL || player->isRemoved())
-		return false;
-
-	int32_t onBuy;
-	int32_t onSell;
-
-	Npc* merchant = player->getShopOwner(onBuy, onSell);
-	if(merchant == NULL)
-		return false;
-
-	const ItemType& it = Item::items.getItemIdByClientId(spriteId);
-	if(it.id == 0)
-		return false;
-
-	uint8_t subType = 0;
-	if(it.isFluidContainer())
-	{
-		int32_t maxFluidType = sizeof(reverseFluidMap) / sizeof(uint32_t);
-		if(count < maxFluidType)
-			subType = (uint8_t)reverseFluidMap[count];
-	}
-	else
-		subType = count;
-
-	merchant->onPlayerTrade(player, SHOPEVENT_SELL, onSell, it.id, subType, amount);
-	return true;
-}
-
-bool Game::playerCloseShop(uint32_t playerId)
-{
-	Player* player = getPlayerByID(playerId);
-	if(player == NULL || player->isRemoved())
-		return false;
-
-	player->closeShopWindow();
-	return true;
-}
-
-bool Game::playerLookInShop(uint32_t playerId, uint16_t spriteId, uint8_t count)
-{
-	Player* player = getPlayerByID(playerId);
-	if(player == NULL || player->isRemoved())
-		return false;
-
-	const ItemType& it = Item::items.getItemIdByClientId(spriteId);
-	if(it.id == 0)
-		return false;
-
-	int32_t subType = 0;
-	if(it.isFluidContainer())
-	{
-		int32_t maxFluidType = sizeof(reverseFluidMap) / sizeof(uint32_t);
-		if(count < maxFluidType)
-			subType = reverseFluidMap[count];
-	}
-	else
-		subType = count;
-
-	std::stringstream ss;
-	ss << "You see " << Item::getDescription(it, 1, NULL, subType);
-	player->sendTextMessage(MSG_INFO_DESCR, ss.str());
-	return true;
-}
-
 bool Game::playerLookAt(uint32_t playerId, const Position& pos, uint16_t spriteId, uint8_t stackPos)
 {
 	Player* player = getPlayerByID(playerId);
@@ -3236,9 +3117,6 @@ bool Game::playerSay(uint32_t playerId, uint16_t channelId, SpeakClasses type,
 		case SPEAK_CHANNEL_R2:
 			return playerTalkToChannel(player, type, text, channelId);
 			break;
-		case SPEAK_PRIVATE_PN:
-			return playerSpeakToNpc(player, text);
-			break;
 		case SPEAK_BROADCAST:
 			return playerBroadcastMessage(player, text);
 			break;
@@ -3403,55 +3281,6 @@ bool Game::playerTalkToChannel(Player* player, SpeakClasses type, const std::str
 	}
 
 	g_chat.talkToChannel(player, type, text, channelId);
-	return true;
-}
-
-bool Game::playerSpeakToNpc(Player* player, const std::string& text)
-{
-	SpectatorVec list;
-	SpectatorVec::iterator it;
-	getSpectators(list, player->getPosition());
-
-	//send to npcs only
-	Npc* tmpNpc = NULL;
-	for(it = list.begin(); it != list.end(); ++it)
-	{
-		if((tmpNpc = (*it)->getNpc()))
-			(*it)->onCreatureSay(player, SPEAK_PRIVATE_PN, text);
-	}
-	return true;
-}
-
-bool Game::npcSpeakToPlayer(Npc* npc, Player* player, const std::string& text, bool publicize)
-{
-	if(player != NULL)
-	{
-		player->sendCreatureSay(npc, SPEAK_PRIVATE_NP, text);
-		player->onCreatureSay(npc, SPEAK_PRIVATE_NP, text);
-	}
-
-	if(publicize)
-	{
-		SpectatorVec list;
-		SpectatorVec::iterator it;
-		getSpectators(list, npc->getPosition());
-
-		//send to client
-		Player* tmpPlayer = NULL;
-		for(it = list.begin(); it != list.end(); ++it)
-		{
-			tmpPlayer = (*it)->getPlayer();
-			if((tmpPlayer != NULL) && (tmpPlayer != player))
-				tmpPlayer->sendCreatureSay(npc, SPEAK_SAY, text);
-		}
-
-		//event method
-		for(it = list.begin(); it != list.end(); ++it)
-		{
-			if((*it) != player)
-				(*it)->onCreatureSay(npc, SPEAK_SAY, text);
-		}
-	}
 	return true;
 }
 
@@ -3816,22 +3645,14 @@ bool Game::combatBlockHit(CombatType_t combatType, Creature* attacker, Creature*
 			case COMBAT_ENERGYDAMAGE:
 			case COMBAT_FIREDAMAGE:
 			case COMBAT_PHYSICALDAMAGE:
-			case COMBAT_ICEDAMAGE:
-			case COMBAT_DEATHDAMAGE:
 			{
 				hitEffect = NM_ME_BLOCKHIT;
 				break;
 			}
 
-			case COMBAT_EARTHDAMAGE:
+			case COMBAT_POISONDAMAGE:
 			{
 				hitEffect = NM_ME_POISON_RINGS;
-				break;
-			}
-
-			case COMBAT_HOLYDAMAGE:
-			{
-				hitEffect = NM_ME_HOLYDAMAGE;
 				break;
 			}
 
@@ -3952,12 +3773,12 @@ bool Game::combatChangeHealth(CombatType_t combatType, Creature* attacker, Creat
 
 					case COMBAT_ENERGYDAMAGE:
 					{
-						textColor = TEXTCOLOR_PURPLE;
+						textColor = TEXTCOLOR_LIGHTBLUE;
 						hitEffect = NM_ME_ENERGY_DAMAGE;
 						break;
 					}
 
-					case COMBAT_EARTHDAMAGE:
+					case COMBAT_POISONDAMAGE:
 					{
 						textColor = TEXTCOLOR_LIGHTGREEN;
 						hitEffect = NM_ME_POISON_RINGS;
@@ -3975,27 +3796,6 @@ bool Game::combatChangeHealth(CombatType_t combatType, Creature* attacker, Creat
 					{
 						textColor = TEXTCOLOR_ORANGE;
 						hitEffect = NM_ME_HITBY_FIRE;
-						break;
-					}
-
-					case COMBAT_ICEDAMAGE:
-					{
-						textColor = TEXTCOLOR_LIGHTBLUE;
-						hitEffect = NM_ME_ICEATTACK;
-						break;
-					}
-
-					case COMBAT_HOLYDAMAGE:
-					{
-						textColor = TEXTCOLOR_YELLOW;
-						hitEffect = NM_ME_HOLYDAMAGE;
-						break;
-					}
-
-					case COMBAT_DEATHDAMAGE:
-					{
-						textColor = TEXTCOLOR_DARKRED;
-						hitEffect = NM_ME_SMALLCLOUDS;
 						break;
 					}
 
@@ -4410,7 +4210,7 @@ bool Game::broadcastMessage(const std::string& text, MessageClasses type)
 {
 	if(type >= MSG_CLASS_FIRST && type <= MSG_CLASS_LAST)
 	{
-		std::cout << "> Broadcasted message: \"" << text << "\"." << std::endl;
+		std::cout << ":: Broadcasted message: \"" << text << "\"." << std::endl;
 		for(AutoList<Player>::listiterator it = Player::listPlayer.list.begin(); it != Player::listPlayer.list.end(); ++it)
 			(*it).second->sendTextMessage(type, text);
 		return true;
@@ -4519,7 +4319,7 @@ void Game::removePremium(Account account)
 		account.lastDay = timeNow;
 
 	if(!IOLoginData::getInstance()->saveAccount(account))
-		std::cout << "> ERROR: Failed to save account: " << account.accnumber << "!" << std::endl;
+		std::cout << ":: ERROR: Failed to save account: " << account.accnumber << "!" << std::endl;
 }
 
 void Game::autoSave()
@@ -4651,7 +4451,7 @@ void Game::loadMotd()
         std::ifstream file("lastMotd.txt");
         if(!file)
         {
-                std::cout << "> ERROR: Failed to load lastMotd.txt" << std::endl;
+                std::cout << ":: ERROR: Failed to load lastMotd.txt" << std::endl;
                 lastMotdNum = random_range(5, 500);
                 return;
         }
@@ -4680,14 +4480,14 @@ void Game::savePlayersRecord()
 	FILE* file = fopen("playersRecord.txt", "w"); 
 	if(file == NULL)
 	{
-		std::cout << "> ERROR: Failed to save playersRecord.txt" << std::endl;
+		std::cout << ":: ERROR: Failed to save playersRecord.txt" << std::endl;
 		return;
 	}
 
         int32_t tmp = fprintf(file, "%u", lastPlayersRecord);
         if(tmp == EOF)
         {
-                std::cout << "> ERROR: Failed to save playersRecord.txt" << std::endl;
+                std::cout << ":: ERROR: Failed to save playersRecord.txt" << std::endl;
                 return;
         }
 
@@ -4699,7 +4499,7 @@ void Game::loadPlayersRecord()
 	FILE* file = fopen("playersRecord.txt", "r");
 	if(file == NULL)
 	{
-		std::cout << "> ERROR: Failed to load playersRecord.txt" << std::endl;
+		std::cout << ":: ERROR: Failed to load playersRecord.txt" << std::endl;
 		lastPlayersRecord = 0;
 		return;
 	}
@@ -4707,7 +4507,7 @@ void Game::loadPlayersRecord()
         int32_t tmp = fscanf(file, "%u", &lastPlayersRecord);
         if(tmp == EOF)
         {
-                std::cout << "> ERROR: Failed to read playersRecord.txt" << std::endl;
+                std::cout << ":: ERROR: Failed to read playersRecord.txt" << std::endl;
                 lastPlayersRecord = 0;
         }
         fclose(file);
@@ -5081,18 +4881,6 @@ bool Game::playerLeaveParty(uint32_t playerId)
 		return false;
 
 	return player->getParty()->leaveParty(player);
-}
-
-bool Game::playerEnableSharedPartyExperience(uint32_t playerId, uint8_t sharedExpActive, uint8_t unknown)
-{
-	Player* player = getPlayerByID(playerId);
-	if(!player || player->isRemoved())
-		return false;
-
-	if(!player->getParty() || player->hasCondition(CONDITION_INFIGHT))
-		return false;
-
-	return player->getParty()->setSharedExperience(player, sharedExpActive == 1);
 }
 
 void Game::sendGuildMotd(uint32_t playerId, uint32_t guildId)
