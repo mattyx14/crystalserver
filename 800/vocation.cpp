@@ -37,6 +37,7 @@ Vocations::~Vocations()
 {
 	for(VocationsMap::iterator it = vocationsMap.begin(); it != vocationsMap.end(); ++it)
 		delete it->second;
+
 	vocationsMap.clear();
 }
 
@@ -45,110 +46,120 @@ bool Vocations::loadFromXml()
 	std::string filename = "data/XML/vocations.xml";
 
 	xmlDocPtr doc = xmlParseFile(filename.c_str());
-	if(doc){
+	if(doc)
+	{
 		xmlNodePtr root, p;
 		root = xmlDocGetRootElement(doc);
 		
-		if(xmlStrcmp(root->name,(const xmlChar*)"vocations") != 0){
+		if(xmlStrcmp(root->name,(const xmlChar*)"vocations") != 0)
+		{
 			xmlFreeDoc(doc);
 			return false;
 		}
 		
 		p = root->children;
 		
-		while(p){
-			std::string str;
-			int32_t intVal;
-			float floatVal;
-			if(xmlStrcmp(p->name, (const xmlChar*)"vocation") == 0){
+		while(p)
+		{
+			std::string strValue;
+			int32_t intValue;
+			float floatValue;
+			if(xmlStrcmp(p->name, (const xmlChar*)"vocation") == 0)
+			{
 				Vocation* voc = new Vocation();
 				uint32_t voc_id;
 				xmlNodePtr configNode;
-				if(readXMLInteger(p, "id", intVal)){
-					voc_id = intVal;
-					if(readXMLString(p, "name", str)){
-						voc->name = str;
-					}
-					if(readXMLString(p, "description", str)){
-						voc->description = str;
-					}
-					if(readXMLInteger(p, "gaincap", intVal)){
-						voc->gainCap = intVal;
-					}
-					if(readXMLInteger(p, "gainhp", intVal)){
-						voc->gainHP = intVal;
-					}
-					if(readXMLInteger(p, "gainmana", intVal)){
-						voc->gainMana = intVal;
-					}
-					if(readXMLInteger(p, "gainhpticks", intVal)){
-						voc->gainHealthTicks = intVal;
-					}
-					if(readXMLInteger(p, "gainhpamount", intVal)){
-						voc->gainHealthAmount = intVal;
-					}
-					if(readXMLInteger(p, "gainmanaticks", intVal)){
-						voc->gainManaTicks = intVal;
-					}
-					if(readXMLInteger(p, "gainmanaamount", intVal)){
-						voc->gainManaAmount = intVal;
-					}
-					if(readXMLFloat(p, "manamultiplier", floatVal)){
-						voc->manaMultiplier = floatVal;
-					}
-					if(readXMLInteger(p, "attackspeed", intVal)){
-						voc->attackSpeed = intVal;
-					}
-					if(readXMLInteger(p, "soulmax", intVal)){
-						voc->soulMax = intVal;
-					}
-					if(readXMLInteger(p, "gainsoulticks", intVal)){
-						voc->gainSoulTicks = intVal;
-					}
-					if(readXMLInteger(p, "fromvoc", intVal)){
-						voc->fromVocation = intVal;
-					}
+				if(readXMLInteger(p, "id", intValue))
+				{
+					voc_id = intValue;
+					if(readXMLString(p, "name", strValue))
+						voc->name = strValue;
+
+					if(readXMLString(p, "description", strValue))
+						voc->description = strValue;
+
+					if(readXMLInteger(p, "gaincap", intValue))
+						voc->gainCap = intValue;
+
+					if(readXMLInteger(p, "gainhp", intValue))
+						voc->gainHP = intValue;
+
+					if(readXMLInteger(p, "gainmana", intValue))
+						voc->gainMana = intValue;
+
+					if(readXMLInteger(p, "gainhpticks", intValue))
+						voc->gainHealthTicks = intValue;
+
+					if(readXMLInteger(p, "gainhpamount", intValue))
+						voc->gainHealthAmount = intValue;
+
+					if(readXMLInteger(p, "gainmanaticks", intValue))
+						voc->gainManaTicks = intValue;
+
+					if(readXMLInteger(p, "gainmanaamount", intValue))
+						voc->gainManaAmount = intValue;
+
+					if(readXMLFloat(p, "manamultiplier", floatValue))
+						voc->manaMultiplier = floatValue;
+
+					if(readXMLInteger(p, "attackspeed", intValue))
+						voc->attackSpeed = intValue;
+
+					if(readXMLInteger(p, "soulmax", intValue))
+						voc->soulMax = intValue;
+
+					if(readXMLInteger(p, "gainsoulticks", intValue))
+						voc->gainSoulTicks = intValue;
+
+					if(readXMLInteger(p, "fromvoc", intValue))
+						voc->fromVocation = intValue;
+
 					configNode = p->children;
-					while(configNode){
-						if(xmlStrcmp(configNode->name, (const xmlChar*)"skill") == 0){
+					while(configNode)
+					{
+						if(xmlStrcmp(configNode->name, (const xmlChar*)"skill") == 0)
+						{
 							uint32_t skill_id;
-							if(readXMLInteger(configNode, "id", intVal)){
-								skill_id = intVal;
-								if(skill_id < SKILL_FIRST || skill_id > SKILL_LAST){
+							if(readXMLInteger(configNode, "id", intValue))
+							{
+								skill_id = intValue;
+								if(skill_id < SKILL_FIRST || skill_id > SKILL_LAST)
+								{
 									std::cout << "No valid skill id. " << skill_id << std::endl;
 									
 								}
-								else{
-									if(readXMLFloat(configNode, "multiplier", floatVal)){
-										voc->skillMultipliers[skill_id] = floatVal;
-									}
+								else
+								{
+									if(readXMLFloat(configNode, "multiplier", floatValue))
+										voc->skillMultipliers[skill_id] = floatValue;
 								}
 							}
-							else{
+							else
 								std::cout << "Missing skill id." << std::endl;
-							}
 						}
 						else if(xmlStrcmp(configNode->name, (const xmlChar*)"formula") == 0)
 						{
-							if(readXMLFloat(configNode, "meleeDamage", floatVal))
-								voc->meleeDamageMultipler = floatVal;
+							if(readXMLFloat(configNode, "meleeDamage", floatValue))
+								voc->meleeDamageMultipler = floatValue;
 
-							if(readXMLFloat(configNode, "distDamage", floatVal))
-								voc->distDamageMultipler = floatVal;
+							if(readXMLFloat(configNode, "distDamage", floatValue))
+								voc->distDamageMultipler = floatValue;
 
-							if(readXMLFloat(configNode, "defense", floatVal))
-								voc->defenseMultipler = floatVal;
+							if(readXMLFloat(configNode, "defense", floatValue))
+								voc->defenseMultipler = floatValue;
 
-							if(readXMLFloat(configNode, "armor", floatVal))
-								voc->armorMultipler = floatVal;
+							if(readXMLFloat(configNode, "armor", floatValue))
+								voc->armorMultipler = floatValue;
 						}
+
 						configNode = configNode->next;
 					}
+
 					vocationsMap[voc_id] = voc;
 				}
-				else{
+				else
 					std::cout << "Missing vocation id." << std::endl;
-				}
+
 			}
 			p = p->next;
 		}
@@ -176,6 +187,7 @@ int32_t Vocations::getVocationId(const std::string& name)
 		if(strcasecmp(it->second->name.c_str(), name.c_str()) == 0)
 			return it->first;
 	}
+
 	return -1;
 }
 
@@ -186,6 +198,7 @@ int32_t Vocations::getPromotedVocation(uint32_t vocationId)
 		if(it->second->fromVocation == vocationId && it->first != vocationId)
 			return it->first;
 	}
+
 	return 0;
 }
 
@@ -225,21 +238,20 @@ Vocation::Vocation()
 Vocation::~Vocation()
 {
 	cacheMana.clear();
-	for(int32_t i = SKILL_FIRST; i < SKILL_LAST; ++i){
+	for(int32_t i = SKILL_FIRST; i < SKILL_LAST; ++i)
 		cacheSkill[i].clear();
-	}
 }
 
 uint32_t Vocation::getReqSkillTries(int32_t skill, int32_t level)
 {
-	if(skill < SKILL_FIRST || skill > SKILL_LAST){
+	if(skill < SKILL_FIRST || skill > SKILL_LAST)
 		return 0;
-	}
+
 	cacheMap& skillMap = cacheSkill[skill];
 	cacheMap::iterator it = skillMap.find(level);
-	if(it != cacheSkill[skill].end()){
+	if(it != cacheSkill[skill].end())
 		return it->second;
-	}
+
 	uint32_t tries = (unsigned int)(skillBase[skill] * pow((float)skillMultipliers[skill], (float)(level - 11)));
 	skillMap[level] = tries;
 	return tries;

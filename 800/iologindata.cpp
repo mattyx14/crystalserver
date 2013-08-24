@@ -235,7 +235,7 @@ bool IOLoginData::updateOnlineStatus(uint32_t guid, bool login)
 	DBResult* result;
 
 	uint16_t onlineValue = login;
-	if(g_config.getString(ConfigManager::ALLOW_CLONES) == "yes")
+	if(g_config.getBoolean(ConfigManager::ALLOW_CLONES))
 	{
 		query << "SELECT `online` FROM `players` WHERE `id` = " << guid << ";";
 		if(!(result = db->storeQuery(query.str())))
@@ -277,7 +277,7 @@ bool IOLoginData::loadPlayer(Player* player, const std::string& name, bool prelo
 
 	player->accountType = acc.accountType;
 
-	if(g_config.getString(ConfigManager::FREE_PREMIUM) == "yes")
+	if(g_config.getBoolean(ConfigManager::FREE_PREMIUM))
 		player->premiumDays = 65535;
 	else
 		player->premiumDays = acc.premiumDays;
@@ -403,7 +403,7 @@ bool IOLoginData::loadPlayer(Player* player, const std::string& name, bool prelo
 			db->freeResult(result);
 		}
 	}
-	else if(g_config.getString(ConfigManager::INGAME_GUILD_SYSTEM) == "yes")
+	else if(g_config.getBoolean(ConfigManager::INGAME_GUILD_SYSTEM))
 	{
 		db->freeResult(result);
 		query.str("");
@@ -736,7 +736,7 @@ bool IOLoginData::savePlayer(Player* player, bool preSave)
 	query << "`lastlogout` = " << player->getLastLogout() << ", ";
 	query << "`stamina` = " << player->getStaminaMinutes() << ", ";
 	query << "`blessings` = " << player->blessings;
-	if(g_config.getString(ConfigManager::INGAME_GUILD_SYSTEM) == "yes")
+	if(g_config.getBoolean(ConfigManager::INGAME_GUILD_SYSTEM))
 	{
 		query << ", `guildnick` = " << db->escapeString(player->guildNick) << ", ";
 		query << "`rank_id` = " << IOGuild::getInstance()->getRankIdByGuildIdAndLevel(player->getGuildId(), player->getGuildLevel()) << " ";
@@ -827,7 +827,7 @@ bool IOLoginData::savePlayer(Player* player, bool preSave)
 	if(!stmt.execute())
 		return false;
 
-	if(g_config.getString(ConfigManager::INGAME_GUILD_SYSTEM) == "yes")
+	if(g_config.getBoolean(ConfigManager::INGAME_GUILD_SYSTEM))
 	{
 		//save guild invites
 		query << "DELETE FROM `guild_invites` WHERE `player_id` = " << player->getGUID() << ";";
@@ -1091,7 +1091,7 @@ int32_t IOLoginData::getLevel(uint32_t guid)
 
 bool IOLoginData::isPremium(uint32_t guid)
 {
-	if(g_config.getString(ConfigManager::FREE_PREMIUM) == "yes")
+	if(g_config.getBoolean(ConfigManager::FREE_PREMIUM))
 		return true;
 
 	Database* db = Database::getInstance();

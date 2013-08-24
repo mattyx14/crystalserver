@@ -342,7 +342,7 @@ void DatabaseManager::checkEncryption()
 			default: break;
 		}
 	}
-	else if(g_config.getString(ConfigManager::ACCOUNT_MANAGER) == "yes")
+	else if(g_config.getBoolean(ConfigManager::ACCOUNT_MANAGER))
 	{
 		switch(currentValue)
 		{

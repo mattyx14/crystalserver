@@ -45,19 +45,22 @@ bool Teleport::unserialize(xmlNodePtr nodeItem)
 
 	char* nodeValue;
 	nodeValue = (char*)xmlGetProp(nodeItem, (const xmlChar *) "destx");
-	if(nodeValue){
+	if(nodeValue)
+	{
 		destPos.x = atoi(nodeValue);
 		xmlFreeOTSERV(nodeValue);
 	}
 
 	nodeValue = (char*)xmlGetProp(nodeItem, (const xmlChar *) "desty");
-	if(nodeValue){
+	if(nodeValue)
+	{
 		destPos.y = atoi(nodeValue);
 		xmlFreeOTSERV(nodeValue);
 	}
 
 	nodeValue = (char*)xmlGetProp(nodeItem, (const xmlChar *) "destz");
-	if(nodeValue){
+	if(nodeValue)
+	{
 		destPos.z = atoi(nodeValue);
 		xmlFreeOTSERV(nodeValue);
 	}

@@ -30,7 +30,8 @@ class Task
 	public:
 		~Task() {}
 
-		void operator()(){
+		void operator()()
+		{
 			m_f();
 		}
 

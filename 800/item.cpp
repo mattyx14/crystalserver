@@ -112,7 +112,7 @@ Item* Item::CreateItem(PropStream& propStream)
 			return NULL;
 	}
 	
-	if(g_config.getString(ConfigManager::RANDOMIZE_TILES) == "yes")
+	if(g_config.getBoolean(ConfigManager::RANDOMIZE_TILES))
 	{
 		if(_id == 352 || _id == 353)
 			_id = 351;

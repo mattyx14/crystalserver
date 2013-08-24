@@ -1786,12 +1786,7 @@ void Player::addExperience(uint64_t exp, bool useMult/* = false*/, bool applySta
 
 	if(applyStaminaChange && g_config.getBoolean(ConfigManager::STAMINA_SYSTEM))
 	{
-		if(staminaMinutes > 2400)
-		{
-			if(isPremium())
-				exp *= 1.5;
-		}
-		else if(staminaMinutes <= 840)
+		if(staminaMinutes <= 840)
 			exp *= 0.5;
 	}
 
@@ -3155,7 +3150,7 @@ void Player::doAttacking(uint32_t interval)
 
 uint64_t Player::getGainedExperience(Creature* attacker) const
 {
-	if(g_config.getString(ConfigManager::EXPERIENCE_FROM_PLAYERS) == "yes")
+	if(g_config.getBoolean(ConfigManager::EXPERIENCE_FROM_PLAYERS))
 	{
 		Player* attackerPlayer = attacker->getPlayer();
 		if(attackerPlayer && attackerPlayer != this && skillLoss)
@@ -4027,7 +4022,7 @@ void Player::manageAccount(const std::string &text)
 		}
 		else if(checkText(text, "yes") && talkState[9])
 		{
-			if(g_config.getString(ConfigManager::START_CHOOSEVOC) == "yes")
+			if(g_config.getBoolean(ConfigManager::START_CHOOSEVOC))
 			{
 				talkState[9] = false;
 				talkState[11] = true;
@@ -4169,7 +4164,7 @@ void Player::manageAccount(const std::string &text)
 		}
 		else if(checkText(text, "yes") && talkState[3])
 		{
-			if(g_config.getString(ConfigManager::GENERATE_ACCOUNT_NUMBER) == "yes")
+			if(g_config.getBoolean(ConfigManager::GENERATE_ACCOUNT_NUMBER))
 			{
 				do
 				{
@@ -4298,9 +4293,10 @@ void Player::leaveGuild()
 
 bool Player::isPremium() const
 {
-	if(g_config.getString(ConfigManager::FREE_PREMIUM) == "yes" || hasFlag(PlayerFlag_IsAlwaysPremium))
+	if(g_config.getBoolean(ConfigManager::FREE_PREMIUM) || hasFlag(PlayerFlag_IsAlwaysPremium))
 		return true;
-	return premiumDays;
+
+	return premiumDays > 0;
 }
 
 void Player::setGuildLevel(GuildLevel_t newGuildLevel)

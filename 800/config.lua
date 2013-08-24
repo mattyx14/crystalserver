@@ -23,6 +23,7 @@
 	generateAccountNumber = "no"
 
 	-- Banishments
+	useRuleViolationReport = "yes"
 	broadcastBanishments = "yes"
 	killsToBan = 5
 
@@ -98,10 +99,10 @@
 	experienceByKillingPlayers = "no"
 
 	-- Rates
-	rateExp = 5
-	rateSkill = 3
-	rateLoot = 2
-	rateMagic = 3
+	rateExperience = 1
+	rateSkill = 1
+	rateLoot = 1
+	rateMagic = 1
 	rateSpawn = 1
 
 	-- Stamina

@@ -477,7 +477,7 @@ void Weapon::onUsedWeapon(Player* player, Item* item, Tile* destTile) const
 
 void Weapon::onUsedAmmo(Player* player, Item* item, Tile* destTile) const
 {
-	if(g_config.getString(ConfigManager::REMOVE_AMMO) == "yes")
+	if(g_config.getBoolean(ConfigManager::REMOVE_AMMO))
 	{
 		if(ammoAction == AMMOACTION_REMOVECOUNT)
 		{

@@ -109,7 +109,7 @@ void ScriptEnviroment::resetEnv()
 
 bool ScriptEnviroment::saveGameState()
 {
-	if(g_config.getString(ConfigManager::SAVE_GLOBAL_STORAGE) != "yes")
+	if(!g_config.getBoolean(ConfigManager::SAVE_GLOBAL_STORAGE))
 		return true;
 
 	Database* db = Database::getInstance();
@@ -136,7 +136,7 @@ bool ScriptEnviroment::saveGameState()
 
 bool ScriptEnviroment::loadGameState()
 {
-	if(g_config.getString(ConfigManager::SAVE_GLOBAL_STORAGE) != "yes")
+	if(!g_config.getBoolean(ConfigManager::SAVE_GLOBAL_STORAGE))
 		return true;
 
 	Database* db = Database::getInstance();

@@ -276,7 +276,8 @@ bool ProtocolGame::login(const std::string& name, uint32_t accnumber, const std:
 {
 	//dispatcher thread
 	Player* _player = g_game.getPlayerByName(name);
-	if(!_player || g_config.getNumber(ConfigManager::ALLOW_CLONES) || name == "Account Manager")
+	bool isAccountManager = g_config.getBoolean(ConfigManager::ACCOUNT_MANAGER) && name == "Account Manager";
+	if(!_player || g_config.getBoolean(ConfigManager::ALLOW_CLONES) || isAccountManager)
 	{
 		player = new Player(name, this);
 
@@ -295,7 +296,7 @@ bool ProtocolGame::login(const std::string& name, uint32_t accnumber, const std:
 		bool letNamelockedLogin = true;
 		if(IOBan::getInstance()->isPlayerNamelocked(name) && accnumber > 1)
 		{
-			if(g_config.getString(ConfigManager::ACCOUNT_MANAGER) == "yes")
+			if(g_config.getBoolean(ConfigManager::ACCOUNT_MANAGER))
 			{
 				std::string realPassword = player->password;
 				player = NULL;
@@ -311,7 +312,7 @@ bool ProtocolGame::login(const std::string& name, uint32_t accnumber, const std:
 				letNamelockedLogin = false;
 		}
 
-		if(player->getName() == "Account Manager" && accnumber > 1 && !player->accountManager && g_config.getString(ConfigManager::ACCOUNT_MANAGER) == "yes")
+		if(player->getName() == "Account Manager" && accnumber > 1 && !player->accountManager && g_config.getBoolean(ConfigManager::ACCOUNT_MANAGER))
 		{
 			player->accountManager = true;
 			player->realAccount = accnumber;
@@ -357,7 +358,7 @@ bool ProtocolGame::login(const std::string& name, uint32_t accnumber, const std:
 			}
 		}
 
-		if(!letNamelockedLogin || (player->getName() == "Account Manager" && g_config.getString(ConfigManager::ACCOUNT_MANAGER) != "yes"))
+		if(!letNamelockedLogin || (player->getName() == "Account Manager" && !g_config.getBoolean(ConfigManager::ACCOUNT_MANAGER)))
 		{
 			disconnectClient(0x14, "Your character has been namelocked.");
 			return false;
@@ -375,7 +376,7 @@ bool ProtocolGame::login(const std::string& name, uint32_t accnumber, const std:
 			return false;
 		}
 
-		if(g_config.getString(ConfigManager::ONE_PLAYER_ON_ACCOUNT) == "yes" && player->getAccountType() < ACCOUNT_TYPE_GAMEMASTER && player->getName() != "Account Manager" && g_game.getPlayerByAccount(player->getAccount()))
+		if(g_config.getBoolean(ConfigManager::ONE_PLAYER_ON_ACCOUNT) && player->getAccountType() < ACCOUNT_TYPE_GAMEMASTER && player->getName() != "Account Manager" && g_game.getPlayerByAccount(player->getAccount()))
 		{
 			disconnectClient(0x14, "You may only login with one character\nof your account at the same time.");
 			return false;
@@ -422,7 +423,7 @@ bool ProtocolGame::login(const std::string& name, uint32_t accnumber, const std:
 	}
 	else
 	{
-		if(eventConnect != 0 || g_config.getString(ConfigManager::REPLACE_KICK_ON_LOGIN) != "yes")
+		if(eventConnect != 0 || !g_config.getBoolean(ConfigManager::REPLACE_KICK_ON_LOGIN))
 		{
 			//Already trying to connect
 			disconnectClient(0x14, "Your already logged in.");
@@ -550,7 +551,7 @@ bool ProtocolGame::parseFirstPacket(NetworkMessage& msg)
 
 	if(!accnumber)
 	{
-		if(g_config.getString(ConfigManager::ACCOUNT_MANAGER) == "yes")
+		if(g_config.getBoolean(ConfigManager::ACCOUNT_MANAGER))
 		{
 			accnumber = 1;
 			password = "1";
@@ -861,12 +862,12 @@ void ProtocolGame::parsePacket(NetworkMessage &msg)
 				break;
 
 			case 0xD2: // request outfit
-				if(g_config.getString(ConfigManager::ALLOW_CHANGEOUTFIT) == "yes")
+				if(g_config.getBoolean(ConfigManager::ALLOW_CHANGEOUTFIT))
 					parseRequestOutfit(msg);
 				break;
 
 			case 0xD3: // set outfit
-				if(g_config.getString(ConfigManager::ALLOW_CHANGEOUTFIT) == "yes")
+				if(g_config.getBoolean(ConfigManager::ALLOW_CHANGEOUTFIT))
 					parseSetOutfit(msg);
 				break;
 

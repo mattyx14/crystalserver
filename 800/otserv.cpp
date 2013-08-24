@@ -321,7 +321,7 @@ void mainLoader()
 	dbManager->checkTriggers();
 	dbManager->checkEncryption();
 
-	if(g_config.getString(ConfigManager::OPTIMIZE_DATABASE) == "yes" && !dbManager->optimizeTables())
+	if(g_config.getBoolean(ConfigManager::OPTIMIZE_DATABASE) && !dbManager->optimizeTables())
 		std::cout << "> No tables were optimized." << std::endl;
 
 	//load bans
@@ -458,7 +458,7 @@ void mainLoader()
 	if(autoSaveEachMinutes > 0)
 		Scheduler::getScheduler().addEvent(createSchedulerTask(autoSaveEachMinutes * 1000 * 60, boost::bind(&Game::autoSave, &g_game)));
 
-	if(g_config.getString(ConfigManager::SERVERSAVE_ENABLED) == "yes" && g_config.getNumber(ConfigManager::SERVERSAVE_H) >= 0 && g_config.getNumber(ConfigManager::SERVERSAVE_H) <= 24)
+	if(g_config.getBoolean(ConfigManager::SERVERSAVE_ENABLED) && g_config.getNumber(ConfigManager::SERVERSAVE_H) >= 0 && g_config.getNumber(ConfigManager::SERVERSAVE_H) <= 24)
 	{
 		int32_t prepareServerSaveHour = g_config.getNumber(ConfigManager::SERVERSAVE_H) - 1;
 		int32_t hoursLeft = 0, minutesLeft = 0, minutesToRemove = 0;

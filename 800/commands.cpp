@@ -101,9 +101,8 @@ s_defcommands Commands::defined_commands[] =
 	{"/unban", &Commands::unban},
 	{"/ghost", &Commands::ghost},
 	{"/clean", &Commands::clean},
-#ifdef __ENABLE_SERVER_DIAGNOSTIC__
 	{"/serverdiag", &Commands::serverDiag},
-#endif
+
 	//player commands - TODO: make them talkactions
 	{"!online", &Commands::whoIsOnline},
 	{"!buyhouse", &Commands::buyHouse},
@@ -1008,7 +1007,8 @@ bool Commands::whoIsOnline(Creature* creature, const std::string &cmd, const std
 		std::stringstream ss;
 		ss << "Players online:" << std::endl;
 		bool first = true;
-		if(g_config.getString(ConfigManager::SHOW_GAMEMASTERS_ONLINE) == "no")
+
+		if(!g_config.getBoolean(ConfigManager::SHOW_GAMEMASTERS_ONLINE))
 		{
 			while (it != Player::listPlayer.list.end())
 			{
@@ -1127,7 +1127,7 @@ bool Commands::newType(Creature* creature, const std::string& cmd, const std::st
 	int32_t lookType = atoi(param.c_str());
 	if(player)
 	{
-		if(lookType < 0 || lookType == 1 || lookType == 135 || (lookType > 160 && lookType < 192) || lookType > 301)
+		if(lookType < 0 || lookType == 1 || lookType == 135 || lookType > 160 && lookType < 192 || lookType > 266)
 			player->sendTextMessage(MSG_STATUS_SMALL, "This lookType does not exist.");
 		else
 		{
@@ -1369,13 +1369,13 @@ bool Commands::clean(Creature* creature, const std::string& cmd, const std::stri
 	return true;
 }
 
-#ifdef __ENABLE_SERVER_DIAGNOSTIC__
 bool Commands::serverDiag(Creature* creature, const std::string& cmd, const std::string& param)
 {
 	Player* player = creature->getPlayer();
 	if(!player)
 		return false;
 
+#ifdef __ENABLE_SERVER_DIAGNOSTIC__
 	std::stringstream text;
 	text << "Server diagonostic:\n";
 	text << "World:" << "\n";
@@ -1403,13 +1403,14 @@ bool Commands::serverDiag(Creature* creature, const std::string& cmd, const std:
 	text << "libxml: " << XML_DEFAULT_VERSION << "\n";
 	text << "lua: " << LUA_VERSION << "\n";
 
-	//TODO: more information that could be useful
-
 	player->sendTextMessage(MSG_STATUS_CONSOLE_BLUE, text.str().c_str());
+#else
+	player->sendTextMessage(MSG_STATUS_CONSOLE_BLUE, "This command has been disabled.");
+#endif
 
 	return true;
 }
-#endif
+
 
 bool Commands::ghost(Creature* creature, const std::string& cmd, const std::string& param)
 {

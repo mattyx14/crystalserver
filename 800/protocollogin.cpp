@@ -106,7 +106,7 @@ bool ProtocolLogin::parseFirstPacket(NetworkMessage& msg)
 
 	if(!accnumber)
 	{
-		if(g_config.getString(ConfigManager::ACCOUNT_MANAGER) == "yes")
+		if(g_config.getBoolean(ConfigManager::ACCOUNT_MANAGER))
 		{
 			accnumber = 1;
 			password = "1";
@@ -179,7 +179,7 @@ bool ProtocolLogin::parseFirstPacket(NetworkMessage& msg)
 
 		//Add char list
 		output->AddByte(0x64);
-		if(accnumber != 1 && g_config.getString(ConfigManager::ACCOUNT_MANAGER) == "yes")
+		if(accnumber != 1 && g_config.getBoolean(ConfigManager::ACCOUNT_MANAGER))
 		{
 			output->AddByte((uint8_t)account.charList.size() + 1);
 			output->AddString("Account Manager");
@@ -194,7 +194,7 @@ bool ProtocolLogin::parseFirstPacket(NetworkMessage& msg)
 		for(it = account.charList.begin(); it != account.charList.end(); it++)
 		{
 			output->AddString((*it));
-			if(g_config.getString(ConfigManager::ON_OR_OFF_CHARLIST) == "yes")
+			if(g_config.getBoolean(ConfigManager::ON_OR_OFF_CHARLIST))
 			{
 				if(g_game.getPlayerByName((*it)))
 					output->AddString("Online");
@@ -209,8 +209,8 @@ bool ProtocolLogin::parseFirstPacket(NetworkMessage& msg)
 		}
 
 		//Add premium days
-		if(g_config.getString(ConfigManager::FREE_PREMIUM) == "yes")
-			output->AddU16(65535); //client displays free premium
+		if(g_config.getBoolean(ConfigManager::FREE_PREMIUM))
+			output->AddU16(0xFFFF); //client displays free premium
 		else
 			output->AddU16(account.premiumDays);
 

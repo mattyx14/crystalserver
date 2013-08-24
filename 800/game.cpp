@@ -2131,7 +2131,7 @@ bool Game::playerUseItemEx(uint32_t playerId, const Position& fromPos, uint8_t f
 	if(!player || player->isRemoved())
 		return false;
 
-	if(isHotkey && g_config.getString(ConfigManager::AIMBOT_HOTKEY_ENABLED) == "no")
+	if(isHotkey && !g_config.getBoolean(ConfigManager::AIMBOT_HOTKEY_ENABLED))
 		return false;
 
 	Thing* thing = internalGetThing(player, fromPos, fromStackPos, fromSpriteId);
@@ -2224,7 +2224,7 @@ bool Game::playerUseItem(uint32_t playerId, const Position& pos, uint8_t stackPo
 	if(!player || player->isRemoved())
 		return false;
 
-	if(isHotkey && g_config.getString(ConfigManager::AIMBOT_HOTKEY_ENABLED) == "no")
+	if(isHotkey && !g_config.getBoolean(ConfigManager::AIMBOT_HOTKEY_ENABLED))
 		return false;
 
 	Thing* thing = internalGetThing(player, pos, stackPos, spriteId);
@@ -2292,7 +2292,7 @@ bool Game::playerUseBattleWindow(uint32_t playerId, const Position& fromPos, uin
 	if(!Position::areInRange<7,5,0>(creature->getPosition(), player->getPosition()))
 		return false;
 
-	if(g_config.getString(ConfigManager::AIMBOT_HOTKEY_ENABLED) == "no")
+	if(!g_config.getBoolean(ConfigManager::AIMBOT_HOTKEY_ENABLED))
 	{
 		if(creature->getPlayer() || isHotkey)
 		{
@@ -3303,7 +3303,7 @@ bool Game::playerReportRuleViolation(Player* player, const std::string& text)
 {
 	//Do not allow reports on multiclones worlds
 	//Since reports are name-based
-	if(g_config.getNumber(ConfigManager::ALLOW_CLONES))
+	if(!g_config.getBoolean(ConfigManager::ENABLE_RVR))
 	{
 		player->sendTextMessage(MSG_INFO_DESCR, "Rule violation reports are disabled.");
 		return false;
@@ -3691,7 +3691,7 @@ bool Game::combatChangeHealth(CombatType_t combatType, Creature* attacker, Creat
 		if(target->getHealth() <= 0)
 			return false;
 
-		if(attacker && target && attacker->defaultOutfit.lookFeet == target->defaultOutfit.lookFeet && g_config.getString(ConfigManager::CANNOT_ATTACK_SAME_LOOKFEET) == "yes" && combatType != COMBAT_HEALING)
+		if(attacker && target && attacker->defaultOutfit.lookFeet == target->defaultOutfit.lookFeet && g_config.getBoolean(ConfigManager::CANNOT_ATTACK_SAME_LOOKFEET) && combatType != COMBAT_HEALING)
 			return false;
 
 		target->changeHealth(healthChange);
@@ -3705,7 +3705,7 @@ bool Game::combatChangeHealth(CombatType_t combatType, Creature* attacker, Creat
 			return true;
 		}
 
-		if(attacker && target && attacker->defaultOutfit.lookFeet == target->defaultOutfit.lookFeet && g_config.getString(ConfigManager::CANNOT_ATTACK_SAME_LOOKFEET) == "yes" && combatType != COMBAT_HEALING)
+		if(attacker && target && attacker->defaultOutfit.lookFeet == target->defaultOutfit.lookFeet && g_config.getBoolean(ConfigManager::CANNOT_ATTACK_SAME_LOOKFEET) && combatType != COMBAT_HEALING)
 			return false;
 
 		int32_t damage = -healthChange;
@@ -3845,7 +3845,7 @@ bool Game::combatChangeMana(Creature* attacker, Creature* target, int32_t manaCh
 
 	if(manaChange > 0)
 	{
-		if(attacker && target && attacker->defaultOutfit.lookFeet == target->defaultOutfit.lookFeet && g_config.getString(ConfigManager::CANNOT_ATTACK_SAME_LOOKFEET) == "yes")
+		if(attacker && target && attacker->defaultOutfit.lookFeet == target->defaultOutfit.lookFeet && g_config.getBoolean(ConfigManager::CANNOT_ATTACK_SAME_LOOKFEET))
 			return false;
 		target->changeMana(manaChange);
 	}
@@ -3857,7 +3857,7 @@ bool Game::combatChangeMana(Creature* attacker, Creature* target, int32_t manaCh
 			return false;
 		}
 
-		if(attacker && target && attacker->defaultOutfit.lookFeet == target->defaultOutfit.lookFeet && g_config.getString(ConfigManager::CANNOT_ATTACK_SAME_LOOKFEET) == "yes")
+		if(attacker && target && attacker->defaultOutfit.lookFeet == target->defaultOutfit.lookFeet && g_config.getBoolean(ConfigManager::CANNOT_ATTACK_SAME_LOOKFEET))
 			return false;
 
 		int32_t manaLoss = std::min(target->getMana(), -manaChange);
@@ -4371,7 +4371,7 @@ void Game::prepareServerSave()
 
 void Game::serverSave()
 {
-	if(g_config.getString(ConfigManager::SHUTDOWN_AT_SERVERSAVE) == "yes")
+	if(g_config.getBoolean(ConfigManager::SHUTDOWN_AT_SERVERSAVE))
 	{
 		//shutdown server
 		Dispatcher::getDispatcher().addTask(createTask(boost::bind(&Game::setGameState, this, GAME_STATE_SHUTDOWN)));
@@ -4382,7 +4382,7 @@ void Game::serverSave()
 		Dispatcher::getDispatcher().addTask(createTask(boost::bind(&Game::setGameState, this, GAME_STATE_CLOSED)));
 
 		//clean map if configured to
-		if(g_config.getString(ConfigManager::CLEAN_MAP_AT_SERVERSAVE) == "yes")
+		if(g_config.getBoolean(ConfigManager::CLEAN_MAP_AT_SERVERSAVE))
 			map->clean();
 
 		//reload highscores
@@ -4692,7 +4692,7 @@ bool Game::violationWindow(uint32_t playerId, std::string targetPlayerName, int3
 	}
 
 	char buffer[800];
-	if(g_config.getString(ConfigManager::BROADCAST_BANISHMENTS) == "yes")
+	if(g_config.getBoolean(ConfigManager::BROADCAST_BANISHMENTS))
 	{
 		if(action == 6)
 			sprintf(buffer, "%s has taken the action \"%s\" for the statement: \"%s\" against: %s (Warnings: %d), with reason: \"%s\", and comment: \"%s\".", player->getName().c_str(), getAction(action, IPBanishment).c_str(), statement.c_str(), targetPlayerName.c_str(), account.warnings, getReason(reason).c_str(), banComment.c_str());

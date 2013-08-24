@@ -51,8 +51,6 @@ bool ConfigManager::loadFile(const std::string& _filename)
 	{
 		m_confString[CONFIG_FILE] = _filename;
 		m_confString[IP] = getGlobalString(L, "ip", "127.0.0.1");
-		m_confInteger[PORT] = getGlobalNumber(L, "port", 7171);
-		m_confInteger[SQL_PORT] = getGlobalNumber(L, "mysqlPort", 3306);
 		m_confString[MAP_NAME] = getGlobalString(L, "mapName", "");
 		m_confString[MAP_AUTHOR] = getGlobalString(L, "mapAuthor", "Unknown");
 		m_confString[HOUSE_RENT_PERIOD] = getGlobalString(L, "houseRentPeriod", "monthly");
@@ -66,13 +64,15 @@ bool ConfigManager::loadFile(const std::string& _filename)
 		#endif
 		m_confString[PASSWORDTYPE] = getGlobalString(L, "passwordType", "plain");
 
+		m_confInteger[PORT] = getGlobalNumber(L, "port", 7171);
+		m_confInteger[SQL_PORT] = getGlobalNumber(L, "mysqlPort", 3306);
 		m_confInteger[PASSWORD_TYPE] = PASSWORD_TYPE_PLAIN;
-		m_confString[SERVERSAVE_ENABLED] = getGlobalString(L, "serverSaveEnabled", "yes");
 		m_confInteger[SERVERSAVE_H] = getGlobalNumber(L, "serverSaveHour", 3);
-		m_confString[SAVE_GLOBAL_STORAGE] = getGlobalString(L, "saveGlobalStorage", "no");
-		m_confString[INGAME_GUILD_SYSTEM] = getGlobalString(L, "ingameGuildSystem", "yes");
-		m_confString[OPTIMIZE_DATABASE] = getGlobalString(L, "startupDatabaseOptimization", "yes");
 
+		m_confBoolean[SAVE_GLOBAL_STORAGE] = booleanString(getGlobalString(L, "saveGlobalStorage", "no"));
+		m_confBoolean[INGAME_GUILD_SYSTEM] = booleanString(getGlobalString(L, "ingameGuildSystem", "yes"));
+		m_confBoolean[OPTIMIZE_DATABASE] = booleanString(getGlobalString(L, "startupDatabaseOptimization", "yes"));
+		m_confBoolean[SERVERSAVE_ENABLED] = booleanString(getGlobalString(L, "serverSaveEnabled", "yes"));
 	}
 
 	m_confString[LOGIN_MSG] = getGlobalString(L, "loginMessage", "Welcome to Crystal Server!");
@@ -81,16 +81,18 @@ bool ConfigManager::loadFile(const std::string& _filename)
 	m_confString[OWNER_EMAIL] = getGlobalString(L, "ownerEmail");
 	m_confString[URL] = getGlobalString(L, "url");
 	m_confString[LOCATION] = getGlobalString(L, "location");
+	m_confString[DEFAULT_PRIORITY] = getGlobalString(L, "defaultPriority", "high");
+	m_confString[MOTD] = getGlobalString(L, "motd");
+	m_confString[WORLD_TYPE] = getGlobalString(L, "worldType", "pvp");
+
 	m_confInteger[LOGIN_TRIES] = getGlobalNumber(L, "loginTries", 3);
 	m_confInteger[RETRY_TIMEOUT] = getGlobalNumber(L, "retryTimeout", 30 * 1000);
 	m_confInteger[LOGIN_TIMEOUT] = getGlobalNumber(L, "loginTimeout", 5 * 1000);
-	m_confString[MOTD] = getGlobalString(L, "motd");
 	m_confInteger[MAX_PLAYERS] = getGlobalNumber(L, "maxPlayers");
 	m_confInteger[PZ_LOCKED] = getGlobalNumber(L, "pzLocked", 0);
 	m_confInteger[DEFAULT_DESPAWNRANGE] = getGlobalNumber(L, "deSpawnRange", 2);
 	m_confInteger[DEFAULT_DESPAWNRADIUS] = getGlobalNumber(L, "deSpawnRadius", 50);
-	m_confInteger[ALLOW_CLONES] = getGlobalNumber(L, "allowClones", 0);
-	m_confInteger[RATE_EXPERIENCE] = getGlobalNumber(L, "rateExp", 1);
+	m_confInteger[RATE_EXPERIENCE] = getGlobalNumber(L, "rateExperience", 1);
 	m_confInteger[RATE_SKILL] = getGlobalNumber(L, "rateSkill", 1);
 	m_confInteger[RATE_LOOT] = getGlobalNumber(L, "rateLoot", 1);
 	m_confInteger[RATE_MAGIC] = getGlobalNumber(L, "rateMagic", 1);
@@ -99,47 +101,47 @@ bool ConfigManager::loadFile(const std::string& _filename)
 	m_confInteger[SPAWNPOS_Y] = getGlobalNumber(L, "newPlayerSpawnPosY", 100);
 	m_confInteger[SPAWNPOS_Z] = getGlobalNumber(L, "newPlayerSpawnPosZ", 7);
 	m_confInteger[SPAWNTOWN_ID] = getGlobalNumber(L, "newPlayerTownId", 1);
-	m_confString[WORLD_TYPE] = getGlobalString(L, "worldType", "pvp");
-	m_confString[ACCOUNT_MANAGER] = getGlobalString(L, "accountManager", "yes");
 	m_confInteger[START_LEVEL] = getGlobalNumber(L, "newPlayerLevel", 1);
 	m_confInteger[START_MAGICLEVEL] = getGlobalNumber(L, "newPlayerMagicLevel", 0);
-	m_confString[START_CHOOSEVOC] = getGlobalString(L, "newPlayerChooseVoc", "no");
 	m_confInteger[HOUSE_PRICE] = getGlobalNumber(L, "housePriceEachSQM", 1000);
 	m_confInteger[KILLS_TO_RED] = getGlobalNumber(L, "killsToRedSkull", 3);
 	m_confInteger[KILLS_TO_BAN] = getGlobalNumber(L, "killsToBan", 5);
 	m_confInteger[HIGHSCORES_TOP] = getGlobalNumber(L, "highscoreDisplayPlayers", 10);
 	m_confInteger[HIGHSCORES_UPDATETIME] = getGlobalNumber(L, "updateHighscoresAfterMinutes", 60);
-	m_confString[ON_OR_OFF_CHARLIST] = getGlobalString(L, "displayOnOrOffAtCharlist", "no");
-	m_confString[ALLOW_CHANGEOUTFIT] = getGlobalString(L, "allowChangeOutfit", "yes");
-	m_confString[ONE_PLAYER_ON_ACCOUNT] = getGlobalString(L, "onePlayerOnlinePerAccount", "yes");
-	m_confString[CANNOT_ATTACK_SAME_LOOKFEET] = getGlobalString(L, "noDamageToSameLookfeet", "no");
-	m_confString[AIMBOT_HOTKEY_ENABLED] = getGlobalString(L, "hotkeyAimbotEnabled", "yes");
 	m_confInteger[ACTIONS_DELAY_INTERVAL] = getGlobalNumber(L, "timeBetweenActions", 200);
 	m_confInteger[EX_ACTIONS_DELAY_INTERVAL] = getGlobalNumber(L, "timeBetweenExActions", 1000);
 	m_confInteger[MAX_MESSAGEBUFFER] = getGlobalNumber(L, "maxMessageBuffer", 4);
 	m_confInteger[CRITICAL_HIT_CHANCE] = getGlobalNumber(L, "criticalHitChance", 5);
-	m_confString[SHOW_GAMEMASTERS_ONLINE] = getGlobalString(L, "displayGamemastersWithOnlineCommand", "no");
 	m_confInteger[KICK_AFTER_MINUTES] = getGlobalNumber(L, "kickIdlePlayerAfterMinutes", 15);
-	m_confString[REMOVE_AMMO] = getGlobalString(L, "removeAmmoWhenUsingDistanceWeapon", "yes");
-	m_confString[REMOVE_RUNE_CHARGES] = getGlobalString(L, "removeChargesFromRunes", "yes");
-	m_confString[RANDOMIZE_TILES] = getGlobalString(L, "randomizeTiles", "yes");
-	m_confString[DEFAULT_PRIORITY] = getGlobalString(L, "defaultPriority", "high");
-	m_confString[EXPERIENCE_FROM_PLAYERS] = getGlobalString(L, "experienceByKillingPlayers", "no");
-	m_confString[SHUTDOWN_AT_SERVERSAVE] = getGlobalString(L, "shutdownAtServerSave", "no");
-	m_confString[CLEAN_MAP_AT_SERVERSAVE] = getGlobalString(L, "cleanMapAtServerSave", "yes");
-	m_confString[FREE_PREMIUM] = getGlobalString(L, "freePremium", "no");
 	m_confInteger[PROTECTION_LEVEL] = getGlobalNumber(L, "protectionLevel", 1);
-	m_confString[ADMIN_LOGS_ENABLED] = getGlobalString(L, "adminLogsEnabled", "no");
 	m_confInteger[DEATH_LOSE_PERCENT] = getGlobalNumber(L, "deathLosePercent", 10);
 	m_confInteger[STATUSQUERY_TIMEOUT] = getGlobalNumber(L, "statusTimeout", 5 * 60 * 1000);
-	m_confString[BROADCAST_BANISHMENTS] = getGlobalString(L, "broadcastBanishments", "yes");
-	m_confString[GENERATE_ACCOUNT_NUMBER] = getGlobalString(L, "generateAccountNumber", "yes");
 	m_confInteger[FRAG_TIME] = getGlobalNumber(L, "timeToDecreaseFrags", 24 * 60 * 60 * 1000);
 	m_confInteger[WHITE_SKULL_TIME] = getGlobalNumber(L, "whiteSkullTime", 15 * 60 * 1000);
 	m_confInteger[AUTO_SAVE_EACH_MINUTES] = getGlobalNumber(L, "autoSaveEachMinutes", 0);
-	m_confString[REPLACE_KICK_ON_LOGIN] = getGlobalString(L, "replaceKickOnLogin", "yes");
 
-	m_confBoolean[STAMINA_SYSTEM] = booleanString(getGlobalString(L, "staminaSystem", "yes"));
+	m_confBoolean[STAMINA_SYSTEM] = booleanString(getGlobalString(L, "useStaminaSystem", "yes"));
+	m_confBoolean[ENABLE_RVR] = booleanString(getGlobalString(L, "useRuleviolationReport", "yes"));
+	m_confBoolean[ACCOUNT_MANAGER] = booleanString(getGlobalString(L, "accountManager", "yes"));
+	m_confBoolean[ON_OR_OFF_CHARLIST] = booleanString(getGlobalString(L, "displayOnOrOffAtCharlist", "no"));
+	m_confBoolean[ALLOW_CHANGEOUTFIT] = booleanString(getGlobalString(L, "allowChangeOutfit", "yes"));
+	m_confBoolean[ONE_PLAYER_ON_ACCOUNT] = booleanString(getGlobalString(L, "onePlayerOnlinePerAccount", "yes"));
+	m_confBoolean[CANNOT_ATTACK_SAME_LOOKFEET] = booleanString(getGlobalString(L, "noDamageToSameLookfeet", "no"));
+	m_confBoolean[AIMBOT_HOTKEY_ENABLED] = booleanString(getGlobalString(L, "hotkeyAimbotEnabled", "yes"));
+	m_confBoolean[START_CHOOSEVOC] = booleanString(getGlobalString(L, "newPlayerChooseVoc", "no"));
+	m_confBoolean[SHOW_GAMEMASTERS_ONLINE] = booleanString(getGlobalString(L, "displayGamemastersWithOnlineCommand", "no"));
+	m_confBoolean[REMOVE_AMMO] = booleanString(getGlobalString(L, "removeAmmoWhenUsingDistanceWeapon", "yes"));
+	m_confBoolean[REMOVE_RUNE_CHARGES] = booleanString(getGlobalString(L, "removeChargesFromRunes", "yes"));
+	m_confBoolean[RANDOMIZE_TILES] = booleanString(getGlobalString(L, "randomizeTiles", "yes"));
+	m_confBoolean[EXPERIENCE_FROM_PLAYERS] = booleanString(getGlobalString(L, "experienceByKillingPlayers", "no"));
+	m_confBoolean[SHUTDOWN_AT_SERVERSAVE] = booleanString(getGlobalString(L, "shutdownAtServerSave", "no"));
+	m_confBoolean[CLEAN_MAP_AT_SERVERSAVE] = booleanString(getGlobalString(L, "cleanMapAtServerSave", "yes"));
+	m_confBoolean[FREE_PREMIUM] = booleanString(getGlobalString(L, "freePremium", "no"));
+	m_confBoolean[ADMIN_LOGS_ENABLED] = booleanString(getGlobalString(L, "adminLogsEnabled", "no"));
+	m_confBoolean[BROADCAST_BANISHMENTS] = booleanString(getGlobalString(L, "broadcastBanishments", "yes"));
+	m_confBoolean[GENERATE_ACCOUNT_NUMBER] = booleanString(getGlobalString(L, "generateAccountNumber", "yes"));
+	m_confBoolean[REPLACE_KICK_ON_LOGIN] = booleanString(getGlobalString(L, "replaceKickOnLogin", "yes"));
+	m_confBoolean[ALLOW_CLONES] = booleanString(getGlobalString(L, "allowClones", "no"));
 
 	m_isLoaded = true;
 	lua_close(L);
