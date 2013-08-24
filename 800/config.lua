@@ -104,6 +104,9 @@
 	rateMagic = 3
 	rateSpawn = 1
 
+	-- Stamina
+	useStaminaSystem = "yes"
+
 	-- Real Server Save
 	-- note: serverSaveHour means like 03:00, not that it will save every 3 hours,
 	-- if you want such a system use autoSaveEachMinutes. this serversave method

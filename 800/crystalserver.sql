@@ -101,13 +101,14 @@ CREATE TABLE `players`
 	`loss_skills` INT NOT NULL DEFAULT '10' COMMENT 'NOT IN USE BY THE SERVER',
 	`premend` INT NOT NULL DEFAULT 0 COMMENT 'NOT IN USE BY THE SERVER',
 	`online` TINYINT NOT NULL DEFAULT 0,
+	`stamina` smallint(5) unsigned NOT NULL DEFAULT 3360,
 	PRIMARY KEY (`id`),
 	KEY (`name`),
 	FOREIGN KEY (`account_id`) REFERENCES `accounts`(`id`) ON DELETE CASCADE,
 	FOREIGN KEY (`group_id`) REFERENCES `groups`(`id`)
 ) ENGINE = InnoDB;
 
-INSERT INTO `players` VALUES (1, 'Account Manager', 1, 1, 1, 0, 150, 150, 0, 0, 0, 0, 0, 110, 0, 0, 0, 0, 0, 0, 0, 50, 50, 7, '', 400, 0, 0, 0, 0, 0, 0, 0, '', 0, 0, 0, 10, 10, 10, 0, 0);
+INSERT INTO `players` VALUES (1, 'Account Manager', 1, 1, 1, 0, 150, 150, 0, 0, 0, 0, 0, 110, 0, 0, 0, 0, 0, 0, 0, 50, 50, 7, '', 400, 0, 0, 0, 0, 0, 0, 0, '', 0, 0, 0, 10, 10, 10, 0, 0, 3360);
 	
 CREATE TABLE `bans`
 (

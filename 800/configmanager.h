@@ -36,6 +36,12 @@ class ConfigManager
 		ConfigManager();
 		~ConfigManager();
 
+		enum boolean_config_t
+		{
+			STAMINA_SYSTEM = 0,
+			LAST_BOOLEAN_CONFIG /* this must be the last one */
+		};
+
 		enum string_config_t
 		{
 			DUMMY_STR = 0,
@@ -139,15 +145,17 @@ class ConfigManager
 		const std::string& getString(uint32_t _what) const;
 		int32_t getNumber(uint32_t _what) const;
 		bool setNumber(uint32_t _what, int32_t _value);
+		bool getBoolean(boolean_config_t _what) const;
 
 	private:
-		std::string getGlobalString(lua_State* _L, const std::string& _identifier, const std::string& _default="");
-		int32_t getGlobalNumber(lua_State* _L, const std::string& _identifier, const int32_t _default=0);
-		std::string getGlobalStringField(lua_State* _L, const std::string& _identifier, const int32_t _key, const std::string& _default="");
+		std::string getGlobalString(lua_State* _L, const std::string& _identifier, const std::string& _default = "");
+		int32_t getGlobalNumber(lua_State* _L, const std::string& _identifier, const int32_t _default = 0);
+		std::string getGlobalStringField(lua_State* _L, const std::string& _identifier, const int32_t _key, const std::string& _default = "");
 
 		bool m_isLoaded;
 		std::string m_confString[LAST_STRING_CONFIG];
 		int32_t m_confInteger[LAST_INTEGER_CONFIG];
+		bool m_confBoolean[LAST_BOOLEAN_CONFIG];
 };
 
 #endif /* _CONFIG_MANAGER_H */

@@ -28,6 +28,7 @@
 #include "luascript.h"
 #include "weapons.h"
 #include "configmanager.h"
+#include "game.h"
 
 #include <libxml/xmlmemory.h>
 #include <libxml/parser.h>
@@ -35,6 +36,7 @@
 extern Spells* g_spells;
 extern Monsters g_monsters;
 extern ConfigManager g_config;
+extern Game g_game;
 
 MonsterType::MonsterType()
 {
@@ -124,52 +126,65 @@ MonsterType::~MonsterType()
 
 uint32_t Monsters::getLootRandom()
 {
-	return random_range(0, MAX_LOOTCHANCE)/g_config.getNumber(ConfigManager::RATE_LOOT);
+	return random_range(0, MAX_LOOTCHANCE) / g_config.getNumber(ConfigManager::RATE_LOOT);
 }
 
 void MonsterType::createLoot(Container* corpse)
 {
-	for(LootItems::const_iterator it = lootItems.begin(); it != lootItems.end() && (corpse->capacity() - corpse->size() > 0); it++)
+	Player* owner = g_game.getPlayerByID(corpse->getCorpseOwner());
+	if(!owner || owner->getStaminaMinutes() > 840)
 	{
-		Item* tmpItem = createLootItem(*it);
-		if(tmpItem)
+		for(LootItems::const_reverse_iterator it = lootItems.rbegin(), end = lootItems.rend(); it != end; ++it)
 		{
-			//check containers
-			if(Container* container = tmpItem->getContainer())
+			std::list<Item*> itemList = createLootItem(*it);
+			if(itemList.empty())
+				continue;
+
+			for(std::list<Item*>::iterator iit = itemList.begin(), iend = itemList.end(); iit != iend; ++iit)
 			{
-				createLootContainer(container, *it);
-				if(container->size() == 0)
-					delete container;
-				else
+				Item* tmpItem = *iit;
+
+				//check containers
+				if(Container* container = tmpItem->getContainer())
+				{
+					if(!createLootContainer(container, *it))
+						delete container;
+					else if(g_game.internalAddItem(corpse, tmpItem) != RET_NOERROR)
+						corpse->__internalAddThing(tmpItem);
+				}
+				else if(g_game.internalAddItem(corpse, tmpItem) != RET_NOERROR)
 					corpse->__internalAddThing(tmpItem);
 			}
-			else
-				corpse->__internalAddThing(tmpItem);
 		}
 	}
+
 	corpse->__startDecaying();
 }
 
-Item* MonsterType::createLootItem(const LootBlock& lootBlock)
+std::list<Item*> MonsterType::createLootItem(const LootBlock& lootBlock)
 {
 	Item* tmpItem = NULL;
-	if(Item::items[lootBlock.id].stackable)
+	int32_t itemCount = 0;
+
+	uint32_t randvalue = Monsters::getLootRandom();
+	if(randvalue < lootBlock.chance)
 	{
-		uint32_t randvalue = Monsters::getLootRandom();
-		if(randvalue < lootBlock.chance)
-		{
-			uint32_t n = randvalue % lootBlock.countmax + 1;
-			tmpItem = Item::CreateItem(lootBlock.id, n);
-		}
-	}
-	else
-	{
-		if(Monsters::getLootRandom() < lootBlock.chance)
-			tmpItem = Item::CreateItem(lootBlock.id, 0);
+		if(Item::items[lootBlock.id].stackable)
+			itemCount = randvalue % lootBlock.countmax + 1;
+		else
+			itemCount = 1;
 	}
 
-	if(tmpItem)
+	std::list<Item*> itemList;
+	while(itemCount > 0)
 	{
+		uint16_t n = (uint16_t)std::min<int32_t>(itemCount, 100);
+		tmpItem = Item::CreateItem(lootBlock.id, n);
+		if(!tmpItem)
+			break;
+
+		itemCount -= n;
+
 		if(lootBlock.subType != -1)
 			tmpItem->setSubType(lootBlock.subType);
 
@@ -179,26 +194,29 @@ Item* MonsterType::createLootItem(const LootBlock& lootBlock)
 		if(lootBlock.text != "")
 			tmpItem->setText(lootBlock.text);
 
-		return tmpItem;
+		itemList.push_back(tmpItem);
 	}
-
-	return NULL;
+	return itemList;
 }
 
-void MonsterType::createLootContainer(Container* parent, const LootBlock& lootblock)
+bool MonsterType::createLootContainer(Container* parent, const LootBlock& lootblock)
 {
-	if(parent->size() < parent->capacity())
+	LootItems::const_iterator it = lootblock.childLoot.begin(),
+		end = lootblock.childLoot.end();
+	if(it == end)
+		return true;
+
+	for(; it != end && parent->size() < parent->capacity(); ++it)
 	{
-		LootItems::const_iterator it;
-		for(it = lootblock.childLoot.begin(); it != lootblock.childLoot.end(); it++)
+		std::list<Item*> itemList = createLootItem(*it);
+		if(!itemList.empty())
 		{
-			Item* tmpItem = createLootItem(*it);
-			if(tmpItem)
+			for(std::list<Item*>::iterator iit = itemList.begin(), iend = itemList.end(); iit != iend; ++iit)
 			{
+				Item* tmpItem = *iit;
 				if(Container* container = tmpItem->getContainer())
 				{
-					createLootContainer(container, *it);
-					if(container->size() == 0)
+					if(!createLootContainer(container, *it))
 						delete container;
 					else
 						parent->__internalAddThing(container);
@@ -208,6 +226,7 @@ void MonsterType::createLootContainer(Container* parent, const LootBlock& lootbl
 			}
 		}
 	}
+	return parent->size() != 0;
 }
 
 Monsters::Monsters()

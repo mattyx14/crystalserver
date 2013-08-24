@@ -41,71 +41,72 @@ enum DistributionType_t
 	DISTRO_NORMAL
 };
 
-std::string transformToMD5(std::string plainText, bool upperCase = false);
-std::string transformToSHA1(std::string plainText, bool upperCase = false);
-bool passwordTest(const std::string &plain, std::string &hash);
+extern std::string transformToMD5(std::string plainText, bool upperCase = false);
+extern std::string transformToSHA1(std::string plainText, bool upperCase = false);
+extern bool passwordTest(const std::string &plain, std::string &hash);
 
-void replaceString(std::string& str, const std::string sought, const std::string replacement);
-void trim_right(std::string& source, const std::string& t);
-void trim_left(std::string& source, const std::string& t);
-void toLowerCaseString(std::string& source);
-void toUpperCaseString(std::string& source);
-std::string asLowerCaseString(const std::string& source);
-std::string asUpperCaseString(const std::string& source);
+extern void replaceString(std::string& str, const std::string sought, const std::string replacement);
+extern void trim_right(std::string& source, const std::string& t);
+extern void trim_left(std::string& source, const std::string& t);
+extern void toLowerCaseString(std::string& source);
+extern void toUpperCaseString(std::string& source);
+extern std::string asLowerCaseString(const std::string& source);
+extern std::string asUpperCaseString(const std::string& source);
 
-bool utf8ToLatin1(char* intext, std::string& outtext);
-bool readXMLInteger(xmlNodePtr node, const char* tag, int& value);
+extern bool utf8ToLatin1(char* intext, std::string& outtext);
+extern bool readXMLInteger(xmlNodePtr node, const char* tag, int& value);
 #if (defined __WINDOWS__ || defined WIN32) && !defined __GNUC__
-bool readXMLInteger(xmlNodePtr node, const char* tag, int32_t& value);
+extern bool readXMLInteger(xmlNodePtr node, const char* tag, int32_t& value);
 #endif
-bool readXMLInteger64(xmlNodePtr node, const char* tag, uint64_t& value);
-bool readXMLFloat(xmlNodePtr node, const char* tag, float& value);
-bool readXMLString(xmlNodePtr node, const char* tag, std::string& value);
-bool readXMLContentString(xmlNodePtr node, std::string& value);
+extern bool readXMLInteger64(xmlNodePtr node, const char* tag, uint64_t& value);
+extern bool readXMLFloat(xmlNodePtr node, const char* tag, float& value);
+extern bool readXMLString(xmlNodePtr node, const char* tag, std::string& value);
+extern bool readXMLContentString(xmlNodePtr node, std::string& value);
 
-std::vector<std::string> explodeString(const std::string& inString, const std::string& separator);
-std::vector<int32_t> vectorAtoi(std::vector<std::string> stringVector);
-bool hasBitSet(uint32_t flag, uint32_t flags);
+extern std::vector<std::string> explodeString(const std::string& inString, const std::string& separator);
+extern std::vector<int32_t> vectorAtoi(std::vector<std::string> stringVector);
+extern bool hasBitSet(uint32_t flag, uint32_t flags);
 
-std::string generateRecoveryKey(int32_t fieldCount, int32_t fieldLength);
+extern std::string generateRecoveryKey(int32_t fieldCount, int32_t fieldLength);
 
-bool isNumber(char character);
-bool isLowercaseLetter(char character);
-bool isPasswordCharacter(char character);
+extern bool isNumber(char character);
+extern bool isLowercaseLetter(char character);
+extern bool isPasswordCharacter(char character);
 
-bool isValidName(std::string text);
-bool isValidPassword(std::string text);
-bool isNumbers(std::string text);
+extern bool isValidName(std::string text);
+extern bool isValidPassword(std::string text);
+extern bool isNumbers(std::string text);
 
-bool checkText(std::string text, std::string str);
+extern bool checkText(std::string text, std::string str);
 
-int random_range(int lowest_number, int highest_number, DistributionType_t type = DISTRO_UNIFORM);
+extern int32_t random_range(int lowest_number, int highest_number, DistributionType_t type = DISTRO_UNIFORM);
 
-Direction getDirection(std::string string);
-Direction getReverseDirection(Direction dir);
-Position getNextPosition(Direction direction, Position pos);
+extern Direction getDirection(std::string string);
+extern Direction getReverseDirection(Direction dir);
+extern Position getNextPosition(Direction direction, Position pos);
 
-char upchar(char c);
+extern char upchar(char c);
 
-std::string parseParams(tokenizer::iterator &it, tokenizer::iterator end);
+extern std::string parseParams(tokenizer::iterator &it, tokenizer::iterator end);
 
-void formatDate(time_t time, char* buffer);
-void formatDate2(time_t time, char* buffer);
-void formatIP(uint32_t ip, char* buffer);
-std::string formatTime(int32_t hours, int32_t minutes);
+extern void formatDate(time_t time, char* buffer);
+extern void formatDate2(time_t time, char* buffer);
+extern void formatIP(uint32_t ip, char* buffer);
+extern std::string formatTime(int32_t hours, int32_t minutes);
 
-std::string trimString(std::string& str);
+extern std::string trimString(std::string& str);
 
-MagicEffectClasses getMagicEffect(const std::string& strValue);
-ShootType_t getShootType(const std::string& strValue);
-Ammo_t getAmmoType(const std::string& strValue);
-AmmoAction_t getAmmoAction(const std::string& strValue);
+extern MagicEffectClasses getMagicEffect(const std::string& strValue);
+extern ShootType_t getShootType(const std::string& strValue);
+extern Ammo_t getAmmoType(const std::string& strValue);
+extern AmmoAction_t getAmmoAction(const std::string& strValue);
 
-std::string getSkillName(uint16_t skillid);
-skills_t getSkillId(std::string param);
+extern std::string getSkillName(uint16_t skillid);
+extern skills_t getSkillId(std::string param);
 
-std::string getReason(int32_t reasonId);
-std::string getAction(int32_t actionId, bool IPBanishment);
+extern std::string getReason(int32_t reasonId);
+extern std::string getAction(int32_t actionId, bool IPBanishment);
 
-bool fileExists(const char* filename);
+extern bool fileExists(const char* filename);
+extern bool booleanString(const std::string& str);
 #endif

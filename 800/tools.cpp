@@ -938,3 +938,8 @@ bool fileExists(const char* filename)
 	return exists;
 }
 
+bool booleanString(const std::string& str)
+{
+	const std::string& lowerStr = asLowerCaseString(str);
+	return (lowerStr == "yes" || lowerStr == "true" || lowerStr == "y" || atoi(lowerStr.c_str()) > 0);
+}

@@ -31,6 +31,7 @@
 			
 [ Milestone
 	Game protocol 8.00 (Tryller)
+	Stamina system (Talaturen, Tryller)
 	New Formula of Armor/Defense (OpenTibia SVN)
 	Weapons configurable in XML and Lua (OpenTibia SVN)
 	Wands, Rods, Burst Arrows and Poison Arrows (OpenTibia SVN)

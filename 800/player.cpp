@@ -186,6 +186,9 @@ Creature()
 #ifdef __ENABLE_SERVER_DIAGNOSTIC__
 	playerCount++;
 #endif
+
+	staminaMinutes = 3360;// this is for 42 minutes of stamina -> 2520;
+	nextUseStaminaTime = 0;
 }
 
 Player::~Player()
@@ -1765,11 +1768,34 @@ void Player::addManaSpent(uint64_t amount)
 	}
 }
 
-void Player::addExperience(uint64_t exp)
+void Player::addExperience(uint64_t exp, bool useMult/* = false*/, bool applyStaminaChange/* = false*/)
 {
+	int32_t newLevel = level;
+
+	uint64_t nextLevelExp = Player::getExpForLevel(newLevel + 1);
+	if(Player::getExpForLevel(newLevel) >= nextLevelExp)
+	{
+		//player has reached max level
+		levelPercent = 0;
+		sendStats();
+		return;
+	}
+
+	if(useMult)
+		exp *= g_game.getExperienceStage(level);
+
+	if(applyStaminaChange && g_config.getBoolean(ConfigManager::STAMINA_SYSTEM))
+	{
+		if(staminaMinutes > 2400)
+		{
+			if(isPremium())
+				exp *= 1.5;
+		}
+		else if(staminaMinutes <= 840)
+			exp *= 0.5;
+	}
+
 	experience += exp;
-	int32_t prevLevel = getLevel();
-	int32_t newLevel = getLevel();
 	while(experience >= Player::getExpForLevel(newLevel + 1))
 	{
 		++newLevel;
@@ -1780,6 +1806,7 @@ void Player::addExperience(uint64_t exp)
 		capacity += vocation->getCapGain();
 	}
 
+	int32_t prevLevel = level;
 	if(prevLevel != newLevel)
 	{
 		level = newLevel;
@@ -1797,9 +1824,14 @@ void Player::addExperience(uint64_t exp)
 	}
 
 	uint64_t currLevelExp = Player::getExpForLevel(level);
-	uint32_t newPercent = Player::getPercentLevel(experience - currLevelExp, Player::getExpForLevel(level + 1) - currLevelExp);
-	if(newPercent != levelPercent)
+	nextLevelExp = Player::getExpForLevel(level + 1);
+	if(nextLevelExp > currLevelExp)
+	{
+		uint32_t newPercent = Player::getPercentLevel(experience - currLevelExp, Player::getExpForLevel(level + 1) - currLevelExp);
 		levelPercent = newPercent;
+	}
+	else
+		levelPercent = 0;
 
 	sendStats();
 }
@@ -3440,31 +3472,38 @@ void Player::onKilledCreature(Creature* target)
 
 void Player::gainExperience(uint64_t gainExp)
 {
-	if(!hasFlag(PlayerFlag_NotGainExperience))
+	if(!hasFlag(PlayerFlag_NotGainExperience) && gainExp > 0)
 	{
-		if(gainExp > 0)
-		{
-			//soul regeneration
-			if(gainExp >= getLevel())
-			{
-				Condition* condition = Condition::createCondition(CONDITIONID_DEFAULT, CONDITION_SOUL, 4 * 60 * 1000, 0);
-				uint32_t vocSoulTicks = vocation->getSoulGainTicks();
-				condition->setParam(CONDITIONPARAM_SOULGAIN, 1);
-				condition->setParam(CONDITIONPARAM_SOULTICKS, vocSoulTicks * 1000);
-				addCondition(condition);
-			}
+		uint64_t oldExperience = experience;
+		if(staminaMinutes == 0)
+			return;
 
-			addExperience(gainExp);
+		addExperience(gainExp, true, true);
+
+		//soul regeneration
+		int64_t gainedExperience = experience - oldExperience;
+		if(gainedExperience >= level)
+		{
+			Condition* condition = Condition::createCondition(CONDITIONID_DEFAULT, CONDITION_SOUL, 4 * 60 * 1000, 0);
+			condition->setParam(CONDITIONPARAM_SOULGAIN, 1);
+			condition->setParam(CONDITIONPARAM_SOULTICKS, vocation->getSoulGainTicks() * 1000);
+			addCondition(condition);
 		}
 	}
 }
 
-void Player::onGainExperience(uint64_t gainExp)
+void Player::onGainExperience(uint64_t gainExp, Creature* target)
 {
 	if(hasFlag(PlayerFlag_NotGainExperience))
-		gainExp = 0;
+		return;
 
-	Creature::onGainExperience(gainExp);
+	if(target)
+	{
+		if(gainExp > 0 && target->getMonster())
+			useStamina();
+	}
+
+	Creature::onGainExperience(gainExp, target);
 	gainExperience(gainExp);
 }
 
@@ -4377,5 +4416,52 @@ void Player::clearPartyInvitations()
 
 		for(PartyList::iterator it = list.begin(); it != list.end(); ++it)
 			(*it)->removeInvite(this);
+	}
+}
+
+void Player::regenerateStamina(int32_t offlineTime)
+{
+	if(!g_config.getBoolean(ConfigManager::STAMINA_SYSTEM))
+		return;
+
+	offlineTime -= 600;
+	if(offlineTime < 180)
+		return;
+
+	int16_t regainStaminaMinutes = offlineTime / 180;
+	int16_t maxNormalStaminaRegen = 2400 - std::min<int16_t>(2400, staminaMinutes);
+	if(regainStaminaMinutes > maxNormalStaminaRegen)
+	{
+		int16_t happyHourStaminaRegen = (offlineTime - (maxNormalStaminaRegen * 180)) / 600;
+		staminaMinutes = std::min<int16_t>(2520, std::max<int16_t>(2400, staminaMinutes) + happyHourStaminaRegen);
+	}
+	else
+		staminaMinutes += regainStaminaMinutes;
+}
+
+void Player::useStamina()
+{
+	if(!g_config.getBoolean(ConfigManager::STAMINA_SYSTEM) || staminaMinutes == 0)
+		return;
+
+	time_t currentTime = time(NULL);
+	if(currentTime > nextUseStaminaTime)
+	{
+		time_t timePassed = currentTime - nextUseStaminaTime;
+		if(timePassed > 60)
+		{
+			if(staminaMinutes > 2)
+				staminaMinutes -= 2;
+			else
+				staminaMinutes = 0;
+
+			nextUseStaminaTime = currentTime + 120;
+		}
+		else
+		{
+			--staminaMinutes;
+			nextUseStaminaTime = currentTime + 60;
+		}
+		sendStats();
 	}
 }

@@ -21,6 +21,7 @@
 
 #include "definitions.h"
 #include "configmanager.h"
+#include "tools.h"
 #include <iostream>
 
 ConfigManager::ConfigManager()
@@ -137,8 +138,10 @@ bool ConfigManager::loadFile(const std::string& _filename)
 	m_confInteger[WHITE_SKULL_TIME] = getGlobalNumber(L, "whiteSkullTime", 15 * 60 * 1000);
 	m_confInteger[AUTO_SAVE_EACH_MINUTES] = getGlobalNumber(L, "autoSaveEachMinutes", 0);
 	m_confString[REPLACE_KICK_ON_LOGIN] = getGlobalString(L, "replaceKickOnLogin", "yes");
-	m_isLoaded = true;
 
+	m_confBoolean[STAMINA_SYSTEM] = booleanString(getGlobalString(L, "staminaSystem", "yes"));
+
+	m_isLoaded = true;
 	lua_close(L);
 	return true;
 }
@@ -223,4 +226,15 @@ std::string ConfigManager::getGlobalStringField (lua_State* _L, const std::strin
 	std::string result = lua_tostring(_L, -1);
 	lua_pop(_L, 2);  /* remove number and key*/
 	return result;
+}
+
+bool ConfigManager::getBoolean(boolean_config_t _what) const
+{
+	if (m_isLoaded && _what < LAST_BOOLEAN_CONFIG)
+		return m_confBoolean[_what];
+	else
+	{
+		std::cout << "Warning: [ConfigManager::getBoolean] " << _what << std::endl;
+		return false;
+	}
 }

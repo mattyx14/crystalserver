@@ -643,6 +643,15 @@ bool Game::placeCreature(Creature* creature, const Position& pos, bool forced /*
 	Player* player = creature->getPlayer();
 	if(player)
 	{
+ 		int32_t offlineTime;
+		if(player->getLastLogout() != 0)
+		{
+			// Not counting more than 21 days to prevent overflow when multiplying with 1000 (for milliseconds).
+			offlineTime = std::min<int32_t>(time(NULL) - player->getLastLogout(), 86400 * 21);
+		}
+		else
+			offlineTime = 0;
+
 		Condition* conditionMuted = player->getCondition(CONDITION_MUTED, CONDITIONID_DEFAULT);
 		if(conditionMuted && conditionMuted->getTicks() > 0)
 		{
@@ -684,6 +693,15 @@ bool Game::placeCreature(Creature* creature, const Position& pos, bool forced /*
 		}
 		else if(player->isPromoted())
 			player->setVocation(player->vocation->getFromVocation());
+
+
+		bool sentStats = false;
+
+		int16_t oldStaminaMinutes = player->getStaminaMinutes();
+		player->regenerateStamina(offlineTime);
+
+		if(!sentStats && player->getStaminaMinutes() != oldStaminaMinutes)
+			player->sendStats();
 	}
 
 	addCreatureCheck(creature);

@@ -104,7 +104,7 @@ void House::setHouseOwner(uint32_t guid)
 
 void House::updateDoorDescription()
 {
-        char houseDescription[200];
+	char houseDescription[200];
 	if(houseOwner != 0)
 		sprintf(houseDescription, "It belongs to house '%s'. %s owns this house.", houseName.c_str(), houseOwnerName.c_str());
 	else

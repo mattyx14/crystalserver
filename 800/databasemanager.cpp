@@ -192,6 +192,14 @@ uint32_t DatabaseManager::updateDatabase()
 			return 1;
 		}
 
+		case 1:
+		{
+			std::cout << ":: Updating database to version 2" << std::endl;
+			db->executeQuery("ALTER TABLE `players` ADD `stamina` SMALLINT UNSIGNED NOT NULL DEFAULT 3360;");
+			registerDatabaseConfig("db_version", 2);
+			return 2;
+		}
+
 		default:
 			break;
 	}

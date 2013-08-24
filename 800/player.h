@@ -146,11 +146,15 @@ class Player : public Creature, public Cylinder
 		void addList();
 		void kickPlayer(bool displayEffect);
 
-		static uint64_t getExpForLevel(int32_t level)
+		static uint64_t getExpForLevel(int32_t lv)
 		{
-			level--;
-			return ((50ULL * level * level * level) - (150ULL * level * level) + (400ULL * level))/3ULL;
+			lv--;
+			return ((50ULL * lv * lv * lv) - (150ULL * lv * lv) + (400ULL * lv)) / 3ULL;
 		}
+
+		uint16_t getStaminaMinutes() const { return staminaMinutes; }
+		void regenerateStamina(int32_t offlineTime);
+		void useStamina();
 
 		uint32_t getGuildId() const {return guildId;}
 		void setGuildId(uint32_t newGuildId) {guildId = newGuildId;}
@@ -380,7 +384,7 @@ class Player : public Creature, public Cylinder
 		virtual void onAttackedCreatureDrainHealth(Creature* target, int32_t points);
 		virtual void onTargetCreatureGainHealth(Creature* target, int32_t points);
 		virtual void onKilledCreature(Creature* target);
-		virtual void onGainExperience(uint64_t gainExp);
+		virtual void onGainExperience(uint64_t gainExp, Creature* target);
 
 		virtual void onAttackedCreatureBlockHit(Creature* target, BlockType_t blockType);
 		virtual void onBlockHit(BlockType_t blockType);
@@ -608,7 +612,7 @@ class Player : public Creature, public Cylinder
 		bool hasCapacity(const Item* item, uint32_t count) const;
 
 		void gainExperience(uint64_t exp);
-		void addExperience(uint64_t exp);
+		void addExperience(uint64_t exp, bool useMult = false, bool applyStaminaChange = false);
 
 		void updateInventoryWeigth();
 
@@ -761,6 +765,10 @@ class Player : public Creature, public Cylinder
 		LightInfo itemsLight;
 
 		OutfitList m_playerOutfits;
+
+		//stamina
+		uint16_t staminaMinutes;
+		time_t nextUseStaminaTime;
 
 		//read/write storage data
 		uint32_t windowTextId;
