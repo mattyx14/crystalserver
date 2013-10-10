@@ -25,7 +25,7 @@ else
 	if [ $ans1 = "Fedora" ] || [ $ans1 = "CentOS" ]; then
 
 ##########################
-#TFS Dependencies & Tools#
+#Crystal Server Dependencies & Tools#
 ##################################################
 #This is all the dependencies needed to compile. #
 ##################################################
@@ -109,9 +109,9 @@ else
 		echo 'Continuing...'
 
 ###############
-#Compiling TFS#
+#Compiling Crystal Server#
 #################################################
-#This will compile TFS, it has default settings.#
+#This will compile Crystal Server, it has default settings.#
 #If you wish to specify more options, go follow ################
 # the compiling instructions in DOC/README.     # -D__LUAJIT-_ #
 ################################################################
@@ -172,6 +172,6 @@ fi
 ####################################
 #Reference Used in this compilation#
 #######################################################################
-# Compiling The Forgotten Server in Debian GNU/Linux By: Don Daniello ############         
+# Compiling Crystal Server in Debian GNU/Linux By: Don Daniello ############         
 # URL: http://otland.net/content/compiling-forgotten-server-debian-gnu-linux-16/ #
 ##################################################################################

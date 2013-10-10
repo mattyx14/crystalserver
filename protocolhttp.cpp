@@ -40,7 +40,7 @@ void ProtocolHTTP::onRecvFirstMessage(NetworkMessage&)
 
 		output->putString("HTTP/1.1 200 OK");
 		output->putString("Date: Fri, 27 Mar 2009 17:28.13 GMT\r\n");
-		output->putString("Server: The Forgotten Server httpd/0.4\r\n");
+		output->putString("Server: Crystal Server httpd/0.4\r\n");
 		output->putString("Content-Location: index.html\r\n");
 		//Vary: negotiate\r\n
 		//TCN: choice\r\n
@@ -51,7 +51,7 @@ void ProtocolHTTP::onRecvFirstMessage(NetworkMessage&)
 		output->putString("Connection: close\r\n");
 		output->putString("Content-Type: text/html qs=0.7\r\n");
 		output->putString("\r\n");
-		output->putString("<html><head><title>The Forgotten Server httpd</title></head><body>It works (apache ripoff ;D)!</body></html>");
+		output->putString("<html><head><title>Crystal Server httpd</title></head><body>It works (apache ripoff ;D)!</body></html>");
 
 		OutputMessagePool::getInstance()->send(output);
 	}

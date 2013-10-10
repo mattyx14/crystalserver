@@ -49,7 +49,7 @@ SRC = weapons.cpp waitlist.cpp vocation.cpp trashholder.cpp tools.cpp \
 
 
 DEL = del
-TARGET = theforgottenserver
+TARGET = crystalserver
 OBJDIR = obj
 OBJ = $(SRC:%.cpp=$(OBJDIR)/%.o)
 DELOBJ = $(SRC:%.cpp=$(OBJDIR)\\%.o)

@@ -91,15 +91,15 @@ bool ConfigManager::load()
 		#endif
 		m_confString[SQL_HOST] = getGlobalString("sqlHost", "localhost");
 		m_confNumber[SQL_PORT] = getGlobalNumber("sqlPort", 3306);
-		m_confString[SQL_DB] = getGlobalString("sqlDatabase", "theforgottenserver");
+		m_confString[SQL_DB] = getGlobalString("sqlDatabase", "crystalserver");
 		m_confString[SQL_USER] = getGlobalString("sqlUser", "root");
 		m_confString[SQL_PASS] = getGlobalString("sqlPass", "");
-		m_confString[SQL_FILE] = getGlobalString("sqlFile", "forgottenserver.s3db");
+		m_confString[SQL_FILE] = getGlobalString("sqlFile", "crystalserver.s3db");
 		m_confNumber[SQL_KEEPALIVE] = getGlobalNumber("sqlKeepAlive", 0);
 		m_confNumber[MYSQL_READ_TIMEOUT] = getGlobalNumber("mysqlReadTimeout", 10);
 		m_confNumber[MYSQL_WRITE_TIMEOUT] = getGlobalNumber("mysqlWriteTimeout", 10);
 		m_confBool[OPTIMIZE_DATABASE] = getGlobalBool("startupDatabaseOptimization", true);
-		m_confString[MAP_NAME] = getGlobalString("mapName", "forgotten.otbm");
+		m_confString[MAP_NAME] = getGlobalString("mapName");
 		m_confBool[GLOBALSAVE_ENABLED] = getGlobalBool("globalSaveEnabled", true);
 		m_confNumber[SERVICE_THREADS] = getGlobalNumber("serviceThreads", 1);
 		m_confNumber[GLOBALSAVE_H] = getGlobalNumber("globalSaveHour", 8);

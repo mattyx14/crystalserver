@@ -20,18 +20,18 @@
 
 #define CLIENT_VERSION_MIN 1010
 #define CLIENT_VERSION_MAX 1010
-#define CLIENT_VERSION_STRING "Only clients with protocol 10.1 allowed!"
+#define CLIENT_VERSION_STRING "Only clients with protocol 10.10 allowed!"
 
 #define CLIENT_VERSION_DAT 0
 #define CLIENT_VERSION_SPR 0
 #define CLIENT_VERSION_PIC 0
 //#define CLIENT_VERSION_DATA
 
-#define SOFTWARE_NAME "The Forgotten Server"
-#define SOFTWARE_VERSION "0.3.7_SVN"
+#define SOFTWARE_NAME "Crystal Server"
+#define SOFTWARE_VERSION "0.3.0"
 #define SOFTWARE_CODENAME "Crying Damson"
-#define SOFTWARE_DEVELOPERS "Elf, Talaturen, Dalkon, BeniS, Tryller and Kornholijo"
-#define SOFTWARE_PROTOCOL "10.1"
+#define SOFTWARE_DEVELOPERS "Tryller"
+#define SOFTWARE_PROTOCOL "10.10"
 
 #define VERSION_PATCH 0
 #define VERSION_TIMESTAMP 0

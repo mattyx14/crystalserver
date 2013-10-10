@@ -1,5 +1,5 @@
 AC_PREREQ([2.50])
-AC_INIT([TheForgottenServer], [0.3.7])
+AC_INIT([CrystalServer], [0.3.0])
 AM_INIT_AUTOMAKE([1.10 foreign silent-rules])
 AC_CONFIG_SRCDIR([account.h])
 AM_CONFIG_HEADER([config.h])
@@ -151,7 +151,7 @@ AC_FUNC_REALLOC
 AC_CHECK_FUNCS([ceil floor ftime gethostbyname gethostname memset pow sqrt strcasecmp strncasecmp strstr strtol])
 
 # check for xml2
-AM_PATH_XML2(2.6.5, , AC_MSG_ERROR([You need libxml2 >= 2.6.5 to compile theforgottenserver!]))
+AM_PATH_XML2(2.6.5, , AC_MSG_ERROR([You need libxml2 >= 2.6.5 to compile Crystal Server!]))
 LIBS="$LIBS $XML_LIBS"
 
 # check for zlib
@@ -297,7 +297,7 @@ AC_CONFIG_FILES([Makefile])
 AC_OUTPUT
 
 echo
-#echo The Forgotten Server 0.3.7
+#echo Crystal Server 0.3.0
 echo $PACKAGE $VERSION
 echo
 echo Using LuaJIT................ : $luaJIT

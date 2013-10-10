@@ -442,11 +442,11 @@ void otserv(StringVec, ServiceManager* services)
 	}
 
 	std::stringstream mutexName;
-	mutexName << "forgottenserver_" << g_config.getNumber(ConfigManager::WORLD_ID);
+	mutexName << "crystalserver_" << g_config.getNumber(ConfigManager::WORLD_ID);
 
 	CreateMutex(NULL, FALSE, mutexName.str().c_str());
 	if(GetLastError() == ERROR_ALREADY_EXISTS)
-		startupErrorMessage("Another instance of The Forgotten Server is already running with the same worldId.\nIf you want to run multiple servers, please change the worldId in configuration file.");
+		startupErrorMessage("Another instance of Crystal Server is already running with the same worldId.\nIf you want to run multiple servers, please change the worldId in configuration file.");
 
 	std::string defaultPriority = asLowerCaseString(g_config.getString(ConfigManager::DEFAULT_PRIORITY));
 	if(defaultPriority == "realtime")

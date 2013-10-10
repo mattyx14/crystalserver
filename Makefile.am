@@ -1,11 +1,11 @@
-noinst_PROGRAMS = theforgottenserver
+noinst_PROGRAMS = crystalserver
 
 CXXFLAGS = -pipe -g
 AM_CXXFLAGS = $(XML_CPPFLAGS) $(OTSERV_FLAGS) $(LUA_CFLAGS) $(DEBUG_FLAGS)\
 $(MYSQL_FLAGS) $(MYSQLPP_FLAGS) $(SQLITE_FLAGS) $(PGSQL_FLAGS) $(PROFILER_FLAGS)\
 $(OPTIONAL_FLAGS) -D_THREAD_SAFE -D_REENTRANT -Wall -Wextra -Werror -Wno-strict-aliasing
 
-theforgottenserver_LDADD = $(LUA_LIBS)
+crystalserver_LDADD = $(LUA_LIBS)
 
 if USE_MYSQL
 MAYBE_MYSQL = databasemysql.cpp databasemysql.h
@@ -26,7 +26,7 @@ if OT_ADMIN
 MAYBE_OTADMIN = admin.cpp admin.h
 endif
 
-theforgottenserver_SOURCES = account.h actions.cpp actions.h $(MAYBE_OTADMIN) \
+crystalserver_SOURCES = account.h actions.cpp actions.h $(MAYBE_OTADMIN) \
 	allocator.cpp allocator.h baseevents.cpp baseevents.h beds.cpp \
 	beds.h chat.cpp chat.h combat.cpp combat.h condition.cpp condition.h \
 	config.h configmanager.cpp configmanager.h connection.cpp connection.h \

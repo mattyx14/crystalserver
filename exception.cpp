@@ -111,9 +111,9 @@ long ExceptionHandler::MiniDumpExceptionHandler(EXCEPTION_POINTERS* exceptionPoi
 	SYSTEMTIME systemTime;
 	GetSystemTime(&systemTime);
 
-	// "theforgottenserver_DD-MM-YYYY_HH-MM-SS.mdmp"
+	// "crystalserver_DD-MM-YYYY_HH-MM-SS.mdmp"
 	char fileName[64] = {"\0"};
-	sprintf(fileName, "theforgottenserver_%02u-%02u-%04u_%02u-%02u-%02u.mdmp",
+	sprintf(fileName, "crystalserver_%02u-%02u-%04u_%02u-%02u-%02u.mdmp",
 		systemTime.wDay, systemTime.wMonth, systemTime.wYear,
 		systemTime.wHour, systemTime.wMinute, systemTime.wSecond);
 

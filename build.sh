@@ -23,7 +23,7 @@
 # 1/7 of the original compile time!
 # When more you do it, more ccache will cache, default is limited to use 1GB storage
 
-echo "The Forgotten Server build script - "
+echo "Crystal Server build script - "
 
 
 # Enable CCache
