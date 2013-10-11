@@ -1,4 +1,4 @@
-Crystal Server
-=============
+crystalserver
+===============
 
-Source code for Crystal Server. An OpenTibia distro based on The Forgotten Server and OpenTibia SVN
+The Crystal Server is a server application written in C++ for the MMORPG Tibia. It is is based on the OpenTibia Server and The Forgotten Server projects.
