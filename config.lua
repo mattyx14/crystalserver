@@ -90,7 +90,6 @@
 	addManaSpentInPvPZone = true
 	recoverManaAfterDeathInPvPZone = false
 	squareColor = 0
-	allowFightback = true
 	fistBaseAttack = 7
 	useFairfightReduction = true
 	optionalWarAttackableAlly = false
@@ -324,6 +323,11 @@
 	rateLoot = 2.0
 	rateSpawnMin = 1
 	rateSpawnMax = 1
+
+	-- Offline Training
+	levelToOfflineTraining = 8
+	rateSkillOffline = 0.5
+	rateMagicOffline = 0.5
 
 	-- Monster rates
 	rateMonsterHealth = 1.0

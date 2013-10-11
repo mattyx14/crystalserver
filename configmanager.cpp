@@ -143,9 +143,9 @@ bool ConfigManager::load()
 	m_confBool[EXPERIENCE_STAGES] = getGlobalBool("experienceStages", false);
 	m_confDouble[RATE_EXPERIENCE] = getGlobalDouble("rateExperience", 1);
 	m_confDouble[RATE_SKILL] = getGlobalDouble("rateSkill", 1);
-	m_confDouble[RATE_SKILL_OFFLINE] = getGlobalDouble("rateSkillOffLine", 0.5);
+	m_confDouble[RATE_SKILL_OFFLINE] = getGlobalDouble("rateSkillOffline", 0.5);
 	m_confDouble[RATE_MAGIC] = getGlobalDouble("rateMagic", 1);
-	m_confDouble[RATE_MAGIC_OFFLINE] = getGlobalDouble("rateMagicOffLine", 0.5);
+	m_confDouble[RATE_MAGIC_OFFLINE] = getGlobalDouble("rateMagicOffline", 0.5);
 	m_confDouble[RATE_LOOT] = getGlobalDouble("rateLoot", 1);
 	m_confNumber[RATE_SPAWN_MIN] = getGlobalNumber("rateSpawnMin", 1);
 	m_confNumber[RATE_SPAWN_MAX] = getGlobalNumber("rateSpawnMax", 1);
@@ -358,7 +358,7 @@ bool ConfigManager::load()
 	m_confBool[ALLOW_BLOCK_SPAWN] = getGlobalBool("allowBlockSpawn", true);
 	m_confNumber[FOLLOW_EXHAUST] = getGlobalNumber("playerFollowExhaust", 2000);
 	m_confBool[MULTIPLE_NAME] = getGlobalBool("multipleNames", false);
-	m_confNumber[PACKETS_PER_SECOND] = getGlobalNumber("packetsPerSecond", 50);
+	m_confNumber[PACKETS_PER_SECOND] = getGlobalNumber("packetsPerSecond", 40);
 	m_confBool[SAVE_STATEMENT] = getGlobalBool("logPlayersStatements", true);
 	m_confNumber[LEVEL_TO_OFFLINE] = getGlobalNumber("levelToOfflineTraining", 8);
 

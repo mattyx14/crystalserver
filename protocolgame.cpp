@@ -539,17 +539,6 @@ void ProtocolGame::parsePacket(NetworkMessage &msg)
 	if(!m_acceptPackets || g_game.getGameState() == GAMESTATE_SHUTDOWN || !msg.size())
 		return;
 
-	uint32_t now = time(NULL);
-	if(m_packetTime != now)
-	{
-		m_packetTime = now;
-		m_packetCount = 0;
-	}
-
-	++m_packetCount;
-	if(m_packetCount > (uint32_t)g_config.getNumber(ConfigManager::PACKETS_PER_SECOND))
-		return;
-
 	uint8_t recvbyte = msg.get<char>();
 	if(!player)
 	{

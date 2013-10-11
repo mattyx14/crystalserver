@@ -610,7 +610,7 @@ bool IOLoginData::loadPlayer(Player* player, const std::string& name, bool preLo
 			result->free();
 
 			std::string tmpStatus = "AND `status` IN (1,4)";
-			if (g_config.getBool(ConfigManager::EXTERNAL_GUILD_WARS_MANAGEMENT))
+			if(g_config.getBool(ConfigManager::EXTERNAL_GUILD_WARS_MANAGEMENT))
 				tmpStatus = "AND `status` IN (1,4,9)";
 
 			query.str("");
