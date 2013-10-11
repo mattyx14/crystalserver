@@ -1296,7 +1296,5 @@ bool TalkAction::software(Creature* creature, const std::string&, const std::str
 	std::stringstream s;
 	s << SOFTWARE_NAME << ", version " << SOFTWARE_VERSION << "." << std::endl;
 	player->sendTextMessage(MSG_STATUS_CONSOLE_BLUE, s.str());
-
-	player->sendTextMessage(MSG_STATUS_CONSOLE_BLUE, s.str());
 	return true;
 }

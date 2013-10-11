@@ -1742,8 +1742,17 @@ void ProtocolGame::sendContainer(uint32_t cid, const Container* container, bool 
 	msg->put<char>(0x6E);
 	msg->put<char>(cid);
 
-	msg->putItem(container);
-	msg->putString(container->getName());
+	if(container->getID() == ITEM_BROWSEFIELD)
+	{
+		msg->putItem(1987, 1);
+		msg->putString("Browse Field");
+	}
+	else
+	{
+		msg->putItem(container);
+		msg->putString(container->getName());
+	}
+	
 	msg->put<char>(container->capacity());
 
 	msg->put<char>(hasParent ? 0x01 : 0x00);
