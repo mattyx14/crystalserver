@@ -1294,22 +1294,8 @@ bool TalkAction::software(Creature* creature, const std::string&, const std::str
 		return false;
 
 	std::stringstream s;
-	s << SOFTWARE_NAME << ", version " << SOFTWARE_VERSION << " (" << SOFTWARE_CODENAME << ")" << std::endl;
+	s << SOFTWARE_NAME << ", version " << SOFTWARE_VERSION << "." << std::endl;
 	player->sendTextMessage(MSG_STATUS_CONSOLE_BLUE, s.str());
-
-	s.str("");
-	s << "Compiled at: " << __DATE__ << ", " << __TIME__ << "." << std::endl;
-	player->sendTextMessage(MSG_STATUS_CONSOLE_BLUE, s.str());
-
-	s.str("");
-	s << "Libraries:" << std::endl
-		<< "--------------------" << std::endl
-		<< "Platform: " << BOOST_PLATFORM << std::endl
-		<< "Compiler: " << BOOST_COMPILER << std::endl
-		<< "Boost: " << BOOST_VERSION << std::endl
-		<< "ASIO: " << BOOST_ASIO_VERSION << std::endl
-		<< "XML: " << XML_DEFAULT_VERSION << std::endl
-		<< "Lua: " << LUA_VERSION << std::endl;
 
 	player->sendTextMessage(MSG_STATUS_CONSOLE_BLUE, s.str());
 	return true;

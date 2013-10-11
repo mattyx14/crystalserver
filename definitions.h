@@ -29,7 +29,6 @@
 
 #define SOFTWARE_NAME "Crystal Server"
 #define SOFTWARE_VERSION "0.3.0"
-#define SOFTWARE_CODENAME "Crying Damson"
 #define SOFTWARE_DEVELOPERS "Tryller"
 #define SOFTWARE_PROTOCOL "10.10"
 

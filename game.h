@@ -125,7 +125,6 @@ struct RefreshBlock_t
 typedef std::map<Tile*, RefreshBlock_t> RefreshTiles;
 typedef std::list<Position> Trash;
 typedef std::map<int32_t, float> StageList;
-typedef std::vector<std::string> StatusList;
 
 #define EVENT_LIGHTINTERVAL 10000
 #define EVENT_DECAYINTERVAL 250
@@ -527,7 +526,7 @@ class Game
 		bool playerCancelMarketOffer(uint32_t playerId, uint32_t timestamp, uint16_t counter);
 		bool playerAcceptMarketOffer(uint32_t playerId, uint32_t timestamp, uint16_t counter, uint16_t amount);
 		bool playerAnswerModalDialog(uint32_t playerId, uint32_t dialog, uint8_t button, uint8_t choice);
-		void playerExtendedOpcode(uint32_t playerId, uint8_t opcode, const std::string& buffer);
+		void parsePlayerExtendedOpcode(uint32_t playerId, uint8_t opcode, const std::string& buffer);
 		void checkExpiredMarketOffers();
 
 		void kickPlayer(uint32_t playerId, bool displayEffect);
@@ -571,6 +570,7 @@ class Game
 
 		void updateCreatureSkull(Creature* creature);
 		void updateCreatureShield(Creature* creature);
+		void updateCreatureType(Creature* creature);
 		void updateCreatureEmblem(Creature* creature);
 		void updateCreatureWalkthrough(Creature* creature);
 
@@ -634,10 +634,6 @@ class Game
 		int32_t getLightHour() const {return lightHour;}
 		void startDecay(Item* item);
 
-		bool loadStatuslist();
-
-		bool isInBlacklist(std::string ip) const {return std::find(blacklist.begin(), blacklist.end(), ip) != blacklist.end();}
-		bool isInWhitelist(std::string ip) const {return std::find(whitelist.begin(), whitelist.end(), ip) != whitelist.end();}
 #ifdef __GROUND_CACHE__
 
 		std::map<Item*, int32_t> grounds;
@@ -698,8 +694,5 @@ class Game
 
 		StageList stages;
 		uint32_t lastStageLevel;
-
-		StatusList blacklist;
-		StatusList whitelist;
 };
 #endif
