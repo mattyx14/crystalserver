@@ -1,0 +1,41 @@
+[ CHANGELOG
+	Project Name
+		Crystal Server
+
+	Version
+		0.3.0
+
+	Website
+		https://github.com/tryller/crystalserver
+
+	License
+		GNU GPLv3
+]
+
+[ File changes:
+	D = Deleted,
+	M = Modified,
+	A = Added.
+
+	[ 0.3.0
+		[ A...
+		
+		]
+
+		[ M...
+
+		]
+
+		[ D...
+
+		]
+	]
+
+]
+
+[ Charges made
+	[ 0.3.0
+		Game protocol 10.10. (Tryller)
+		Remove MODS, it's sux alot and slow. (Tryller)
+	]
+]

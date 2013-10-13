@@ -1,0 +1,17 @@
+[ TODO
+	Project Name
+		Crystal Server
+
+	Version
+		0.3.0
+
+	Website
+		https://github.com/tryller/crystalserver
+
+	License
+		GNU GPLv3
+]
+
+[ LIST
+	* Remove MODS it's sux and slow to execute scripts.
+]
