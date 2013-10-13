@@ -1717,7 +1717,7 @@ uint32_t adlerChecksum(uint8_t* data, size_t length)
 std::string getFilePath(FileType_t type, std::string name/* = ""*/)
 {
 	#ifdef __FILESYSTEM_HIERARCHY_STANDARD__
-	std::string path = "/var/lib/tfs/";
+	std::string path = "/var/lib/tcs/";
 	#else
 	std::string path = g_config.getString(ConfigManager::DATA_DIRECTORY);
 	#endif
@@ -1733,27 +1733,18 @@ std::string getFilePath(FileType_t type, std::string name/* = ""*/)
 			#ifndef __FILESYSTEM_HIERARCHY_STANDARD__
 			path = g_config.getString(ConfigManager::LOGS_DIRECTORY) + name;
 			#else
-			path = "/var/log/tfs/" + name;
+			path = "/var/log/tcs/" + name;
 			#endif
 			break;
-		case FILE_TYPE_MOD:
-		{
-			#ifndef __FILESYSTEM_HIERARCHY_STANDARD__
-			path = "mods/" + name;
-			#else
-			path = "/usr/share/tfs/" + name;
-			#endif
-			break;
-		}
 		case FILE_TYPE_CONFIG:
 		{
 			#if defined(__HOMEDIR_CONF__)
-			if(fileExists("~/.tfs/" + name))
-				path = "~/.tfs/" + name;
+			if(fileExists("~/.tcs/" + name))
+				path = "~/.tcs/" + name;
 			else
 			#endif
 			#if defined(__FILESYSTEM_HIERARCHY_STANDARD__)
-				path = "/etc/tfs/" + name;
+				path = "/etc/tcs/" + name;
 			#else
 				path = name;
 			#endif

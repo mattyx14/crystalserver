@@ -938,9 +938,6 @@ bool ScriptEvent::configureRaidEvent(xmlNodePtr eventNode)
 	{
 		std::string path = getFilePath(FILE_TYPE_OTHER, std::string(scriptsName + "/scripts/" + strValue));
 		if(!fileExists(path.c_str()))
-			path = getFilePath(FILE_TYPE_MOD, std::string("/scripts/" + strValue));
-
-		if(!fileExists(path.c_str()))
 		{
 			std::clog << "[Error - ScriptEvent::configureRaidEvent] Cannot find script file " << strValue << std::endl;
 			return false;

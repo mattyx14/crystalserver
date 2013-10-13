@@ -226,12 +226,8 @@ Npc* Npc::createNpc(const std::string& name)
 		nType->file = getFilePath(FILE_TYPE_OTHER, "npc/" + name + ".xml");
 		if(!fileExists(nType->file.c_str()))
 		{
-			nType->file = getFilePath(FILE_TYPE_MOD, "npc/" + name + ".xml");
-			if(!fileExists(nType->file.c_str()))
-			{
-				std::clog << "[Warning - Npc::createNpc] Cannot find npc with name: " << name << "." << std::endl;
-				return NULL;
-			}
+			std::clog << "[Warning - Npc::createNpc] Cannot find npc with name: " << name << "." << std::endl;
+			return NULL;
 		}
 
 		nType->name = name;
@@ -521,10 +517,7 @@ bool Npc::loadFromXml()
 		return true;
 
 	if(nType->script.find("/") != std::string::npos)
-	{
 		replaceString(nType->script, "|DATA|", getFilePath(FILE_TYPE_OTHER, "npc/scripts"));
-		replaceString(nType->script, "|MODS|", getFilePath(FILE_TYPE_MOD, "scripts"));
-	}
 	else
 		nType->script = getFilePath(FILE_TYPE_OTHER, "npc/scripts/" + nType->script);
 

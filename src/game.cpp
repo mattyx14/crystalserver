@@ -6033,16 +6033,6 @@ bool Game::reloadInfo(ReloadInfo_t reload, uint32_t playerId/* = 0*/, bool compl
 			break;
 		}
 
-		case RELOAD_MODS:
-		{
-			if(ScriptManager::getInstance()->reloadMods())
-				done = true;
-			else
-				std::clog << "[Error - Game::reloadInfo] Failed to reload mods." << std::endl;
-
-			break;
-		}
-
 		case RELOAD_MONSTERS:
 		{
 			if(g_monsters.reload())
@@ -6171,9 +6161,6 @@ bool Game::reloadInfo(ReloadInfo_t reload, uint32_t playerId/* = 0*/, bool compl
 					done = false;
 			}
 
-			if(!ScriptManager::getInstance()->reloadMods() && done)
-				done = false;
-
 			break;
 		}
 
@@ -6183,9 +6170,6 @@ bool Game::reloadInfo(ReloadInfo_t reload, uint32_t playerId/* = 0*/, bool compl
 			break;
 		}
 	}
-
-	if(reload != RELOAD_CONFIG && reload != RELOAD_MODS && !completeReload && !ScriptManager::getInstance()->reloadMods())
-		std::clog << "[Error - Game::reloadInfo] Failed to reload mods." << std::endl;
 
 	if(!playerId)
 		return done;

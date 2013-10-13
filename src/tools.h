@@ -31,13 +31,13 @@ typedef std::vector<int32_t> IntegerVec;
 
 typedef boost::tokenizer<boost::char_separator<char> > tokenizer; // TODO: replace by StringVec...
 typedef std::map<int32_t, bool> VocationMap;
+
 enum FileType_t
 {
 	FILE_TYPE_XML,
 	FILE_TYPE_LOG,
 	FILE_TYPE_OTHER,
-	FILE_TYPE_CONFIG,
-	FILE_TYPE_MOD
+	FILE_TYPE_CONFIG
 };
 
 enum DistributionType_t
