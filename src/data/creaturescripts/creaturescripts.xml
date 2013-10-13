@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <creaturescripts>
 	<event type="login" name="PlayerLogin" event="script" value="login.lua"/>
+	<event type="login" name="FirstItems" event="script" value="firstitems.lua"/>
 
 	<event type="channelrequest" name="Ban_Type" event="script" value="ban/type.lua"/>
 	<event type="channelrequest" name="Ban_Action" event="script" value="ban/action.lua"/>

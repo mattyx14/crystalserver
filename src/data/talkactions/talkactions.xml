@@ -71,6 +71,8 @@
 	<talkaction words="!serverinfo;/serverinfo" event="script" value="serverinfo.lua"/>
 	<talkaction words="!commands;/commands" event="script" value="commands.lua"/>
 	<talkaction words="!software;/software" event="function" value="software"/>
+	<talkaction words="!changender;!changesex;/changender;/changesex" event="script" value="changender.lua"/>
+	<talkaction words="!buypremium" event="script" value="buypremium.lua"/>
 
 	<!-- Houses -->
 	<talkaction words="alevo grav" filter="word-spaced" event="function" value="houseBuy"/>
