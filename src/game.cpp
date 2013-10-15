@@ -5947,7 +5947,7 @@ void Game::loadPlayersRecord()
 	result->free();
 }
 
-bool Game::reloadInfo(ReloadInfo_t reload, uint32_t playerId/* = 0*/, bool completeReload/* = false*/)
+bool Game::reloadInfo(ReloadInfo_t reload, uint32_t playerId/* = 0*/)
 {
 	bool done = false;
 	switch(reload)
@@ -6157,7 +6157,7 @@ bool Game::reloadInfo(ReloadInfo_t reload, uint32_t playerId/* = 0*/, bool compl
 			done = true;
 			for(int32_t i = RELOAD_FIRST; i <= RELOAD_LAST; ++i)
 			{
-				if(!reloadInfo((ReloadInfo_t)i, 0, true) && done)
+				if(!reloadInfo((ReloadInfo_t)i, 0) && done)
 					done = false;
 			}
 

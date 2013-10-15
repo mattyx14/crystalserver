@@ -1,116 +1,116 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <spells>
-    <!-- Attack Runes -->
-    <rune name="Poison Field" id="2285" allowfaruse="1" charges="3" lvl="14" maglv="0" exhaustion="2000" groups="1,2000" icon="26" blocktype="solid" event="script" value="attack/poison field.lua"/>
-    <rune name="Poison Bomb" id="2286" allowfaruse="1" charges="2" lvl="25" maglv="3" exhaustion="2000" groups="1,2000" icon="91" blocktype="solid" event="script" value="attack/poison bomb.lua"/>
-    <rune name="Poison Wall" id="2289" allowfaruse="1" charges="3" lvl="29" maglv="5" exhaustion="2000" groups="1,2000" icon="26" blocktype="solid" event="script" value="attack/poison wall.lua"/>
-    <rune name="Fire Field" id="2301" allowfaruse="1" charges="3" lvl="15" maglv="1" exhaustion="2000" groups="1,2000" icon="25" blocktype="solid" event="script" value="attack/fire field.lua"/>
-    <rune name="Firebomb" id="2305" allowfaruse="1" charges="2" lvl="27" maglv="5" exhaustion="2000" groups="1,2000" icon="17" blocktype="solid" event="script" value="attack/fire bomb.lua"/>
-    <rune name="Fire Wall" id="2303" allowfaruse="1" charges="3" lvl="33" maglv="6" exhaustion="2000" groups="1,2000" icon="25" blocktype="solid" event="script" value="attack/fire wall.lua"/>
-    <rune name="Soulfire" id="2308" allowfaruse="1" charges="3" lvl="27" maglv="7" exhaustion="2000" groups="1,2000" icon="50" needtarget="1" blocktype="solid" event="function" value="soulfire"/>
-    <rune name="Fireball" id="2302" allowfaruse="1" charges="5" lvl="27" maglv="3" exhaustion="2000" groups="1,2000" icon="15" needtarget="1" blocktype="solid" event="script" value="attack/fireball.lua"/>
-    <rune name="Great Fireball" id="2304" allowfaruse="1" charges="3" lvl="30" maglv="3" exhaustion="2000" groups="1,2000" icon="16" blocktype="solid" event="script" value="attack/great fireball.lua"/>
-    <rune name="Energy Field" id="2277" allowfaruse="1" charges="3" lvl="18" maglv="3" exhaustion="2000" groups="1,2000" icon="27" blocktype="solid" event="script" value="attack/energy field.lua"/>
-    <rune name="Energybomb" id="2262" allowfaruse="1" charges="2" lvl="37" maglv="10" exhaustion="2000" groups="1,2000" icon="55" blocktype="solid" event="script" value="attack/energy bomb.lua"/>
-    <rune name="Energy Wall" id="2279" allowfaruse="1" charges="3" lvl="41" maglv="9" exhaustion="2000" groups="1,2000" icon="33" blocktype="solid" event="script" value="attack/energy wall.lua"/>
-    <rune name="Light Magic Missile" id="2287" allowfaruse="1" charges="10" lvl="15" exhaustion="2000" groups="1,2000" icon="7" maglv="0" needtarget="1" blocktype="solid" event="script" value="attack/light magic missile.lua"/>
-    <rune name="Heavy Magic Missile" id="2311" allowfaruse="1" charges="10" lvl="25" exhaustion="2000" groups="1,2000" icon="8" maglv="3" needtarget="1" blocktype="solid" event="script" value="attack/heavy magic missile.lua"/>
-    <rune name="Explosion" id="2313" allowfaruse="1" charges="6" lvl="31" maglv="6" exhaustion="2000" groups="1,2000" icon="18" blocktype="solid" event="script" value="attack/explosion.lua"/>
-    <rune name="Sudden Death" id="2268" allowfaruse="1" charges="3" lvl="45" maglv="15" exhaustion="2000" groups="1,2000" icon="21" needtarget="1" blocktype="solid" event="script" value="attack/sudden death.lua"/>
-    <rune name="Icicle" id="2271" allowfaruse="1" charges="5" lvl="28" maglv="3" exhaustion="2000" groups="1,2000" icon="114" needtarget="1" event="script" value="attack/icicle.lua"/>
-    <rune name="Avalanche" id="2274" allowfaruse="1" charges="3" lvl="30" maglv="3" exhaustion="2000" groups="1,2000" icon="115" event="script" value="attack/avalanche.lua"/>
-    <rune name="Stone Shower" id="2288" allowfaruse="1" charges="3" lvl="28" maglv="3" exhaustion="2000" groups="1,2000" icon="116" event="script" value="attack/stone shower.lua"/>
-    <rune name="Thunderstorm" id="2315" allowfaruse="1" charges="3" lvl="28" maglv="3" exhaustion="2000" groups="1,2000" icon="117" event="script" value="attack/thunderstorm.lua"/>
-    <rune name="Stalagmite" id="2292" allowfaruse="1" charges="10" lvl="24" maglv="3" exhaustion="2000" groups="1,2000" icon="77" needtarget="1" event="script" value="attack/stalagmite.lua"/>
-    <rune name="Holy Missile" id="2295" allowfaruse="1" charges="5" lvl="27" maglv="3" exhaustion="2000" groups="1,2000" icon="130" needtarget="1" blocktype="solid" event="script" value="attack/holy missile.lua">
-        <vocation id="3"/>
-        <vocation id="7" showInDescription="0"/>
-    </rune>
+	<!-- Attack Runes -->
+	<rune name="Poison Field" id="2285" allowfaruse="1" charges="3" lvl="14" maglv="0" exhaustion="2000" groups="1,2000" icon="26" blocktype="solid" event="script" value="attack/poison field.lua"/>
+	<rune name="Poison Bomb" id="2286" allowfaruse="1" charges="2" lvl="25" maglv="3" exhaustion="2000" groups="1,2000" icon="91" blocktype="solid" event="script" value="attack/poison bomb.lua"/>
+	<rune name="Poison Wall" id="2289" allowfaruse="1" charges="3" lvl="29" maglv="5" exhaustion="2000" groups="1,2000" icon="26" blocktype="solid" event="script" value="attack/poison wall.lua"/>
+	<rune name="Fire Field" id="2301" allowfaruse="1" charges="3" lvl="15" maglv="1" exhaustion="2000" groups="1,2000" icon="25" blocktype="solid" event="script" value="attack/fire field.lua"/>
+	<rune name="Firebomb" id="2305" allowfaruse="1" charges="2" lvl="27" maglv="5" exhaustion="2000" groups="1,2000" icon="17" blocktype="solid" event="script" value="attack/fire bomb.lua"/>
+	<rune name="Fire Wall" id="2303" allowfaruse="1" charges="3" lvl="33" maglv="6" exhaustion="2000" groups="1,2000" icon="25" blocktype="solid" event="script" value="attack/fire wall.lua"/>
+	<rune name="Soulfire" id="2308" allowfaruse="1" charges="3" lvl="27" maglv="7" exhaustion="2000" groups="1,2000" icon="50" needtarget="1" blocktype="solid" event="function" value="soulfire"/>
+	<rune name="Fireball" id="2302" allowfaruse="1" charges="5" lvl="27" maglv="3" exhaustion="2000" groups="1,2000" icon="15" needtarget="1" blocktype="solid" event="script" value="attack/fireball.lua"/>
+ 	<rune name="Great Fireball" id="2304" allowfaruse="1" charges="3" lvl="30" maglv="3" exhaustion="2000" groups="1,2000" icon="16" blocktype="solid" event="script" value="attack/great fireball.lua"/>
+	<rune name="Energy Field" id="2277" allowfaruse="1" charges="3" lvl="18" maglv="3" exhaustion="2000" groups="1,2000" icon="27" blocktype="solid" event="script" value="attack/energy field.lua"/>
+	<rune name="Energybomb" id="2262" allowfaruse="1" charges="2" lvl="37" maglv="10" exhaustion="2000" groups="1,2000" icon="55" blocktype="solid" event="script" value="attack/energy bomb.lua"/>
+	<rune name="Energy Wall" id="2279" allowfaruse="1" charges="3" lvl="41" maglv="9" exhaustion="2000" groups="1,2000" icon="33" blocktype="solid" event="script" value="attack/energy wall.lua"/>
+	<rune name="Light Magic Missile" id="2287" allowfaruse="1" charges="10" lvl="15" exhaustion="2000" groups="1,2000" icon="7" maglv="0" needtarget="1" blocktype="solid" event="script" value="attack/light magic missile.lua"/>
+	<rune name="Heavy Magic Missile" id="2311" allowfaruse="1" charges="10" lvl="25" exhaustion="2000" groups="1,2000" icon="8" maglv="3" needtarget="1" blocktype="solid" event="script" value="attack/heavy magic missile.lua"/>
+	<rune name="Explosion" id="2313" allowfaruse="1" charges="6" lvl="31" maglv="6" exhaustion="2000" groups="1,2000" icon="18" blocktype="solid" event="script" value="attack/explosion.lua"/>
+	<rune name="Sudden Death" id="2268" allowfaruse="1" charges="3" lvl="45" maglv="15" exhaustion="2000" groups="1,2000" icon="21" needtarget="1" blocktype="solid" event="script" value="attack/sudden death.lua"/>
+	<rune name="Icicle" id="2271" allowfaruse="1" charges="5" lvl="28" maglv="3" exhaustion="2000" groups="1,2000" icon="114" needtarget="1" event="script" value="attack/icicle.lua"/>
+	<rune name="Avalanche" id="2274" allowfaruse="1" charges="3" lvl="30" maglv="3" exhaustion="2000" groups="1,2000" icon="115" event="script" value="attack/avalanche.lua"/>
+	<rune name="Stone Shower" id="2288" allowfaruse="1" charges="3" lvl="28" maglv="3" exhaustion="2000" groups="1,2000" icon="116" event="script" value="attack/stone shower.lua"/>
+	<rune name="Thunderstorm" id="2315" allowfaruse="1" charges="3" lvl="28" maglv="3" exhaustion="2000" groups="1,2000" icon="117" event="script" value="attack/thunderstorm.lua"/>
+	<rune name="Stalagmite" id="2292" allowfaruse="1" charges="10" lvl="24" maglv="3" exhaustion="2000" groups="1,2000" icon="77" needtarget="1" event="script" value="attack/stalagmite.lua"/>
+	<rune name="Holy Missile" id="2295" allowfaruse="1" charges="5" lvl="27" maglv="3" exhaustion="2000" groups="1,2000" icon="130" needtarget="1" blocktype="solid" event="script" value="attack/holy missile.lua">
+		<vocation id="3"/>
+		<vocation id="7" showInDescription="0"/>
+	</rune>
  
-    <!-- Healing Runes -->
-    <rune name="Antidote Rune" id="2266" allowfaruse="1" charges="1" lvl="15" maglv="0" exhaustion="2000" groups="2,2000" icon="31" aggressive="0" needtarget="1" blocktype="solid" event="script" value="healing/antidote rune.lua"/>
-    <rune name="Intense Healing Rune" id="2265" allowfaruse="1" charges="1" lvl="15" maglv="1" exhaustion="2000" groups="2,2000" icon="3" aggressive="0" needtarget="1" blocktype="solid" event="script" value="healing/intense healing rune.lua"/>
-    <rune name="Ultimate Healing Rune" id="2273" allowfaruse="1" charges="1" lvl="24" maglv="3" exhaustion="2000" groups="2,2000" icon="5" aggressive="0" needtarget="1" blocktype="solid" event="script" value="healing/ultimate healing rune.lua"/>
+	<!-- Healing Runes -->
+	<rune name="Antidote Rune" id="2266" allowfaruse="1" charges="1" lvl="15" maglv="0" exhaustion="2000" groups="2,2000" icon="31" aggressive="0" needtarget="1" blocktype="solid" event="script" value="healing/antidote rune.lua"/>
+	<rune name="Intense Healing Rune" id="2265" allowfaruse="1" charges="1" lvl="15" maglv="1" exhaustion="2000" groups="2,2000" icon="3" aggressive="0" needtarget="1" blocktype="solid" event="script" value="healing/intense healing rune.lua"/>
+	<rune name="Ultimate Healing Rune" id="2273" allowfaruse="1" charges="1" lvl="24" maglv="3" exhaustion="2000" groups="2,2000" icon="5" aggressive="0" needtarget="1" blocktype="solid" event="script" value="healing/ultimate healing rune.lua"/>
  
-    <!-- Summon Runes -->
-    <rune name="Convince Creature" id="2290" allowfaruse="1" charges="1" lvl="16" maglv="5" exhaustion="2000" groups="3,2000" icon="12" needtarget="1" blocktype="solid" event="function" value="convince"/>
-    <rune name="Animate Dead" id="2316" allowfaruse="1" charges="1" lvl="27" maglv="3" exhaustion="2000" groups="3,2000" icon="83" blocktype="solid" event="script" value="support/animate dead rune.lua"/>
+	<!-- Summon Runes -->
+	<rune name="Convince Creature" id="2290" allowfaruse="1" charges="1" lvl="16" maglv="5" exhaustion="2000" groups="3,2000" icon="12" needtarget="1" blocktype="solid" event="function" value="convince"/>
+	<rune name="Animate Dead" id="2316" allowfaruse="1" charges="1" lvl="27" maglv="3" exhaustion="2000" groups="3,2000" icon="83" blocktype="solid" event="script" value="support/animate dead rune.lua"/>
  
-    <!-- Support Runes -->
-    <rune name="Desintegrate" id="2310" allowfaruse="0" charges="3" lvl="21" maglv="3" exhaustion="2000" groups="3,2000" icon="78" range="1" event="script" value="support/desintegrate rune.lua"/>
-    <rune name="Destroy Field" id="2261" allowfaruse="1" charges="3" lvl="17" maglv="3" exhaustion="2000" groups="3,2000" icon="30" aggressive="0" range="5" event="script" value="support/destroy field rune.lua"/>
-    <rune name="Chameleon" id="2291" allowfaruse="1" charges="1" lvl="27" maglv="3" exhaustion="2000" groups="3,2000" icon="14" aggressive="0" selftarget="1" blocktype="solid" event="function" value="chameleon"/>
-    <rune name="Magic Wall" id="2293" allowfaruse="1" charges="3" lvl="32" maglv="9" exhaustion="2000" groups="3,2000" icon="86" blocktype="all" event="script" value="support/magic wall rune.lua"/>
-    <rune name="Wild Growth" id="2269" allowfaruse="1" charges="2" lvl="27" maglv="8" exhaustion="2000" groups="3,2000" icon="94" blocktype="all" event="script" value="support/wild growth rune.lua">
-        <vocation id="2"/>
-        <vocation id="6" showInDescription="0"/>
-    </rune>
-    <rune name="Paralyze" id="2278" allowfaruse="1" charges="1" lvl="54" maglv="18" exhaustion="2000" groups="1,2000" icon="54" mana="1400" needtarget="1" blocktype="solid" event="script" value="support/paralyze rune.lua">
-        <vocation id="2"/>
-        <vocation id="6" showInDescription="0"/>
-    </rune>
- 
-    <!-- Attack Spells -->
-    <instant name="Death Strike" words="exori mort" lvl="16" mana="20" prem="1" range="3" casterTargetOrDirection="1" blockwalls="1" exhaustion="2000" groups="1,2000" icon="87" needlearn="0" event="script" value="attack/death strike.lua">
-        <vocation id="1"/>
-        <vocation id="5"/>
-    </instant>
-    <instant name="Flame Strike" words="exori flam" lvl="14" mana="20" prem="1" range="3" casterTargetOrDirection="1" blockwalls="1" exhaustion="2000" groups="1,2000" icon="89" needlearn="0" event="script" value="attack/flame strike.lua">
-        <vocation id="1"/>
-        <vocation id="2"/>
-        <vocation id="5"/>
-        <vocation id="6"/>
-    </instant>
-    <instant name="Strong Flame Strike" words="exori gran flam" lvl="70" mana="60" prem="1" range="3" casterTargetOrDirection="1" blockwalls="1" exhaustion="8000" groups="1,2000;4,8000" icon="150" needlearn="0" event="script" value="attack/strong flame strike.lua"> 
-        <vocation id="1"/>
-        <vocation id="5"/>
-    </instant>
-    <instant name="Ultimate Flame Strike" words="exori max flam" lvl="90" mana="100" prem="1" range="3" casterTargetOrDirection="1" blockwalls="1" exhaustion="30000" groups="1,4000" icon="154" needlearn="0" event="script" value="attack/ultimate flame strike.lua">  
-        <vocation id="1"/>
-        <vocation id="5"/>
-    </instant> 
-    <instant name="Energy Strike" words="exori vis" lvl="12" mana="20" prem="1" range="3" casterTargetOrDirection="1" blockwalls="1" exhaustion="2000" groups="1,2000" icon="88" needlearn="0" event="script" value="attack/energy strike.lua">
-        <vocation id="1"/>
-        <vocation id="2"/>
-        <vocation id="5"/>
-        <vocation id="6"/>
-    </instant>
-    <instant name="Strong Energy Strike" words="exori gran vis" lvl="80" mana="60" prem="1" range="3" casterTargetOrDirection="1" blockwalls="1" exhaustion="8000" groups="1,2000;4,8000" icon="151" needlearn="0" event="script" value="attack/strong energy strike.lua"> 
-        <vocation id="1"/>
-        <vocation id="5"/>
-    </instant>
-    <instant name="Ultimate Energy Strike" words="exori max vis" lvl="100" mana="100" prem="1" range="3" casterTargetOrDirection="1" blockwalls="1" exhaustion="30000" groups="1,4000" icon="155" needlearn="0" event="script" value="attack/ultimate energy strike.lua"> 
-        <vocation id="1"/>
-        <vocation id="5"/> 
-    </instant> 
-    <instant name="Whirlwind Throw" words="exori hur" lvl="28" mana="40" prem="1" range="5" needtarget="1" blockwalls="1" needweapon="1" exhaustion="6000" groups="1,2000" icon="107" needlearn="0" event="script" value="attack/whirlwind throw.lua">
-        <vocation id="4"/>
-        <vocation id="8"/>
-    </instant>
-    <instant name="Fire Wave" words="exevo flam hur" lvl="18" mana="25" direction="1" exhaustion="4000" groups="1,2000" icon="19" needlearn="0" event="script" value="attack/fire wave.lua">
-        <vocation id="1"/>
-        <vocation id="5"/>
-    </instant>
-    <instant name="Ethereal Spear" words="exori con" lvl="23" mana="25" prem="1" range="7" needtarget="1" exhaustion="2000" groups="1,2000" icon="111" blockwalls="1" needlearn="0" event="script" value="attack/ethereal spear.lua">
-        <vocation id="3"/>
-        <vocation id="7"/>
-    </instant>
-    <instant name="Strong Ethereal Spear" words="exori gran con" lvl="90" mana="55" prem="1" range="7" needtarget="1" exhaustion="8000" groups="1,2000" icon="57" blockwalls="1" needlearn="0" event="script" value="attack/strong ethereal spear.lua"> 
-        <vocation id="3"/> 
-        <vocation id="7"/>  
-    </instant> 
-    <instant name="Energy Beam" words="exevo vis lux" lvl="23" mana="40" direction="1" exhaustion="4000" groups="1,2000" icon="22" needlearn="0" event="script" value="attack/energy beam.lua">
-        <vocation id="1"/>
-        <vocation id="5"/>
-    </instant>
-    <instant name="Great Energy Beam" words="exevo gran vis lux" lvl="29" mana="110" direction="1" exhaustion="6000" groups="1,2000" icon="23" needlearn="0" event="script" value="attack/great energy beam.lua">
-        <vocation id="1"/>
-        <vocation id="5"/>
-    </instant>
-    <instant name="Groundshaker" words="exori mas" lvl="33" mana="160" prem="1" needweapon="1" exhaustion="8000" groups="1,2000" icon="106" needlearn="0" event="script" value="attack/groundshaker.lua">
-        <vocation id="4"/>
-        <vocation id="8"/>
-    </instant>
+	<!-- Support Runes -->
+	<rune name="Desintegrate" id="2310" allowfaruse="0" charges="3" lvl="21" maglv="3" exhaustion="2000" groups="3,2000" icon="78" range="1" event="script" value="support/desintegrate rune.lua"/>
+	<rune name="Destroy Field" id="2261" allowfaruse="1" charges="3" lvl="17" maglv="3" exhaustion="2000" groups="3,2000" icon="30" aggressive="0" range="5" event="script" value="support/destroy field rune.lua"/>
+	<rune name="Chameleon" id="2291" allowfaruse="1" charges="1" lvl="27" maglv="3" exhaustion="2000" groups="3,2000" icon="14" aggressive="0" selftarget="1" blocktype="solid" event="function" value="chameleon"/>
+	<rune name="Magic Wall" id="2293" allowfaruse="1" charges="3" lvl="32" maglv="9" exhaustion="2000" groups="3,2000" icon="86" blocktype="all" event="script" value="support/magic wall rune.lua"/>
+	<rune name="Wild Growth" id="2269" allowfaruse="1" charges="2" lvl="27" maglv="8" exhaustion="2000" groups="3,2000" icon="94" blocktype="all" event="script" value="support/wild growth rune.lua">
+		<vocation id="2"/>
+		<vocation id="6" showInDescription="0"/>
+	</rune>
+	<rune name="Paralyze" id="2278" allowfaruse="1" charges="1" lvl="54" maglv="18" exhaustion="2000" groups="1,2000" icon="54" mana="1400" needtarget="1" blocktype="solid" event="script" value="support/paralyze rune.lua">
+		<vocation id="2"/>
+		<vocation id="6" showInDescription="0"/>
+	</rune>
+
+	<!-- Attack Spells -->
+	<instant name="Death Strike" words="exori mort" lvl="16" mana="20" prem="1" range="3" casterTargetOrDirection="1" blockwalls="1" exhaustion="2000" groups="1,2000" icon="87" needlearn="0" event="script" value="attack/death strike.lua">
+		<vocation id="1"/>
+		<vocation id="5"/>
+	</instant>
+	<instant name="Flame Strike" words="exori flam" lvl="14" mana="20" prem="1" range="3" casterTargetOrDirection="1" blockwalls="1" exhaustion="2000" groups="1,2000" icon="89" needlearn="0" event="script" value="attack/flame strike.lua">
+		<vocation id="1"/>
+		<vocation id="2"/>
+		<vocation id="5"/>
+		<vocation id="6"/>
+	</instant>
+	<instant name="Strong Flame Strike" words="exori gran flam" lvl="70" mana="60" prem="1" range="3" casterTargetOrDirection="1" blockwalls="1" exhaustion="8000" groups="1,2000;4,8000" icon="150" needlearn="0" event="script" value="attack/strong flame strike.lua"> 
+		<vocation id="1"/>
+		<vocation id="5"/>
+	</instant>
+	<instant name="Ultimate Flame Strike" words="exori max flam" lvl="90" mana="100" prem="1" range="3" casterTargetOrDirection="1" blockwalls="1" exhaustion="30000" groups="1,4000" icon="154" needlearn="0" event="script" value="attack/ultimate flame strike.lua">
+		<vocation id="1"/>
+		<vocation id="5"/>
+	</instant>
+	<instant name="Energy Strike" words="exori vis" lvl="12" mana="20" prem="1" range="3" casterTargetOrDirection="1" blockwalls="1" exhaustion="2000" groups="1,2000" icon="88" needlearn="0" event="script" value="attack/energy strike.lua">
+		<vocation id="1"/>
+		<vocation id="2"/>
+		<vocation id="5"/>
+		<vocation id="6"/>
+	</instant>
+	<instant name="Strong Energy Strike" words="exori gran vis" lvl="80" mana="60" prem="1" range="3" casterTargetOrDirection="1" blockwalls="1" exhaustion="8000" groups="1,2000;4,8000" icon="151" needlearn="0" event="script" value="attack/strong energy strike.lua">
+		<vocation id="1"/>
+		<vocation id="5"/>
+	</instant>
+	<instant name="Ultimate Energy Strike" words="exori max vis" lvl="100" mana="100" prem="1" range="3" casterTargetOrDirection="1" blockwalls="1" exhaustion="30000" groups="1,4000" icon="155" needlearn="0" event="script" value="attack/ultimate energy strike.lua">
+		<vocation id="1"/>
+		<vocation id="5"/>
+	</instant>
+	<instant name="Whirlwind Throw" words="exori hur" lvl="28" mana="40" prem="1" range="5" needtarget="1" blockwalls="1" needweapon="1" exhaustion="6000" groups="1,2000" icon="107" needlearn="0" event="script" value="attack/whirlwind throw.lua">
+		<vocation id="4"/>
+		<vocation id="8"/>
+	</instant>
+	<instant name="Fire Wave" words="exevo flam hur" lvl="18" mana="25" direction="1" exhaustion="4000" groups="1,2000" icon="19" needlearn="0" event="script" value="attack/fire wave.lua">
+		<vocation id="1"/>
+		<vocation id="5"/>
+	</instant>
+	<instant name="Ethereal Spear" words="exori con" lvl="23" mana="25" prem="1" range="7" needtarget="1" exhaustion="2000" groups="1,2000" icon="111" blockwalls="1" needlearn="0" event="script" value="attack/ethereal spear.lua">
+		<vocation id="3"/>
+		<vocation id="7"/>
+	</instant>
+	<instant name="Strong Ethereal Spear" words="exori gran con" lvl="90" mana="55" prem="1" range="7" needtarget="1" exhaustion="8000" groups="1,2000" icon="57" blockwalls="1" needlearn="0" event="script" value="attack/strong ethereal spear.lua">
+		<vocation id="3"/>
+		<vocation id="7"/>
+	</instant>
+	<instant name="Energy Beam" words="exevo vis lux" lvl="23" mana="40" direction="1" exhaustion="4000" groups="1,2000" icon="22" needlearn="0" event="script" value="attack/energy beam.lua">
+		<vocation id="1"/>
+		<vocation id="5"/>
+	</instant>
+	<instant name="Great Energy Beam" words="exevo gran vis lux" lvl="29" mana="110" direction="1" exhaustion="6000" groups="1,2000" icon="23" needlearn="0" event="script" value="attack/great energy beam.lua">
+		<vocation id="1"/>
+		<vocation id="5"/>
+	</instant>
+	<instant name="Groundshaker" words="exori mas" lvl="33" mana="160" prem="1" needweapon="1" exhaustion="8000" groups="1,2000" icon="106" needlearn="0" event="script" value="attack/groundshaker.lua">
+		<vocation id="4"/>
+		<vocation id="8"/>
+	</instant>
     <instant name="Berserk" words="exori" lvl="35" mana="115" prem="1" needweapon="1" exhaustion="4000" groups="1,2000" icon="80" needlearn="0" event="script" value="attack/berserk.lua">
         <vocation id="4"/>
         <vocation id="8"/>
@@ -571,98 +571,98 @@
         <vocation id="5"/>
         <vocation id="6"/>
     </conjure>
-    <conjure name="Fire Wall" words="adevo mas grav flam" lvl="33" mana="780" soul="3" reagentId="2260" conjureId="2303" conjureCount="3" exhaustion="2000" groups="3,2000" icon="23" needlearn="0" event="function" value="conjureRune">
-        <vocation id="1"/>
-        <vocation id="2"/>
-        <vocation id="5"/>
-        <vocation id="6"/>
-    </conjure>
-    <conjure name="Energybomb" words="adevo mas vis" lvl="37" mana="880" soul="5" reagentId="2260" conjureId="2262" conjureCount="2" needlearn="0" exhaustion="2000" groups="3,2000" icon="23" event="function" value="conjureRune">
-        <vocation id="1"/>
-        <vocation id="5"/>
-    </conjure>
-    <conjure name="Energy Wall" words="adevo mas grav vis" lvl="41" mana="1000" soul="5" reagentId="2260" conjureId="2279" conjureCount="3" needlearn="0" exhaustion="2000" groups="3,2000" icon="23" event="function" value="conjureRune">
-        <vocation id="1"/>
-        <vocation id="2"/>
-        <vocation id="5"/>
-        <vocation id="6"/>
-    </conjure>
-    <conjure name="Sudden Death" words="adori gran mort" lvl="45" mana="985" soul="5" reagentId="2260" conjureId="2268" conjureCount="3" needlearn="0" exhaustion="2000" groups="3,2000" icon="23" event="function" value="conjureRune">
-        <vocation id="1"/>
-        <vocation id="5"/>
-    </conjure>
-    <conjure name="Cure Poison Rune" words="adana pox" lvl="15" mana="200" soul="1" reagentId="2260" conjureId="2266" conjureCount="1" needlearn="0" exhaustion="2000" groups="3,2000" icon="23" event="function" value="conjureRune">
-        <vocation id="2"/>
-        <vocation id="6"/>
-    </conjure>
-    <conjure name="Intense Healing Rune" words="adura gran" lvl="15" mana="240" soul="2" reagentId="2260" conjureId="2265" conjureCount="1" needlearn="0" exhaustion="2000" groups="3,2000" icon="23" event="function" value="conjureRune">
-        <vocation id="2"/>
-        <vocation id="6"/>
-    </conjure>
-    <conjure name="Ultimate Healing Rune" words="adura vita" lvl="24" mana="400" soul="3" reagentId="2260" conjureId="2273" conjureCount="1" needlearn="0" exhaustion="2000" groups="3,2000" icon="23" event="function" value="conjureRune">
-        <vocation id="2"/>
-        <vocation id="6"/>
-    </conjure>
-    <conjure name="Convince Creature" words="adeta sio" lvl="16" mana="200" soul="3" reagentId="2260" conjureId="2290" conjureCount="1" needlearn="0" exhaustion="2000" groups="3,2000" icon="23" event="function" value="conjureRune">
-        <vocation id="2"/>
-        <vocation id="6"/>
-    </conjure>
-    <conjure name="Animate Dead" words="adana mort" lvl="27" mana="600" soul="5" reagentId="2260" conjureId="2316" conjureCount="1" needlearn="0" exhaustion="2000" groups="3,2000" icon="23" event="function" value="conjureRune">
-        <vocation id="1"/>
-        <vocation id="2"/>
-        <vocation id="5"/>
-        <vocation id="6"/>
-    </conjure>
-    <conjure name="Chameleon" words="adevo ina" lvl="27" mana="600" soul="2" reagentId="2260" conjureId="2291" conjureCount="1" needlearn="0" exhaustion="2000" groups="3,2000" icon="23" event="function" value="conjureRune">
-        <vocation id="2"/>
-        <vocation id="6"/>
-    </conjure>
-    <conjure name="Destroy Field" words="adito grav" lvl="17" mana="120" soul="2" reagentId="2260" conjureId="2261" conjureCount="3" needlearn="0" exhaustion="2000" groups="3,2000" icon="23" event="function" value="conjureRune">
-        <vocation id="1"/>
-        <vocation id="2"/>
-        <vocation id="3"/>
-        <vocation id="5"/>
-        <vocation id="6"/>
-        <vocation id="7"/>
-    </conjure>
-    <conjure name="Desintegrate" words="adito tera" lvl="21" mana="200" soul="3" reagentId="2260" conjureId="2310" conjureCount="3" needlearn="0" exhaustion="2000" groups="3,2000" icon="23" event="function" value="conjureRune">
-        <vocation id="1"/>
-        <vocation id="2"/>
-        <vocation id="3"/>
-        <vocation id="5"/>
-        <vocation id="6"/>
-        <vocation id="7"/>
-    </conjure>
-    <conjure name="Magic Wall" words="adevo grav tera" lvl="32" mana="750" soul="5" reagentId="2260" conjureId="2293" conjureCount="3" exhaustion="2000" groups="3,2000" icon="23" needlearn="0" event="function" value="conjureRune">
-        <vocation id="1"/>
-        <vocation id="5"/>
-    </conjure>
-    <conjure name="Wild Growth" words="adevo grav vita" lvl="27" mana="600" soul="5" reagentId="2260" conjureId="2269" conjureCount="2" needlearn="0" exhaustion="2000" groups="3,2000" icon="23" event="function" value="conjureRune">
-        <vocation id="2"/>
-        <vocation id="6"/>
-    </conjure>
-    <conjure name="Paralyze" words="adana ani" lvl="54" mana="1400" soul="3" reagentId="2260" conjureId="2278" conjureCount="1" exhaustion="2000" groups="3,2000" icon="23" needlearn="0" event="function" value="conjureRune">
-        <vocation id="2"/>
-        <vocation id="6"/>
-    </conjure>
-    <conjure name="Icicle" words="adori frigo" lvl="28" mana="460" soul="3" reagentId="2260" conjureId="2271" conjureCount="5" exhaustion="2000" groups="3,2000" icon="23" needlearn="0" event="function" value="conjureRune">
-        <vocation id="2"/>
-        <vocation id="6"/>
-    </conjure>
-    <conjure name="Avalanche" words="adori mas frigo" lvl="30" mana="530" soul="3" reagentId="2260" conjureId="2274" conjureCount="3" exhaustion="2000" groups="3,2000" icon="23" needlearn="0" event="function" value="conjureRune">
-        <vocation id="2"/>
-        <vocation id="6"/>
-    </conjure>
-    <conjure name="Stone Shower" words="adori mas tera" lvl="28" mana="430" soul="3" reagentId="2260" conjureId="2288" conjureCount="3" exhaustion="2000" groups="3,2000" icon="23" needlearn="0" event="function" value="conjureRune">
-        <vocation id="2"/>
-        <vocation id="6"/>
-    </conjure>
-    <conjure name="Thunderstorm" words="adori mas vis" lvl="28" mana="430" soul="3" reagentId="2260" conjureId="2315" conjureCount="3" exhaustion="2000" groups="3,2000" icon="23" needlearn="0" event="function" value="conjureRune">
-        <vocation id="1"/>
-        <vocation id="5"/>
-    </conjure>
-    <conjure name="Holy Missile" words="adori san" lvl="27" mana="350" soul="3" reagentId="2260" conjureId="2295" conjureCount="5" exhaustion="2000" groups="3,2000" icon="23" needlearn="0" event="function" value="conjureRune">
-        <vocation id="3"/>
-        <vocation id="7"/>
-    </conjure>
+	<conjure name="Fire Wall" words="adevo mas grav flam" lvl="33" mana="780" soul="3" reagentId="2260" conjureId="2303" conjureCount="3" exhaustion="2000" groups="3,2000" icon="23" needlearn="0" event="function" value="conjureRune">
+		<vocation id="1"/>
+		<vocation id="2"/>
+		<vocation id="5"/>
+		<vocation id="6"/>
+	</conjure>
+	<conjure name="Energybomb" words="adevo mas vis" lvl="37" mana="880" soul="5" reagentId="2260" conjureId="2262" conjureCount="2" needlearn="0" exhaustion="2000" groups="3,2000" icon="23" event="function" value="conjureRune">
+		<vocation id="1"/>
+		<vocation id="5"/>
+	</conjure>
+	<conjure name="Energy Wall" words="adevo mas grav vis" lvl="41" mana="1000" soul="5" reagentId="2260" conjureId="2279" conjureCount="3" needlearn="0" exhaustion="2000" groups="3,2000" icon="23" event="function" value="conjureRune">
+		<vocation id="1"/>
+		<vocation id="2"/>
+		<vocation id="5"/>
+		<vocation id="6"/>
+	</conjure>
+	<conjure name="Sudden Death" words="adori gran mort" lvl="45" mana="985" soul="5" reagentId="2260" conjureId="2268" conjureCount="3" needlearn="0" exhaustion="2000" groups="3,2000" icon="23" event="function" value="conjureRune">
+		<vocation id="1"/>
+		<vocation id="5"/>
+	</conjure>
+	<conjure name="Cure Poison Rune" words="adana pox" lvl="15" mana="200" soul="1" reagentId="2260" conjureId="2266" conjureCount="1" needlearn="0" exhaustion="2000" groups="3,2000" icon="23" event="function" value="conjureRune">
+		<vocation id="2"/>
+		<vocation id="6"/>
+	</conjure>
+	<conjure name="Intense Healing Rune" words="adura gran" lvl="15" mana="240" soul="2" reagentId="2260" conjureId="2265" conjureCount="1" needlearn="0" exhaustion="2000" groups="3,2000" icon="23" event="function" value="conjureRune">
+		<vocation id="2"/>
+		<vocation id="6"/>
+	</conjure>
+	<conjure name="Ultimate Healing Rune" words="adura vita" lvl="24" mana="400" soul="3" reagentId="2260" conjureId="2273" conjureCount="1" needlearn="0" exhaustion="2000" groups="3,2000" icon="23" event="function" value="conjureRune">
+		<vocation id="2"/>
+		<vocation id="6"/>
+	</conjure>
+	<conjure name="Convince Creature" words="adeta sio" lvl="16" mana="200" soul="3" reagentId="2260" conjureId="2290" conjureCount="1" needlearn="0" exhaustion="2000" groups="3,2000" icon="23" event="function" value="conjureRune">
+		<vocation id="2"/>
+		<vocation id="6"/>
+	</conjure>
+	<conjure name="Animate Dead" words="adana mort" lvl="27" mana="600" soul="5" reagentId="2260" conjureId="2316" conjureCount="1" needlearn="0" exhaustion="2000" groups="3,2000" icon="23" event="function" value="conjureRune">
+		<vocation id="1"/>
+		<vocation id="2"/>
+		<vocation id="5"/>
+		<vocation id="6"/>
+	</conjure>
+	<conjure name="Chameleon" words="adevo ina" lvl="27" mana="600" soul="2" reagentId="2260" conjureId="2291" conjureCount="1" needlearn="0" exhaustion="2000" groups="3,2000" icon="23" event="function" value="conjureRune">
+		<vocation id="2"/>
+		<vocation id="6"/>
+	</conjure>
+	<conjure name="Destroy Field" words="adito grav" lvl="17" mana="120" soul="2" reagentId="2260" conjureId="2261" conjureCount="3" needlearn="0" exhaustion="2000" groups="3,2000" icon="23" event="function" value="conjureRune">
+		<vocation id="1"/>
+		<vocation id="2"/>
+		<vocation id="3"/>
+		<vocation id="5"/>
+		<vocation id="6"/>
+		<vocation id="7"/>
+	</conjure>
+	<conjure name="Desintegrate" words="adito tera" lvl="21" mana="200" soul="3" reagentId="2260" conjureId="2310" conjureCount="3" needlearn="0" exhaustion="2000" groups="3,2000" icon="23" event="function" value="conjureRune">
+		<vocation id="1"/>
+		<vocation id="2"/>
+		<vocation id="3"/>
+		<vocation id="5"/>
+		<vocation id="6"/>
+		<vocation id="7"/>
+	</conjure>
+	<conjure name="Magic Wall" words="adevo grav tera" lvl="32" mana="750" soul="5" reagentId="2260" conjureId="2293" conjureCount="3" exhaustion="2000" groups="3,2000" icon="23" needlearn="0" event="function" value="conjureRune">
+		<vocation id="1"/>
+		<vocation id="5"/>
+	</conjure>
+	<conjure name="Wild Growth" words="adevo grav vita" lvl="27" mana="600" soul="5" reagentId="2260" conjureId="2269" conjureCount="2" needlearn="0" exhaustion="2000" groups="3,2000" icon="23" event="function" value="conjureRune">
+		<vocation id="2"/>
+		<vocation id="6"/>
+	</conjure>
+	<conjure name="Paralyze" words="adana ani" lvl="54" mana="1400" soul="3" reagentId="2260" conjureId="2278" conjureCount="1" exhaustion="2000" groups="3,2000" icon="23" needlearn="0" event="function" value="conjureRune">
+		<vocation id="2"/>
+		<vocation id="6"/>
+	</conjure>
+	<conjure name="Icicle" words="adori frigo" lvl="28" mana="460" soul="3" reagentId="2260" conjureId="2271" conjureCount="5" exhaustion="2000" groups="3,2000" icon="23" needlearn="0" event="function" value="conjureRune">
+		<vocation id="2"/>
+		<vocation id="6"/>
+	</conjure>
+	<conjure name="Avalanche" words="adori mas frigo" lvl="30" mana="530" soul="3" reagentId="2260" conjureId="2274" conjureCount="3" exhaustion="2000" groups="3,2000" icon="23" needlearn="0" event="function" value="conjureRune">
+		<vocation id="2"/>
+		<vocation id="6"/>
+	</conjure>
+	<conjure name="Stone Shower" words="adori mas tera" lvl="28" mana="430" soul="3" reagentId="2260" conjureId="2288" conjureCount="3" exhaustion="2000" groups="3,2000" icon="23" needlearn="0" event="function" value="conjureRune">
+		<vocation id="2"/>
+		<vocation id="6"/>
+	</conjure>
+	<conjure name="Thunderstorm" words="adori mas vis" lvl="28" mana="430" soul="3" reagentId="2260" conjureId="2315" conjureCount="3" exhaustion="2000" groups="3,2000" icon="23" needlearn="0" event="function" value="conjureRune">
+		<vocation id="1"/>
+		<vocation id="5"/>
+	</conjure>
+	<conjure name="Holy Missile" words="adori san" lvl="27" mana="350" soul="3" reagentId="2260" conjureId="2295" conjureCount="5" exhaustion="2000" groups="3,2000" icon="23" needlearn="0" event="function" value="conjureRune">
+		<vocation id="3"/>
+		<vocation id="7"/>
+	</conjure>
 </spells>
