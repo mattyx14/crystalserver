@@ -45,7 +45,7 @@
 		Game protocol 10.10. (Tryller)
 		Remove MODS, it's sux alot and slow. (Tryller)
 		Move MODS files to correct folder. (Tryller)
-		Add new configurables levelToOfflineTraining, rateSkillOffline, rateMagicOffline. (mattyx14)
+		Add new configurables useRunesRequirements, levelToOfflineTraining, rateSkillOffline, rateMagicOffline. (Tryller, mattyx14)
 		Added missing constants "SHIELD_GRAY - ITEM_BROWSEFIELD" this no are supported. (mattyx14, Tryller)
 		Added 2 creatureEvents "onMount(cid, mountId) and onDismount(cid, mountId). (mattyx14)
 		Added funtion to items.xml (premiumScrolls). (mattyx14)

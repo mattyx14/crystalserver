@@ -826,7 +826,7 @@ std::string Item::getDescription(const ItemType& it, int32_t lookDistance, const
 		if(!it.runeSpellName.empty())
 			s << "(\"" << it.runeSpellName << "\")";
 
-		if(it.runeLevel > 0 || it.runeMagLevel > 0 || (it.vocationString != "" && it.wieldInfo == 0))
+		if(g_config.getBool(ConfigManager::USE_RUNE_REQUIREMENTS) && it.runeLevel > 0 || it.runeMagLevel > 0 || (it.vocationString != "" && it.wieldInfo == 0))
 		{
 			s << "." << std::endl << "It can only be used";
 			if(it.vocationString != "" && it.wieldInfo == 0)

@@ -221,6 +221,7 @@
 	skipItemsVersionCheck = false
 
 	-- Spells
+	useRunesRequirements = true
 	formulaLevel = 5.0
 	formulaMagic = 1.0
 	bufferMutedOnSpellFailure = false

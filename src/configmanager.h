@@ -329,6 +329,7 @@ class ConfigManager
 			ALLOW_BLOCK_SPAWN,
 			MULTIPLE_NAME,
 			SAVE_STATEMENT,
+			USE_RUNE_REQUIREMENTS,
 			LAST_BOOL_CONFIG /* this must be the last one */
 		};
 
