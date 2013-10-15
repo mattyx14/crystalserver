@@ -10,6 +10,9 @@
 	<!-- Weapons enchanting (Gems) -->
 	<action itemid="2146-2147;2149-2150;7759-7762" event="script" value="other/enchanting.lua"/>
 
+	<!-- Change gold -->
+	<action itemid="2148;2152;2160" event="script" value="other/changegold.lua"/>
+
 	<!-- Tools -->
 	<action itemid="2420;2442" event="script" value="tools/machete.lua"/>
 	<action itemid="2550" event="script" value="tools/scythe.lua"/>
