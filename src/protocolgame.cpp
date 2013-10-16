@@ -3209,6 +3209,12 @@ void ProtocolGame::AddDistanceShoot(NetworkMessage_ptr msg, const Position& from
 
 void ProtocolGame::AddCreature(NetworkMessage_ptr msg, const Creature* creature, bool known, uint32_t remove)
 {
+	/*
+	TODO: fix the charges bellow.
+	1 - otherPlayer fix me Crystal Server use skulls to creatures too.
+	2 -	Creature skull, creature shield and guild emblemm need to stay as "creature" instead of "otherPlayer".
+	3 - After moving skulls shield and emblems only to players use otherPlayer to fix charges an avoid crashs.
+	*/
 	CreatureType_t creatureType = creature->getType();
 	const Player* otherPlayer = creature->getPlayer();
 
@@ -3217,7 +3223,7 @@ void ProtocolGame::AddCreature(NetworkMessage_ptr msg, const Creature* creature,
 		msg->put<uint16_t>(0x61);
 		msg->put<uint32_t>(remove);
 		msg->put<uint32_t>(creature->getID());
-		msg->put<char>(creature->getType());
+		msg->put<char>(creatureType);
 		msg->putString(creature->getHideName() ? "" : creature->getName());
 	}
 	else
@@ -3241,8 +3247,10 @@ void ProtocolGame::AddCreature(NetworkMessage_ptr msg, const Creature* creature,
 	msg->put<char>(lightInfo.color);
 
 	msg->put<uint16_t>(creature->getStepSpeed() / 2);
+
 	msg->put<char>(player->getSkullType(creature));
 	msg->put<char>(player->getPartyShield(creature));
+
 	if(!known)
 		msg->put<char>(player->getGuildEmblem(creature));
 
@@ -3265,7 +3273,7 @@ void ProtocolGame::AddCreature(NetworkMessage_ptr msg, const Creature* creature,
 	msg->put<char>(creatureType); // Type (for summons)
 	msg->put<char>(0xFF); // MARK_UNMARKED
 
-	if(creature->getPlayer())
+	if(otherPlayer)
 		msg->put<uint16_t>(0x00); // Helpers
 	else
 		msg->put<uint16_t>(0x00);

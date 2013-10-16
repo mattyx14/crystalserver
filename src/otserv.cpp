@@ -223,7 +223,7 @@ void signalHandler(int32_t sig)
 
 		case SIGCONT:
 			Dispatcher::getInstance().addTask(createTask(
-				boost::bind(&Game::reloadInfo, &g_game, RELOAD_ALL, 0, false)));
+				boost::bind(&Game::reloadInfo, &g_game, RELOAD_ALL, 0)));
 			break;
 
 		case SIGQUIT:

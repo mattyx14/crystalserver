@@ -13,5 +13,7 @@
 ]
 
 [ LIST
-	* Remove MODS it's sux and slow to execute scripts.
+	* Add browse field support.
+	* Add helpers support.
+	* Remove MODS it's sux and slow to execute scripts. [DONE]
 ]
