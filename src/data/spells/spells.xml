@@ -516,60 +516,60 @@
 		<vocation id="5"/>
 		<vocation id="6"/>
 	</conjure>
-    <conjure name="Fireball" words="adori flam" lvl="27" mana="460" soul="3" reagentId="2260" conjureId="2302" conjureCount="5" exhaustion="2000" groups="3,2000" icon="23" needlearn="0" event="function" value="conjureRune">
-        <vocation id="1"/>
-        <vocation id="5"/>
-    </conjure>
-    <conjure name="Energy Field" words="adevo grav vis" lvl="18" mana="320" soul="2" reagentId="2260" conjureId="2277" conjureCount="3" exhaustion="2000" groups="3,2000" icon="23" needlearn="0" event="function" value="conjureRune">
-        <vocation id="1"/>
-        <vocation id="2"/>
-        <vocation id="5"/>
-        <vocation id="6"/>
-    </conjure>
-    <conjure name="Stalagmite" words="adori tera" lvl="24" mana="400" soul="2" prem="2" reagentId="2260" conjureId="2292" conjureCount="10" exhaustion="2000" groups="3,2000" icon="23" needlearn="0" event="function" value="conjureRune">
-        <vocation id="1"/>
-        <vocation id="5"/>
-        <vocation id="2"/>
-        <vocation id="6"/>
-    </conjure>
-    <conjure name="Great Fireball" words="adori mas flam" lvl="30" mana="530" soul="3" reagentId="2260" conjureId="2304" conjureCount="3" exhaustion="2000" groups="3,2000" icon="23" needlearn="0" event="function" value="conjureRune">
-        <vocation id="1"/>
-        <vocation id="5"/>
-    </conjure>
-    <conjure name="Heavy Magic Missile" words="adori vis" lvl="25" mana="350" soul="2" reagentId="2260" conjureId="2311" conjureCount="10" exhaustion="2000" groups="3,2000" icon="23" needlearn="0" event="function" value="conjureRune">
-        <vocation id="1"/>
-        <vocation id="5"/>
-        <vocation id="2"/>
-        <vocation id="6"/>
-    </conjure>
-    <conjure name="Poison Bomb" words="adevo mas pox" lvl="25" mana="520" soul="2" reagentId="2260" conjureId="2286" conjureCount="2" exhaustion="2000" groups="3,2000" icon="23" needlearn="0" event="function" value="conjureRune">
-        <vocation id="2"/>
-        <vocation id="6"/>
-    </conjure>
-    <conjure name="Firebomb" words="adevo mas flam" lvl="27" mana="600" soul="3" reagentId="2260" conjureId="2305" conjureCount="2" exhaustion="2000" groups="3,2000" icon="23" needlearn="0" event="function" value="conjureRune">
-        <vocation id="1"/>
-        <vocation id="2"/>
-        <vocation id="5"/>
-        <vocation id="6"/>
-    </conjure>
-    <conjure name="Soulfire" words="adevo res flam" lvl="27" mana="600" soul="3" reagentId="2260" conjureId="2308" conjureCount="3" exhaustion="2000" groups="3,2000" icon="23" needlearn="0" event="function" value="conjureRune">
-        <vocation id="1"/>
-        <vocation id="2"/>
-        <vocation id="5"/>
-        <vocation id="6"/>
-    </conjure>
-    <conjure name="Poison Wall" words="adevo mas grav pox" lvl="29" mana="640" soul="3" reagentId="2260" conjureId="2289" conjureCount="3" exhaustion="2000" groups="3,2000" icon="23" needlearn="0" event="function" value="conjureRune">
-        <vocation id="1"/>
-        <vocation id="2"/>
-        <vocation id="5"/>
-        <vocation id="6"/>
-    </conjure>
-    <conjure name="Explosion" words="adevo mas hur" lvl="31" mana="570" soul="3" reagentId="2260" conjureId="2313" conjureCount="6" needlearn="0" exhaustion="2000" groups="3,2000" icon="23" event="function" value="conjureRune">
-        <vocation id="1"/>
-        <vocation id="2"/>
-        <vocation id="5"/>
-        <vocation id="6"/>
-    </conjure>
+	<conjure name="Fireball" words="adori flam" lvl="27" mana="460" soul="3" reagentId="2260" conjureId="2302" conjureCount="5" exhaustion="2000" groups="3,2000" icon="23" needlearn="0" event="function" value="conjureRune">
+		<vocation id="1"/>
+		<vocation id="5"/>
+	</conjure>
+	<conjure name="Energy Field" words="adevo grav vis" lvl="18" mana="320" soul="2" reagentId="2260" conjureId="2277" conjureCount="3" exhaustion="2000" groups="3,2000" icon="23" needlearn="0" event="function" value="conjureRune">
+		<vocation id="1"/>
+		<vocation id="2"/>
+		<vocation id="5"/>
+		<vocation id="6"/>
+	</conjure>
+	<conjure name="Stalagmite" words="adori tera" lvl="24" mana="400" soul="2" prem="2" reagentId="2260" conjureId="2292" conjureCount="10" exhaustion="2000" groups="3,2000" icon="23" needlearn="0" event="function" value="conjureRune">
+		<vocation id="1"/>
+		<vocation id="5"/>
+		<vocation id="2"/>
+		<vocation id="6"/>
+	</conjure>
+	<conjure name="Great Fireball" words="adori mas flam" lvl="30" mana="530" soul="3" reagentId="2260" conjureId="2304" conjureCount="3" exhaustion="2000" groups="3,2000" icon="23" needlearn="0" event="function" value="conjureRune">
+		<vocation id="1"/>
+		<vocation id="5"/>
+	</conjure>
+	<conjure name="Heavy Magic Missile" words="adori vis" lvl="25" mana="350" soul="2" reagentId="2260" conjureId="2311" conjureCount="10" exhaustion="2000" groups="3,2000" icon="23" needlearn="0" event="function" value="conjureRune">
+		<vocation id="1"/>
+		<vocation id="5"/>
+		<vocation id="2"/>
+		<vocation id="6"/>
+	</conjure>
+	<conjure name="Poison Bomb" words="adevo mas pox" lvl="25" mana="520" soul="2" reagentId="2260" conjureId="2286" conjureCount="2" exhaustion="2000" groups="3,2000" icon="23" needlearn="0" event="function" value="conjureRune">
+		<vocation id="2"/>
+		<vocation id="6"/>
+	</conjure>
+	<conjure name="Firebomb" words="adevo mas flam" lvl="27" mana="600" soul="3" reagentId="2260" conjureId="2305" conjureCount="2" exhaustion="2000" groups="3,2000" icon="23" needlearn="0" event="function" value="conjureRune">
+		<vocation id="1"/>
+		<vocation id="2"/>
+		<vocation id="5"/>
+		<vocation id="6"/>
+	</conjure>
+	<conjure name="Soulfire" words="adevo res flam" lvl="27" mana="600" soul="3" reagentId="2260" conjureId="2308" conjureCount="3" exhaustion="2000" groups="3,2000" icon="23" needlearn="0" event="function" value="conjureRune">
+		<vocation id="1"/>
+		<vocation id="2"/>
+		<vocation id="5"/>
+		<vocation id="6"/>
+	</conjure>
+	<conjure name="Poison Wall" words="adevo mas grav pox" lvl="29" mana="640" soul="3" reagentId="2260" conjureId="2289" conjureCount="3" exhaustion="2000" groups="3,2000" icon="23" needlearn="0" event="function" value="conjureRune">
+		<vocation id="1"/>
+		<vocation id="2"/>
+		<vocation id="5"/>
+		<vocation id="6"/>
+	</conjure>
+	<conjure name="Explosion" words="adevo mas hur" lvl="31" mana="570" soul="3" reagentId="2260" conjureId="2313" conjureCount="6" needlearn="0" exhaustion="2000" groups="3,2000" icon="23" event="function" value="conjureRune">
+		<vocation id="1"/>
+		<vocation id="2"/>
+		<vocation id="5"/>
+		<vocation id="6"/>
+	</conjure>
 	<conjure name="Fire Wall" words="adevo mas grav flam" lvl="33" mana="780" soul="3" reagentId="2260" conjureId="2303" conjureCount="3" exhaustion="2000" groups="3,2000" icon="23" needlearn="0" event="function" value="conjureRune">
 		<vocation id="1"/>
 		<vocation id="2"/>

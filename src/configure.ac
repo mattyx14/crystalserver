@@ -1,5 +1,5 @@
 AC_PREREQ([2.50])
-AC_INIT([CrystalServer], [0.3.0])
+AC_INIT([CrystalServer], [0.3.1])
 AM_INIT_AUTOMAKE([1.10 foreign silent-rules])
 AC_CONFIG_SRCDIR([account.h])
 AM_CONFIG_HEADER([config.h])
@@ -303,7 +303,7 @@ AC_CONFIG_FILES([Makefile])
 AC_OUTPUT
 
 echo
-#echo Crystal Server 0.3.0
+#echo Crystal Server 0.3.1
 echo $PACKAGE $VERSION
 echo
 echo Using LuaJIT................ : $luaJIT
