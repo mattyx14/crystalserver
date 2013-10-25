@@ -1069,26 +1069,23 @@ bool IOLoginData::savePlayer(Player* player, bool preSave/* = true*/, bool shall
 	if(!saveItems(player, itemList, stmt))
 		return false;
 
-	if(player->depotChange)
+	//save depot items
+	query.str("");
+	query << "DELETE FROM `player_depotitems` WHERE `player_id` = " << player->getGUID() << ";";
+	if(!db->query(query.str()))
+		return false;
+
+	stmt.setQuery("INSERT INTO `player_depotitems` (`player_id`, `pid`, `sid`, `itemtype`, `count`, `attributes`) VALUES ");
+	itemList.clear();
+	for(DepotMap::iterator it = player->depotChests.begin(); it != player->depotChests.end() ;++it)
 	{
-		//save depot items
-		query.str("");
-		query << "DELETE FROM `player_depotitems` WHERE `player_id` = " << player->getGUID() << ";";
-		if(!db->query(query.str()))
-			return false;
-
-		stmt.setQuery("INSERT INTO `player_depotitems` (`player_id`, `pid`, `sid`, `itemtype`, `count`, `attributes`) VALUES ");
-		itemList.clear();
-		for(DepotMap::iterator it = player->depotChests.begin(); it != player->depotChests.end() ;++it)
-		{
-			DepotChest* depotChest = it->second;
-			for(ItemList::const_iterator iit = depotChest->getItems(), end = depotChest->getEnd(); iit != end; ++iit)
-				itemList.push_back(itemBlock(it->first, *iit));
-		}
-
-		if(!saveItems(player, itemList, stmt))
-			return false;
+		DepotChest* depotChest = it->second;
+		for(ItemDeque::const_iterator iit = depotChest->getItems(), end = depotChest->getEnd(); iit != end; ++iit)
+			itemList.push_back(itemBlock(it->first, *iit));
 	}
+
+	if(!saveItems(player, itemList, stmt))
+		return false;
 
 	//save inbox items
 	query.str("");
@@ -1098,7 +1095,7 @@ bool IOLoginData::savePlayer(Player* player, bool preSave/* = true*/, bool shall
 
 	stmt.setQuery("INSERT INTO `player_inboxitems` (`player_id`, `pid`, `sid`, `itemtype`, `count`, `attributes`) VALUES ");
 	itemList.clear();
-	for(ItemList::const_iterator it = player->getInbox()->getItems(), end = player->getInbox()->getEnd(); it != end; ++it)
+	for(ItemDeque::const_iterator it = player->getInbox()->getItems(), end = player->getInbox()->getEnd(); it != end; ++it)
 		itemList.push_back(itemBlock(0, *it));
 
 	if(!saveItems(player, itemList, stmt))

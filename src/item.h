@@ -21,6 +21,7 @@
 
 #include <libxml/xmlmemory.h>
 #include <libxml/parser.h>
+#include <deque>
 
 #include "thing.h"
 #include "itemattributes.h"
@@ -134,7 +135,7 @@ struct TeleportDest
 #pragma pack()
 
 typedef std::list<Item*> ItemList;
-typedef std::vector<Item*> ItemVector;
+typedef std::deque<Item*> ItemDeque;
 
 class Item : virtual public Thing, public ItemAttributes
 {

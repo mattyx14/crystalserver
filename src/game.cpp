@@ -2017,7 +2017,7 @@ uint64_t Game::getMoney(const Cylinder* cylinder)
 	{
 		container = listContainer.front();
 		listContainer.pop_front();
-		for(ItemList::const_iterator it = container->getItems(); it != container->getEnd(); ++it)
+		for(ItemDeque::const_iterator it = container->getItems(); it != container->getEnd(); ++it)
 		{
 			item = *it;
 			if((tmpContainer = item->getContainer()))
@@ -3339,7 +3339,7 @@ bool Game::playerLookInTrade(uint32_t playerId, bool lookAtCounterOffer, int32_t
 
 	std::list<const Container*> listContainer;
 	listContainer.push_back(tradeContainer);
-	ItemList::const_iterator it;
+	ItemDeque::const_iterator it;
 
 	Container* tmpContainer = NULL;
 	while(listContainer.size() > 0)
@@ -6432,7 +6432,7 @@ bool Game::playerCreateMarketOffer(uint32_t playerId, uint8_t type, uint16_t spr
 		{
 			Container* container = containerList.front();
 			containerList.pop_front();
-			for(ItemList::const_iterator iter = container->getItems(), end = container->getEnd(); iter != end; ++iter)
+			for(ItemDeque::const_iterator iter = container->getItems(), end = container->getEnd(); iter != end; ++iter)
 			{
 				Item* item = (*iter);
 				Container* c = item->getContainer();
@@ -6622,7 +6622,7 @@ bool Game::playerAcceptMarketOffer(uint32_t playerId, uint32_t timestamp, uint16
 		{
 			Container* container = containerList.front();
 			containerList.pop_front();
-			for(ItemList::const_iterator iter = container->getItems(), end = container->getEnd(); iter != end; ++iter)
+			for(ItemDeque::const_iterator iter = container->getItems(), end = container->getEnd(); iter != end; ++iter)
 			{
 				Item* item = (*iter);
 				Container* c = item->getContainer();

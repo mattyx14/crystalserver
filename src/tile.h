@@ -37,6 +37,7 @@ class QTreeLeafNode;
 typedef std::list<Creature*> SpectatorVec;
 typedef std::vector<Creature*> CreatureVector;
 typedef std::map<Position, boost::shared_ptr<SpectatorVec> > SpectatorCache;
+typedef std::vector<Item*> ItemVector;
 
 enum tileflags_t
 {

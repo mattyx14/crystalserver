@@ -33,7 +33,7 @@ Container::Container(uint16_t type) : Item(type)
 
 Container::~Container()
 {
-	for(ItemList::iterator cit = itemlist.begin(); cit != itemlist.end(); ++cit)
+	for(ItemDeque::iterator cit = itemlist.begin(); cit != itemlist.end(); ++cit)
 	{
 		(*cit)->setParent(NULL);
 		(*cit)->unRef();
@@ -45,7 +45,7 @@ Container::~Container()
 Item* Container::clone() const
 {
 	Container* _item = static_cast<Container*>(Item::clone());
-	for(ItemList::const_iterator it = itemlist.begin(); it != itemlist.end(); ++it)
+	for(ItemDeque::const_iterator it = itemlist.begin(); it != itemlist.end(); ++it)
 		_item->addItem((*it)->clone());
 
 	return _item;
@@ -163,7 +163,7 @@ std::stringstream& Container::getContentDescription(std::stringstream& s) const
 Item* Container::getItem(uint32_t index)
 {
 	size_t n = 0;
-	for(ItemList::const_iterator cit = getItems(); cit != getEnd(); ++cit)
+	for(ItemDeque::const_iterator cit = getItems(); cit != getEnd(); ++cit)
 	{
 		if(n == index)
 			return *cit;
@@ -332,7 +332,7 @@ ReturnValue Container::__queryMaxCount(int32_t index, const Thing* thing, uint32
 		{
 			//Iterate through every item and check how much free stackable slots there is.
 			uint32_t slotIndex = 0;
-			for(ItemList::const_iterator cit = itemlist.begin(); cit != itemlist.end(); ++cit, ++slotIndex)
+			for(ItemDeque::const_iterator cit = itemlist.begin(); cit != itemlist.end(); ++cit, ++slotIndex)
 			{
 				if((*cit) != item && (*cit)->getID() == item->getID() && (*cit)->getItemCount() < 100)
 				{
@@ -433,7 +433,7 @@ Cylinder* Container::__queryDestination(int32_t& index, const Thing* thing, Item
 	{
 		//try to find a suitable item to stack with
 		uint32_t n = itemlist.size();
-		for(ItemList::reverse_iterator cit = itemlist.rbegin(); cit != itemlist.rend(); ++cit, --n)
+		for(ItemDeque::reverse_iterator cit = itemlist.rbegin(); cit != itemlist.rend(); ++cit, --n)
 		{
 			if((*cit)->getID() == item->getID() && (*cit)->getItemCount() < 100)
 			{
@@ -554,7 +554,7 @@ void Container::__replaceThing(uint32_t index, Thing* thing)
 	}
 
 	uint32_t count = 0;
-	ItemList::iterator cit = itemlist.end();
+	ItemDeque::iterator cit = itemlist.end();
 	for(cit = itemlist.begin(); cit != itemlist.end(); ++cit)
 	{
 		if(count == index)
@@ -610,7 +610,7 @@ void Container::__removeThing(Thing* thing, uint32_t count)
 		return /*RET_NOTPOSSIBLE*/;
 	}
 
-	ItemList::iterator cit = std::find(itemlist.begin(), itemlist.end(), thing);
+	ItemDeque::iterator cit = std::find(itemlist.begin(), itemlist.end(), thing);
 	if(cit == itemlist.end())
 	{
 #ifdef __DEBUG_MOVESYS__
@@ -659,7 +659,7 @@ Thing* Container::__getThing(uint32_t index) const
 		return NULL;
 
 	uint32_t count = 0;
-	for(ItemList::const_iterator cit = itemlist.begin(); cit != itemlist.end(); ++cit)
+	for(ItemDeque::const_iterator cit = itemlist.begin(); cit != itemlist.end(); ++cit)
 	{
 		if(count == index)
 			return *cit;
@@ -673,7 +673,7 @@ Thing* Container::__getThing(uint32_t index) const
 int32_t Container::__getIndexOfThing(const Thing* thing) const
 {
 	uint32_t index = 0;
-	for(ItemList::const_iterator cit = getItems(); cit != getEnd(); ++cit)
+	for(ItemDeque::const_iterator cit = getItems(); cit != getEnd(); ++cit)
 	{
 		if(*cit == thing)
 			return index;
@@ -697,7 +697,7 @@ int32_t Container::__getLastIndex() const
 uint32_t Container::__getItemTypeCount(uint16_t itemId, int32_t subType /*= -1*/) const
 {
 	uint32_t count = 0;
-	for(ItemList::const_iterator it = itemlist.begin(); it != itemlist.end(); ++it)
+	for(ItemDeque::const_iterator it = itemlist.begin(); it != itemlist.end(); ++it)
 	{
 		if((*it) && (*it)->getID() == itemId && (subType == -1 || subType == (*it)->getSubType()))
 			count += (*it)->getItemCount();
@@ -709,7 +709,7 @@ uint32_t Container::__getItemTypeCount(uint16_t itemId, int32_t subType /*= -1*/
 std::map<uint32_t, uint32_t>& Container::__getAllItemTypeCount(std::map<uint32_t,
 	uint32_t>& countMap) const
 {
-	for(ItemList::const_iterator it = itemlist.begin(); it != itemlist.end(); ++it)
+	for(ItemDeque::const_iterator it = itemlist.begin(); it != itemlist.end(); ++it)
 		countMap[(*it)->getID()] += (*it)->getItemCount();
 
 	return countMap;
@@ -789,7 +789,7 @@ void Container::__internalAddThing(uint32_t
 
 void Container::__startDecaying()
 {
-	for(ItemList::const_iterator it = itemlist.begin(); it != itemlist.end(); ++it)
+	for(ItemDeque::const_iterator it = itemlist.begin(); it != itemlist.end(); ++it)
 		(*it)->__startDecaying();
 }
 

@@ -1761,6 +1761,7 @@ void ProtocolGame::sendContainer(uint32_t cid, const Container* container, bool 
 
 	msg->put<char>(0x01); // Drag and drop
 	msg->put<char>(0x00); // Pagination
+
 	msg->put<uint16_t>(container->size());
 	msg->put<uint16_t>(0x00);
 
@@ -1768,7 +1769,7 @@ void ProtocolGame::sendContainer(uint32_t cid, const Container* container, bool 
 
 	msg->put<char>(std::min<uint32_t>(maxItemsToSend, container->size()));
 	uint32_t i = 0;
-	for(ItemList::const_iterator cit = container->getItems(), end = container->getEnd(); i < maxItemsToSend && cit != end; ++cit, ++i)
+	for(ItemDeque::const_iterator cit = container->getItems(), end = container->getEnd(); i < maxItemsToSend && cit != end; ++cit, ++i)
 		msg->putItem(*cit);
 }
 
@@ -1895,7 +1896,7 @@ void ProtocolGame::sendMarketEnter(uint32_t depotId)
 	{
 		Container* container = containerList.front();
 		containerList.pop_front();
-		for(ItemList::const_iterator it = container->getItems(), end = container->getEnd(); it != end; ++it)
+		for(ItemDeque::const_iterator it = container->getItems(), end = container->getEnd(); it != end; ++it)
 		{
 			Item* item = *it;
 

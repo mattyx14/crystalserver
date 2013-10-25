@@ -66,7 +66,7 @@ void DepotLocker::postRemoveNotification(Creature* actor, Thing* thing, const Cy
 
 void DepotLocker::removeInbox(Inbox* inbox)
 {
-	ItemList::iterator cit = std::find(itemlist.begin(), itemlist.end(), inbox);
+	ItemDeque::iterator cit = std::find(itemlist.begin(), itemlist.end(), inbox);
 	if(cit == itemlist.end())
 		return;
 

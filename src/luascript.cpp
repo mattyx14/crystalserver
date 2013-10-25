@@ -1096,7 +1096,7 @@ void LuaInterface::pushThing(lua_State* L, Thing* thing, uint32_t id/* = 0*/, Re
 				if(recursive == RECURSE_FIRST)
 					recursive = RECURSE_NONE;
 
-				ItemList::const_iterator it = container->getItems();
+				ItemDeque::const_iterator it = container->getItems();
 				createTable(L, "items");
 				for(int32_t i = 1; it != container->getEnd(); ++it, ++i)
 				{

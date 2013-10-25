@@ -106,8 +106,6 @@ Player::Player(const std::string& _name, ProtocolGame* p):
 	inbox = new Inbox(ITEM_INBOX);
 	inbox->addRef();
 
-	depotChange = false;
-
 	transferContainer.setParent(NULL);
 	for(int32_t i = 0; i < 11; ++i)
 	{

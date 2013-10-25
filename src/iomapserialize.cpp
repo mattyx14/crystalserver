@@ -859,7 +859,7 @@ bool IOMapSerialize::saveItems(Database* db, uint32_t& tileId, uint32_t houseId,
 	{
 		container = cit->first;
 		parentId = cit->second;
-		for(ItemList::const_iterator it = container->getItems(); it != container->getEnd(); ++it)
+		for(ItemDeque::const_iterator it = container->getItems(); it != container->getEnd(); ++it)
 		{
 			if(!(item = *it))
 				continue;
@@ -1012,7 +1012,7 @@ bool IOMapSerialize::loadItem(PropStream& propStream, Cylinder* parent, bool dep
 
 		if(depotTransfer)
 		{
-			for(ItemList::const_iterator it = container->getItems(); it != container->getEnd(); ++it)
+			for(ItemDeque::const_iterator it = container->getItems(); it != container->getEnd(); ++it)
 				parent->__addThing(NULL, (*it));
 
 			container->itemlist.clear();
@@ -1061,7 +1061,7 @@ bool IOMapSerialize::saveItem(PropWriteStream& stream, const Item* item)
 	{
 		stream.addByte(ATTR_CONTAINER_ITEMS);
 		stream.addLong(container->size());
-		for(ItemList::const_reverse_iterator rit = container->getReversedItems(); rit != container->getReversedEnd(); ++rit)
+		for(ItemDeque::const_reverse_iterator rit = container->getReversedItems(); rit != container->getReversedEnd(); ++rit)
 			saveItem(stream, (*rit));
 	}
 

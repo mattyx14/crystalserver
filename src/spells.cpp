@@ -1673,7 +1673,7 @@ ReturnValue ConjureSpell::internalConjureItem(Player* player, uint32_t conjureId
 	{
 		for(std::list<Container*>::iterator cit = containers.begin(); cit != containers.end(); ++cit)
 		{
-			for(ItemList::const_reverse_iterator it = (*cit)->getReversedItems(); it != (*cit)->getReversedEnd(); ++it)
+			for(ItemDeque::const_reverse_iterator it = (*cit)->getReversedItems(); it != (*cit)->getReversedEnd(); ++it)
 			{
 				if((*it)->getID() == reagentId)
 				{

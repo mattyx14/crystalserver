@@ -286,7 +286,7 @@ bool House::transferToDepot()
 				moveList.push_back(*iit);
 			else if((tmpContainer = (*iit)->getContainer()))
 			{
-				for(ItemList::const_iterator cit = tmpContainer->getItems(); cit != tmpContainer->getEnd(); ++cit)
+				for(ItemDeque::const_iterator cit = tmpContainer->getItems(); cit != tmpContainer->getEnd(); ++cit)
 					moveList.push_back(*cit);
 			}
 		}

@@ -48,7 +48,7 @@ class ContainerIterator
 
 		Container* base;
 		std::queue<Container*> over;
-		ItemList::iterator current;
+		ItemDeque::iterator current;
 
 		friend class Container;
 };
@@ -97,11 +97,11 @@ class Container : public Item, public Cylinder
 		ContainerIterator begin() const;
 		ContainerIterator end() const;
 
-		ItemList::const_iterator getItems() const {return itemlist.begin();}
-		ItemList::const_iterator getEnd() const {return itemlist.end();}
+		ItemDeque::const_iterator getItems() const {return itemlist.begin();}
+		ItemDeque::const_iterator getEnd() const {return itemlist.end();}
 
-		ItemList::const_reverse_iterator getReversedItems() const {return itemlist.rbegin();}
-		ItemList::const_reverse_iterator getReversedEnd() const {return itemlist.rend();}
+		ItemDeque::const_reverse_iterator getReversedItems() const {return itemlist.rbegin();}
+		ItemDeque::const_reverse_iterator getReversedEnd() const {return itemlist.rend();}
 
 		//cylinder implementations
 		virtual Cylinder* getParent() {return Thing::getParent();}
@@ -163,7 +163,7 @@ class Container : public Item, public Cylinder
 		uint32_t maxSize, serializationCount;
 		double totalWeight;
 
-		ItemList itemlist;
+		ItemDeque itemlist;
 		friend class ContainerIterator;
 		friend class IOMapSerialize;
 };

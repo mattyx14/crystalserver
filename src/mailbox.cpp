@@ -104,7 +104,7 @@ bool Mailbox::getReceiver(Item* item, std::string& name)
 		Container* parcel = item->getContainer();
 		if(parcel)
 		{
-			for(ItemList::const_iterator cit = parcel->getItems(); cit != parcel->getEnd(); ++cit)
+			for(ItemDeque::const_iterator cit = parcel->getItems(); cit != parcel->getEnd(); ++cit)
 			{
 				if((*cit)->getID() == ITEM_LABEL)
 				{
