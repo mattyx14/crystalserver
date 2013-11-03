@@ -237,63 +237,90 @@ void ProtocolLogin::onRecvFirstMessage(NetworkMessage& msg)
 
 		//Add char list
 		output->put<char>(0x64);
-		if(g_config.getBool(ConfigManager::ACCOUNT_MANAGER) && account.number != 1)
-		{
-			output->put<char>(account.charList.size() + 1);
-			output->putString("Account Manager");
+		if(version >= 1020) {
+			if(g_config.getBool(ConfigManager::ON_OR_OFF_CHARLIST)) {
+				output->put<char>(1); // number of worlds
+				output->put<char>(0); // world id
+				output->putString(g_config.getString(ConfigManager::SERVER_NAME));
+				output->putString(g_config.getString(ConfigManager::IP));
+				IntegerVec games = vectorAtoi(explodeString(g_config.getString(ConfigManager::GAME_PORT), ","));
+					output->put<uint16_t>(games[random_range(0, games.size() - 1)]);
+				output->put<char>(0);
+			} else {
+				output->put<char>(1); // number of worlds
+				output->put<char>(0); // world id
+				output->putString(g_config.getString(ConfigManager::SERVER_NAME));
+				output->putString(g_config.getString(ConfigManager::IP));
+				IntegerVec games = vectorAtoi(explodeString(g_config.getString(ConfigManager::GAME_PORT), ","));
+					output->put<uint16_t>(games[random_range(0, games.size() - 1)]);
+				output->put<char>(0);
+			}
 
-			output->putString(g_config.getString(ConfigManager::SERVER_NAME));
-			output->put<uint32_t>(serverIp);
-
-			IntegerVec games = vectorAtoi(explodeString(g_config.getString(ConfigManager::GAME_PORT), ","));
-			output->put<uint16_t>(games[random_range(0, games.size() - 1)]);
-
-			if(version >= 971)
-				output->put<char>(0x00);
-		}
-		else
 			output->put<char>((uint8_t)account.charList.size());
-
-		#ifndef __LOGIN_SERVER__
-		for(Characters::iterator it = account.charList.begin(); it != account.charList.end(); ++it)
-		{
-			output->putString((*it));
-			if(g_config.getBool(ConfigManager::ON_OR_OFF_CHARLIST))
+			for(Characters::iterator it = account.charList.begin(); it != account.charList.end(); ++it) {
+				if(g_config.getBool(ConfigManager::ON_OR_OFF_CHARLIST)) {
+					output->put<char>(g_game.getPlayerByName((*it)) != NULL);
+				} else {
+					output->put<char>(0);
+				}
+				output->putString((*it));
+			}
+		} else {
+			if(g_config.getBool(ConfigManager::ACCOUNT_MANAGER) && account.number != 1)
 			{
-				if(g_game.getPlayerByName((*it)))
+				output->put<char>(account.charList.size() + 1);
+				output->putString("Account Manager");
+
+				output->putString(g_config.getString(ConfigManager::SERVER_NAME));
+				output->put<uint32_t>(serverIp);
+
+				IntegerVec games = vectorAtoi(explodeString(g_config.getString(ConfigManager::GAME_PORT), ","));
+				output->put<uint16_t>(games[random_range(0, games.size() - 1)]);
+				if(version >= 971)
+					output->put<char>(0x00);
+			}
+			else
+				output->put<char>((uint8_t)account.charList.size());
+
+			#ifndef __LOGIN_SERVER__
+			for(Characters::iterator it = account.charList.begin(); it != account.charList.end(); ++it)
+			{
+				output->putString((*it));
+				if(g_config.getBool(ConfigManager::ON_OR_OFF_CHARLIST))
+				{
+					if(g_game.getPlayerByName((*it)))
+						output->putString("Online");
+					else
+						output->putString("Offline");
+				}
+				else
+					output->putString(g_config.getString(ConfigManager::SERVER_NAME));
+
+				output->put<uint32_t>(serverIp);
+				IntegerVec games = vectorAtoi(explodeString(g_config.getString(ConfigManager::GAME_PORT), ","));
+				output->put<uint16_t>(games[random_range(0, games.size() - 1)]);
+				if(version >= 971)
+					output->put<char>(0x00);
+			}
+			#else
+			for(Characters::iterator it = charList.begin(); it != charList.end(); ++it)
+			{
+				output->putString(it->second.name);
+				if(!g_config.getBool(ConfigManager::ON_OR_OFF_CHARLIST) || it->second.status < 0)
+					output->putString(it->second.server->getName());
+				else if(it->second.status)
 					output->putString("Online");
 				else
 					output->putString("Offline");
+
+				output->put<uint32_t>(it->second.server->getAddress());
+				IntegerVec games = it->second.server->getPorts();
+				output->put<uint16_t>(games[random_range(0, games.size() - 1)]);
+				if(version >= 971)
+					output->put<char>(0x00);
 			}
-			else
-				output->putString(g_config.getString(ConfigManager::SERVER_NAME));
-
-			output->put<uint32_t>(serverIp);
-			IntegerVec games = vectorAtoi(explodeString(g_config.getString(ConfigManager::GAME_PORT), ","));
-			output->put<uint16_t>(games[random_range(0, games.size() - 1)]);
-
-			if(version >= 971)
-				output->put<char>(0x00);
+			#endif
 		}
-		#else
-		for(Characters::iterator it = charList.begin(); it != charList.end(); ++it)
-		{
-			output->putString(it->second.name);
-			if(!g_config.getBool(ConfigManager::ON_OR_OFF_CHARLIST) || it->second.status < 0)
-				output->putString(it->second.server->getName());
-			else if(it->second.status)
-				output->putString("Online");
-			else
-				output->putString("Offline");
-
-			output->put<uint32_t>(it->second.server->getAddress());
-			IntegerVec games = it->second.server->getPorts();
-			output->put<uint16_t>(games[random_range(0, games.size() - 1)]);
-			
-			if(version >= 971)
-				output->put<char>(0x00);			
-		}
-		#endif
 
 		//Add premium days
 		if(g_config.getBool(ConfigManager::FREE_PREMIUM))
