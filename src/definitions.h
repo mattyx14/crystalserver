@@ -18,9 +18,9 @@
 #ifndef __DEFINITIONS__
 #define __DEFINITIONS__
 
-#define CLIENT_VERSION_MIN 1010
-#define CLIENT_VERSION_MAX 1010
-#define CLIENT_VERSION_STRING "Only clients with protocol 10.10 allowed!"
+#define CLIENT_VERSION_MIN 1021
+#define CLIENT_VERSION_MAX 1021
+#define CLIENT_VERSION_STRING "Only clients with protocol 10.21 allowed!"
 
 #define CLIENT_VERSION_DAT 0
 #define CLIENT_VERSION_SPR 0
@@ -30,7 +30,7 @@
 #define SOFTWARE_NAME "Crystal Server"
 #define SOFTWARE_VERSION "0.3.1"
 #define SOFTWARE_DEVELOPERS "Tryller"
-#define SOFTWARE_PROTOCOL "10.10"
+#define SOFTWARE_PROTOCOL "10.21"
 
 #define VERSION_DATABASE 40
 
