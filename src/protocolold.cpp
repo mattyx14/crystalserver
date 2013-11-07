@@ -61,7 +61,7 @@ void ProtocolOld::onRecvFirstMessage(NetworkMessage& msg)
 
 	msg.skip(12);
 	if(version <= 760)
-		disconnectClient(0x0A, CLIENT_VERSION_STRING);
+		disconnectClient(0x0A, "Only clients with protocol " CLIENT_VERSION_STRING " allowed!");
 
 	if(!RSA_decrypt(msg))
 	{
@@ -76,5 +76,5 @@ void ProtocolOld::onRecvFirstMessage(NetworkMessage& msg)
 	if(version <= 822)
 		disableChecksum();
 
-	disconnectClient(0x0A, CLIENT_VERSION_STRING);
+	disconnectClient(0x0A, "Only clients with protocol " CLIENT_VERSION_STRING " allowed!");
 }
