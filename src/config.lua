@@ -105,7 +105,6 @@
 	loginTimeout = 60 * 1000
 	maxPlayers = 1000
 	motd = "Welcome to Crystal Server!"
-	displayOnOrOffAtCharlist = false
 	onePlayerOnlinePerAccount = true
 	allowClones = 0
 	serverName = "Crystal"
